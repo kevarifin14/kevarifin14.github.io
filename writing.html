@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Writing — Kevin Arifin</title>
+    <meta name="description" content="Essays by Kevin Arifin." />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="site-nav">
+        <a class="brand" href="/">Kevin Arifin</a>
+        <div class="links">
+          <a href="/">Home</a>
+          <a href="/writing.html" aria-current="page">Writing</a>
+          <a href="/about.html">About</a>
+        </div>
+      </nav>
+
+      <main>
+        <p class="eyebrow">Writing</p>
+        <h1>Writing</h1>
+        <p class="lead">Essays on AI, crypto, and systems.</p>
+
+        <!--
+          To add a post: create a new HTML file (e.g. posts/my-post.html)
+          and add a <li> linking to it below. Keep the same nav/footer so
+          every page stays connected.
+        -->
+        <ul class="list">
+          <li>
+            <a href="/posts/the-token-economy.html">
+              <span class="title">The Token Economy</span>
+              <span class="date">Coming soon</span>
+            </a>
+          </li>
+        </ul>
+      </main>
+
+      <footer class="site-footer">
+        <span>© <span id="year">2026</span> Kevin Arifin</span>
+        <span class="spacer"></span>
+        <a href="https://github.com/kevarifin14" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://x.com/kevarifin" target="_blank" rel="noreferrer">X</a>
+      </footer>
+    </div>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
