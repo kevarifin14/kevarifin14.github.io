@@ -53,3 +53,11 @@ This log records evaluation runs that produced durable lessons for the skill. Ke
 - Lessons: Long explainers should be planned as prerequisite ladders with one focused draggable figure per concept and a final composed figure.
 - Decisions: Added an article-level archive map reference instead of further bloating SKILL.md.
 - Run file: evals/runs/2026-06-14-ciechanowski-archive-study.md
+## 2026-06-14T18:03:04.688Z - Resume Claude 3D hero and evaluator alignment
+
+- Status: strong
+- Result: Completed the interrupted Claude 3D Bicycle hero pass and brought the full gallery to 100/100 across 61 unique paths.
+- Artifacts: sims/eval-results/latest.md, sims/bicycle/index.html, scripts/evaluate-sims.mjs
+- Lessons: Visual-fidelity upgrades still need the same product controls: reset, reduced-motion handling, and a first-frame interaction that visibly changes state.; The evaluator must match local site conventions: de-dupe duplicate gallery links, count .cap guidance, and grade course modules as navigable lesson sequences rather than canvas stages.
+- Decisions: Updated evaluator/thumbnail scripts, patched Bicycle, Gears, Moon, and refreshed the canonical eval report.
+- Run file: evals/runs/2026-06-14-resume-claude-3d-hero-evaluator-alignment.md

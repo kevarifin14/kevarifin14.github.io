@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generate gallery thumbnails: open each sim, lightly poke it, screenshot the .stage.
+// Generate gallery thumbnails: open each unique sim path, lightly poke it, screenshot the .stage.
 // Output: sims/thumbs/<slug>.png  (slug derived from the gallery card href)
 import { spawn } from "node:child_process";
 import { createServer } from "node:net";
@@ -47,6 +47,7 @@ async function main() {
     let sims = await disco.$$eval("a.card", (cards) => cards.map((c) => new URL(c.href).pathname));
     await disco.close();
     if (only) sims = sims.filter((h) => h.includes(only));
+    sims = [...new Set(sims)];
 
     for (const href of sims) {
       const slug = href.replace(/^\/sims\//, "").replace(/\/$/, "");

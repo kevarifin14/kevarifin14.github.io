@@ -24,6 +24,7 @@
         <label class="row"><span>Driven teeth <strong id="nbValue"></strong></span><input id="nb" type="range" min="8" max="30" step="1" value="20" /></label>
         <label class="row"><span>Speed <strong id="spdValue"></strong></span><input id="spd" type="range" min="0" max="2" step="0.01" value="1" /></label>
         <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
       </div>
       <div class="readout" id="ro"></div>
 
@@ -64,8 +65,9 @@
           m.castShadow = true; m.receiveShadow = true; m.userData.rP = rP; return m;
         }
 
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         let gearA, gearB, theta = 0;
-        const params = { na: 12, nb: 20, spd: 1, run: true };
+        const params = { na: 12, nb: 20, spd: 1, run: !reduce };
         function rebuild() {
           if (gearA) { scene.remove(gearA); gearA.geometry.dispose(); scene.remove(gearB); gearB.geometry.dispose(); }
           gearA = gearMesh(params.na, 0xe8c547); gearB = gearMesh(params.nb, 0x4fa3ff);
@@ -81,9 +83,16 @@
 
         const ro = document.getElementById("ro");
         function readout() { const ratio = params.nb / params.na; ro.innerHTML = "Ratio <strong>" + params.nb + ":" + params.na + "</strong> = <strong>" + ratio.toFixed(2) + "×</strong> — driven turns " + ratio.toFixed(2) + "× slower, with " + ratio.toFixed(2) + "× the torque."; }
-        function bind(id, key, fmt) { const el = document.getElementById(id), out = document.getElementById(id + "Value"); const f = () => { params[key] = +el.value; out.textContent = fmt ? fmt(+el.value) : el.value; }; el.addEventListener("input", () => { f(); if (id === "na" || id === "nb") rebuild(); readout(); }); f(); }
-        bind("na", "na", v => v + "T"); bind("nb", "nb", v => v + "T"); bind("spd", "spd", v => v.toFixed(2)); readout();
-        document.getElementById("toggle").addEventListener("click", function () { params.run = !params.run; this.textContent = params.run ? "Pause" : "Play"; });
+        function bind(id, key, fmt) { const el = document.getElementById(id), out = document.getElementById(id + "Value"); const f = () => { params[key] = +el.value; out.textContent = fmt ? fmt(+el.value) : el.value; }; el.addEventListener("input", () => { f(); if (id === "na" || id === "nb") rebuild(); readout(); }); f(); return f; }
+        const syncNa = bind("na", "na", v => v + "T"), syncNb = bind("nb", "nb", v => v + "T"), syncSpd = bind("spd", "spd", v => v.toFixed(2)); readout();
+        const toggle = document.getElementById("toggle");
+        function setRunning(run) { params.run = run; toggle.textContent = params.run ? "Pause" : "Play"; }
+        toggle.addEventListener("click", function () { setRunning(!params.run); });
+        document.getElementById("reset").addEventListener("click", function () {
+          document.getElementById("na").value = "12"; document.getElementById("nb").value = "20"; document.getElementById("spd").value = "1";
+          syncNa(); syncNb(); syncSpd(); theta = 0; rebuild(); readout(); setRunning(!reduce);
+        });
+        setRunning(!reduce);
 
         renderer.setAnimationLoop(() => {
           if (params.run) { theta += params.spd * 0.012; gearA.rotation.z = theta; gearB.rotation.z = -theta * params.na / params.nb + Math.PI / params.nb; }

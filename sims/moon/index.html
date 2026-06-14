@@ -35,6 +35,10 @@
         <div class="figure">
           <div class="stage" aria-label="Top-down Sun-Earth-Moon system with a synced view of the Moon's phase from Earth"><canvas id="c"></canvas></div>
           <div class="cap" id="cap"></div>
+          <div class="controls">
+            <button id="step">Step phase</button>
+            <button id="reset">Reset</button>
+          </div>
         </div>
         <div class="steps" id="steps">
           <section class="step" data-step data-theta="130"><h2>1 · The Moon orbits the Earth</h2><p>Once every ~27 days the Moon loops around us. The Sun is far off to the left; its light streams in from that side.</p></section>
@@ -126,6 +130,15 @@
           move(p) { if (M.interactive && p.down) setFromPointer(p); },
         });
         function setFromPointer(p) { M.target = M.theta = Math.atan2(earth.y - p.y, earth.x - p.x); sim.renderOnce(); }
+        document.getElementById("step").addEventListener("click", () => {
+          M.interactive = true;
+          M.target = M.theta + Math.PI / 4;
+        });
+        document.getElementById("reset").addEventListener("click", () => {
+          M.theta = M.target = Math.PI * 0.72;
+          M.interactive = false;
+          sim.renderOnce();
+        });
 
         const captions = ["", "", "", "", "", ""];
         const stepsEl = document.getElementById("steps");

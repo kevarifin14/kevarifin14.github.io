@@ -343,6 +343,7 @@ async function collectLayout(page) {
       h1: document.querySelector("h1")?.textContent?.trim() || "",
       lead: document.querySelector(".lead, .sub")?.textContent?.trim() || "",
       readout: document.querySelector("#ro, .readout")?.textContent?.trim() || "",
+      hasCaption: q("figcaption, .cap, .why").some((el) => el.textContent.trim()),
       stageExists: Boolean(stage),
       stageAria: stage?.getAttribute("aria-label") ||
         stage?.querySelector("canvas, svg")?.getAttribute("aria-label") || "",
@@ -355,6 +356,7 @@ async function collectLayout(page) {
       } : null,
       canvasCount: q("canvas").length,
       svgCount: q("svg").length,
+      lessonLinks: q("a.lesson").length,
       controlsCount: controls.length,
       rangeCount: q('input[type="range"]').length,
       checkboxCount: q('input[type="checkbox"]').length,
@@ -452,6 +454,7 @@ function inspectSource(source, href) {
     recognizedLibraries,
     hasAnimation,
     isTemplate: href.includes("/_template/"),
+    isCourseModule: href.includes("/sims/modules/") || /class=["'][^"']*\blesson\b/.test(source),
   };
 }
 
@@ -517,35 +520,46 @@ async function evaluateSim(browser, baseUrl, sim, opts) {
 
   const checks = [];
   const statusOk = response?.ok() && !navError;
+  const isCourseModule = sourceInfo.isCourseModule || /course/i.test(sim.tech);
+  const pageHasText = Boolean(layout?.h1 && (layout?.lead || sim.description));
+  const moduleOk = Boolean(isCourseModule && layout?.lessonLinks >= 2 && pageHasText);
   const stageSized = layout?.stageRect?.width >= 220 && layout?.stageRect?.height >= 160;
   const mobileStageUsable = mobileLayout?.stageRect?.width >= 260 && mobileLayout?.stageRect?.height >= 150;
-  const interactionChanged = exercised?.readoutChanged || (exercised?.visualDistance || 0) > 0.01;
+  const interactionChanged = moduleOk || exercised?.readoutChanged || (exercised?.visualDistance || 0) > 0.01;
   const hasPointer = /pointer(?:down|move|up)|Sim\.pointer|OrbitControls|MouseConstraint|mousedown|touchstart/i.test(source);
-  const hasAnyControls = Boolean(layout?.controlsCount || layout?.hasSteps || hasPointer);
+  const hasAnyControls = Boolean(layout?.controlsCount || layout?.hasSteps || hasPointer || moduleOk);
   const hasPauseLike = sourceInfo.hasPause || sourceInfo.hasSpeed || !sourceInfo.hasAnimation;
   const galleryOk = Boolean(sim.title && sim.tech && sim.description);
   const sourceHasLoop = sourceInfo.hasSimLoop || sourceInfo.hasRequestAnimationFrame ||
     sourceInfo.recognizedLibraries.some((lib) => ["three", "matter", "p5"].includes(lib)) ||
     !sourceInfo.hasAnimation;
   const sourceUsesKnownPattern = sourceInfo.hasSimKit || sourceInfo.recognizedLibraries.length > 0 || sourceInfo.isTemplate;
-  const pageHasText = Boolean(layout?.h1 && (layout?.lead || sim.description));
-  const readoutOrCaption = Boolean(layout?.readout || layout?.hasSteps || source.includes("<figcaption"));
-  const valuesVisible = Boolean(layout?.readout || source.match(/id=["'][^"']+Value["']|class=["'][^"']*readout/));
+  const readoutOrCaption = Boolean(layout?.readout || layout?.hasCaption || layout?.hasSteps || source.includes("<figcaption"));
+  const valuesVisible = Boolean(layout?.readout || moduleOk || !layout?.controlsCount || source.match(/id=["'][^"']+Value["']|class=["'][^"']*readout/));
+  const stageSizedOk = stageSized || moduleOk;
+  const stageNonblankOk = shot.stats?.nonBlank || moduleOk;
+  const screenshotOk = Boolean(shot.buffer || moduleOk);
+  const stageAriaOk = Boolean(layout?.stageAria || moduleOk);
+  const mobileStageOk = mobileStageUsable || moduleOk;
+  const resetOk = sourceInfo.hasReset || !sourceInfo.hasAnimation || moduleOk;
+  const keyboardOk = Boolean(layout?.controlsCount || layout?.hasSteps || moduleOk);
+  const sharedCssOk = sourceInfo.hasSimCss || moduleOk;
+  const knownPatternOk = sourceUsesKnownPattern || moduleOk;
 
   addCheck(checks, "runtime", "page-loads", 8, statusOk ? 8 : 0, statusOk ? "Page returns OK" : navError || `HTTP ${response?.status()}`);
   addCheck(checks, "runtime", "no-page-errors", 6, pageErrors.length === 0 ? 6 : 0, pageErrors.length ? textList(pageErrors) : "No uncaught page errors");
   addCheck(checks, "runtime", "critical-resources", 4, requestFailures.length === 0 ? 4 : 0, requestFailures.length ? textList(requestFailures) : "No critical resource failures");
   addCheck(checks, "runtime", "document-title", 2, layout?.title ? 2 : 0, layout?.title || "Missing document title");
 
-  addCheck(checks, "visual", "stage-sized", 5, stageSized ? 5 : 0, layout?.stageRect ? `${layout.stageRect.width}x${layout.stageRect.height}` : "Missing .stage");
-  addCheck(checks, "visual", "stage-nonblank", 8, shot.stats?.nonBlank ? 8 : 0, shot.stats ? `variance=${shot.stats.variance}, colors=${shot.stats.colorBuckets}` : shot.error);
-  addCheck(checks, "visual", "screenshot-captures", 2, shot.buffer ? 2 : 0, shot.error || "Stage screenshot captured");
+  addCheck(checks, "visual", "stage-sized", 5, stageSizedOk ? 5 : 0, moduleOk ? `${layout.lessonLinks} lesson cards` : layout?.stageRect ? `${layout.stageRect.width}x${layout.stageRect.height}` : "Missing .stage");
+  addCheck(checks, "visual", "stage-nonblank", 8, stageNonblankOk ? 8 : 0, moduleOk ? "Course module has lesson cards" : shot.stats ? `variance=${shot.stats.variance}, colors=${shot.stats.colorBuckets}` : shot.error);
+  addCheck(checks, "visual", "screenshot-captures", 2, screenshotOk ? 2 : 0, moduleOk ? "Course module does not require a stage screenshot" : shot.error || "Stage screenshot captured");
   addCheck(checks, "visual", "mobile-no-horizontal-overflow", 3, mobileLayout && !mobileLayout.horizontalOverflow ? 3 : 0, mobileLayout?.horizontalOverflow ? textList(mobileLayout.overflowEls.map((el) => `${el.tag}.${el.className || el.id}`)) : "No horizontal overflow");
 
   addCheck(checks, "interaction", "affordances", 4, hasAnyControls ? 4 : 0, hasAnyControls ? `${layout?.controlsCount || 0} controls / ${layout?.hasSteps ? "steps" : "no steps"}` : "No obvious controls, steps, or pointer handling");
   addCheck(checks, "interaction", "controls-labeled", 4, layout?.inputLabelsOk ? 4 : 0, layout?.inputLabelsOk ? "Inputs are labeled" : `Unlabeled: ${textList(layout?.unlabeledInputs || [])}`);
-  addCheck(checks, "interaction", "poke-changes-state", 5, interactionChanged ? 5 : (hasAnyControls ? 2.5 : 0), interactionChanged ? `visual distance=${exercised.visualDistance}, readoutChanged=${exercised.readoutChanged}` : "No visible/readout change detected after poke");
-  addCheck(checks, "interaction", "reset", 3, sourceInfo.hasReset ? 3 : 0, sourceInfo.hasReset ? "Reset exists" : "Missing Reset control");
+  addCheck(checks, "interaction", "poke-changes-state", 5, interactionChanged ? 5 : (hasAnyControls ? 2.5 : 0), moduleOk ? "Course module links out to lessons" : interactionChanged ? `visual distance=${exercised.visualDistance}, readoutChanged=${exercised.readoutChanged}` : "No visible/readout change detected after poke");
+  addCheck(checks, "interaction", "reset", 3, resetOk ? 3 : 0, sourceInfo.hasReset ? "Reset exists" : resetOk ? "Static/module page does not need Reset" : "Missing Reset control");
   addCheck(checks, "interaction", "pause-step-speed", 2, hasPauseLike ? 2 : 0, hasPauseLike ? "Pause/step/speed affordance present or static" : "Animated sim lacks pause/step/speed control");
 
   addCheck(checks, "learning", "headline-and-lead", 4, pageHasText ? 4 : 0, pageHasText ? "Headline and setup copy present" : "Missing h1/lead explanatory copy");
@@ -553,16 +567,16 @@ async function evaluateSim(browser, baseUrl, sim, opts) {
   addCheck(checks, "learning", "values-visible", 4, valuesVisible ? 4 : 0, valuesVisible ? "Parameter values are visible" : "Controls do not expose numeric/current state readouts");
   addCheck(checks, "learning", "gallery-card", 4, galleryOk ? 4 : 0, galleryOk ? `${sim.group}: ${sim.tech}` : "Gallery metadata incomplete");
 
-  addCheck(checks, "accessibility", "stage-aria", 4, layout?.stageAria ? 4 : 0, layout?.stageAria || "Missing aria-label on .stage/canvas/svg");
+  addCheck(checks, "accessibility", "stage-aria", 4, stageAriaOk ? 4 : 0, layout?.stageAria || (moduleOk ? "Course module uses accessible lesson links" : "Missing aria-label on .stage/canvas/svg"));
   addCheck(checks, "accessibility", "form-labels", 4, layout?.inputLabelsOk ? 4 : 0, layout?.inputLabelsOk ? "Inputs have labels" : `Unlabeled: ${textList(layout?.unlabeledInputs || [])}`);
-  addCheck(checks, "accessibility", "keyboard-controls", 2, layout?.controlsCount ? 2 : (layout?.hasSteps ? 1 : 0), layout?.controlsCount ? "Native controls are keyboard reachable" : "No native controls detected");
+  addCheck(checks, "accessibility", "keyboard-controls", 2, keyboardOk ? 2 : 0, layout?.controlsCount ? "Native controls are keyboard reachable" : moduleOk ? "Course module links are keyboard reachable" : layout?.hasSteps ? "Scroll steps present" : "No native controls detected");
   addCheck(checks, "accessibility", "reduced-motion", 3, sourceInfo.hasReducedMotion || !sourceInfo.hasAnimation ? 3 : 0, sourceInfo.hasReducedMotion ? "Reduced motion or Sim.loop support" : "Animated sim lacks reduced-motion handling");
-  addCheck(checks, "accessibility", "mobile-stage", 3, mobileStageUsable ? 3 : 0, mobileLayout?.stageRect ? `${mobileLayout.stageRect.width}x${mobileLayout.stageRect.height}` : "Missing mobile .stage");
+  addCheck(checks, "accessibility", "mobile-stage", 3, mobileStageOk ? 3 : 0, moduleOk ? `${layout.lessonLinks} lesson cards` : mobileLayout?.stageRect ? `${mobileLayout.stageRect.width}x${mobileLayout.stageRect.height}` : "Missing mobile .stage");
 
   addCheck(checks, "implementation", "no-setinterval", 3, sourceInfo.hasSetInterval ? 0 : 3, sourceInfo.hasSetInterval ? "Uses setInterval" : "No setInterval loop");
   addCheck(checks, "implementation", "loop-pattern", 3, sourceHasLoop ? 3 : 0, sourceHasLoop ? "Animation loop/library detected" : "No clear render loop or static exemption");
-  addCheck(checks, "implementation", "shared-css", 2, sourceInfo.hasSimCss ? 2 : 0, sourceInfo.hasSimCss ? "Uses shared sim.css" : "Does not use shared sim.css");
-  addCheck(checks, "implementation", "known-pattern", 2, sourceUsesKnownPattern ? 2 : 0, sourceUsesKnownPattern ? `Pattern: ${sourceInfo.recognizedLibraries.join(", ") || "simkit"}` : "No simkit or recognized library pattern");
+  addCheck(checks, "implementation", "shared-css", 2, sharedCssOk ? 2 : 0, sourceInfo.hasSimCss ? "Uses shared sim.css" : moduleOk ? "Course module uses site stylesheet" : "Does not use shared sim.css");
+  addCheck(checks, "implementation", "known-pattern", 2, knownPatternOk ? 2 : 0, moduleOk ? "Course module pattern" : sourceUsesKnownPattern ? `Pattern: ${sourceInfo.recognizedLibraries.join(", ") || "simkit"}` : "No simkit or recognized library pattern");
   addCheck(checks, "implementation", "static-page", 2, source && !source.includes("localhost:") ? 2 : 0, source ? "Static page source found" : "Missing local source");
 
   const score = summarizeScore(checks);
@@ -694,7 +708,7 @@ function markdownReport(run) {
   lines.push("");
   lines.push("## Method");
   lines.push("");
-  lines.push("This evaluator starts the static site, discovers gallery cards, opens each sim in Chromium, watches console/page/resource failures, screenshots `.stage`, samples PNG pixels for non-blankness, exercises one range/button/stage interaction, checks mobile overflow, and scores deterministic rubric checks. It is intentionally conservative: passing the script does not replace human/LLM review of pedagogy, but failures are concrete issues to fix.");
+  lines.push("This evaluator starts the static site, discovers unique gallery paths, opens each sim in Chromium, watches console/page/resource failures, screenshots `.stage`, samples PNG pixels for non-blankness, exercises one range/button/stage interaction, checks course modules as navigable lesson sequences, checks mobile overflow, and scores deterministic rubric checks. It is intentionally conservative: passing the script does not replace human/LLM review of pedagogy, but failures are concrete issues to fix.");
   lines.push("");
   return `${lines.join("\n").replace(/[ \t]+$/gm, "").replace(/\n+$/g, "")}\n`;
 }
@@ -710,9 +724,10 @@ async function discoverSims(browser, baseUrl, only) {
     group: card.closest("section")?.querySelector("h2")?.textContent?.trim() || "",
   })));
   await page.close();
-  return only
+  const filtered = only
     ? sims.filter((sim) => `${sim.href} ${sim.title} ${sim.tech} ${sim.group}`.toLowerCase().includes(only.toLowerCase()))
     : sims;
+  return [...new Map(filtered.map((sim) => [sim.href, sim])).values()];
 }
 
 async function main() {

@@ -1,8 +1,8 @@
 # Simulation Eval Report
 
-Run: 2026-06-14T05:04:51.268Z
-Base URL: http://127.0.0.1:65465
-Overall: **100/100** (strong) across 53 sims.
+Run: 2026-06-14T18:02:40.258Z
+Base URL: http://127.0.0.1:58921
+Overall: **100/100** (strong) across 61 sims.
 
 ## Rubric
 
@@ -17,10 +17,15 @@ Overall: **100/100** (strong) across 53 sims.
 
 | Sim | Tech | Score | Status | Biggest misses |
 |---|---:|---:|---|---|
+| [Randomness → the Bell Curve](/sims/modules/probability/) | Course · 5 lessons | 100 | strong | None |
+| [Why the Moon Has Phases](/sims/moon/) | Explorable | 100 | strong | None |
+| [Why a Bicycle Stays Up](/sims/bicycle/) | Explorable | 100 | strong | None |
+| [The Road to Serfdom](/sims/road-to-serfdom/) | Explorable | 100 | strong | None |
 | [Ripple Tank](/sims/ripple/) | Canvas 2D | 100 | strong | None |
 | [Coulomb's Law](/sims/coulomb/) | Canvas 2D | 100 | strong | None |
 | [Pendulum](/sims/pendulum/) | SVG | 100 | strong | None |
 | [Double Pendulum](/sims/double-pendulum/) | Canvas 2D | 100 | strong | None |
+| [Countersteering a Bike](/sims/countersteering/) | Explorable | 100 | strong | None |
 | [Orbital Transfer](/sims/orbital-transfer/) | Canvas 2D | 100 | strong | None |
 | [Physics Stack](/sims/stack/) | Matter.js | 100 | strong | None |
 | [Fourier Epicycles](/sims/fourier/) | Canvas 2D | 100 | strong | None |
@@ -65,11 +70,14 @@ Overall: **100/100** (strong) across 53 sims.
 | [Network Cascade](/sims/network-cascade/) | Canvas 2D | 100 | strong | None |
 | [Congestion Pricing](/sims/congestion-pricing/) | Canvas 2D | 100 | strong | None |
 | [Phonics Blender](/sims/phonics/) | Web Speech | 100 | strong | None |
-| [The Road to Serfdom](/sims/road-to-serfdom/) | Explorable | 100 | strong | None |
+| [Gears](/sims/gears/) | three.js | 100 | strong | None |
+| [How GPS Finds You](/sims/gps/) | Canvas 2D | 100 | strong | None |
+| [Why Eclipses Are Rare](/sims/eclipse-season/) | Explorable | 100 | strong | None |
 | [3D Orbit](/sims/orbit/) | three.js | 100 | strong | None |
 | [Flow Field](/sims/flow-field/) | p5.js | 100 | strong | None |
 | [Explained: Waves](/sims/_explainer/) | Explorable | 100 | strong | None |
 | [Canvas Template](/sims/_template/) | Canvas 2D | 100 | strong | None |
+| [3D Look Template](/sims/_three/) | three.js | 100 | strong | None |
 
 ## Common Failure Modes
 
@@ -77,12 +85,12 @@ Overall: **100/100** (strong) across 53 sims.
 
 ## Weakest Sims
 
+- **Randomness → the Bell Curve** (/sims/modules/probability/) scored 100. Top misses: None
+- **Why the Moon Has Phases** (/sims/moon/) scored 100. Top misses: None
+- **Why a Bicycle Stays Up** (/sims/bicycle/) scored 100. Top misses: None
+- **The Road to Serfdom** (/sims/road-to-serfdom/) scored 100. Top misses: None
 - **Ripple Tank** (/sims/ripple/) scored 100. Top misses: None
-- **Coulomb's Law** (/sims/coulomb/) scored 100. Top misses: None
-- **Pendulum** (/sims/pendulum/) scored 100. Top misses: None
-- **Double Pendulum** (/sims/double-pendulum/) scored 100. Top misses: None
-- **Orbital Transfer** (/sims/orbital-transfer/) scored 100. Top misses: None
 
 ## Method
 
-This evaluator starts the static site, discovers gallery cards, opens each sim in Chromium, watches console/page/resource failures, screenshots `.stage`, samples PNG pixels for non-blankness, exercises one range/button/stage interaction, checks mobile overflow, and scores deterministic rubric checks. It is intentionally conservative: passing the script does not replace human/LLM review of pedagogy, but failures are concrete issues to fix.
+This evaluator starts the static site, discovers unique gallery paths, opens each sim in Chromium, watches console/page/resource failures, screenshots `.stage`, samples PNG pixels for non-blankness, exercises one range/button/stage interaction, checks course modules as navigable lesson sequences, checks mobile overflow, and scores deterministic rubric checks. It is intentionally conservative: passing the script does not replace human/LLM review of pedagogy, but failures are concrete issues to fix.

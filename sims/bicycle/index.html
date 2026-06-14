@@ -6,6 +6,12 @@
     <title>Why a Bicycle Stays Up — Kevin Arifin</title>
     <meta name="description" content="A ground-up explorable: build from Newton's forces and torque to why a moving bicycle balances itself." />
     <link rel="stylesheet" href="../lib/sim.css" />
+    <script type="importmap">
+      { "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      } }
+    </script>
     <style>
       .sim { max-width: 720px; }
       .lede { color: var(--muted); font-size: 1.06rem; }
@@ -106,9 +112,7 @@
           return g;
         }
 
-        const hero = bikeFig("hero", { v: 7, tr: 0.6, kick: 0.7 });
-        document.getElementById("heroNudge").onclick = function () { if (hero.state().fallen) hero.reset(0); hero.state().phiv += 0.8; };
-        document.getElementById("heroReset").onclick = function () { hero.reset(0.5); hero.sim.renderOnce(); };
+        // The hero (#hero) is rendered as a lit 3D bicycle by the module script below.
 
         const bal = bikeFig("balance", { v: 0, tr: 0.6, kick: 0.5 });
         document.getElementById("balNudge").onclick = function () { bal.reset(0.6); };
@@ -184,6 +188,75 @@
           Sim.bind("fo", P, "fo", function (v) { g.sim.renderOnce(); return v + " mm"; });
           g.sim.renderOnce();
         })();
+      </script>
+
+      <script type="module">
+        // Hero: a lit, shadowed, orbitable 3D bicycle + rider (the _three premium recipe).
+        import * as THREE from "three";
+        import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+        const canvas = document.getElementById("hero");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+        const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0e0e10);
+        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100); camera.position.set(2.7, 1.5, 4.2);
+        scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x14141a, 0.55));
+        const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(4, 8, 6); key.castShadow = true;
+        key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004; key.shadow.camera.near = 1; key.shadow.camera.far = 30;
+        key.shadow.camera.left = key.shadow.camera.bottom = -5; key.shadow.camera.right = key.shadow.camera.top = 5; scene.add(key);
+        const rim = new THREE.DirectionalLight(0x88aaff, 0.5); rim.position.set(-5, 2, -4); scene.add(rim);
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.4 }));
+        ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+        const frameMat = new THREE.MeshStandardMaterial({ color: 0xe8c547, roughness: 0.4, metalness: 0.35 });
+        const tireMat = new THREE.MeshStandardMaterial({ color: 0x1c1c22, roughness: 0.7 });
+        const rimMat = new THREE.MeshStandardMaterial({ color: 0xb8b8c0, roughness: 0.35, metalness: 0.6 });
+        const riderMat = new THREE.MeshStandardMaterial({ color: 0x4fa3ff, roughness: 0.6 });
+        const skinMat = new THREE.MeshStandardMaterial({ color: 0xe8b07a, roughness: 0.75 });
+
+        const bike = new THREE.Group(); scene.add(bike);
+        const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+        function tube(a, b, r, mat) {
+          const d = b.clone().sub(a), len = d.length();
+          const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 12), mat);
+          m.position.copy(a).add(b).multiplyScalar(0.5);
+          m.quaternion.setFromUnitVectors(v3(0, 1, 0), d.normalize()); m.castShadow = true; bike.add(m); return m;
+        }
+        const R = 0.5, W = 0.85;
+        const rearHub = v3(-W, R, 0), frontHub = v3(W, R, 0), bb = v3(-0.05, 0.32, 0), seat = v3(-0.45, 1.0, 0), head = v3(0.62, 0.95, 0), bar = v3(0.66, 1.08, 0);
+        function wheel(center) {
+          const g = new THREE.Group();
+          const tire = new THREE.Mesh(new THREE.TorusGeometry(R, 0.05, 16, 44), tireMat); tire.castShadow = true; g.add(tire);
+          g.add(new THREE.Mesh(new THREE.TorusGeometry(R * 0.92, 0.02, 10, 44), rimMat));
+          const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.12, 12), rimMat); hub.rotation.x = Math.PI / 2; g.add(hub);
+          for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; const sp = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, R * 0.9, 6), rimMat); sp.position.set(Math.cos(a) * R * 0.46, Math.sin(a) * R * 0.46, 0); sp.rotation.z = a + Math.PI / 2; g.add(sp); }
+          g.position.copy(center); bike.add(g); return g;
+        }
+        const wRear = wheel(rearHub), wFront = wheel(frontHub);
+        tube(rearHub, bb, 0.03, frameMat); tube(bb, seat, 0.03, frameMat); tube(seat, rearHub, 0.025, frameMat);
+        tube(bb, head, 0.03, frameMat); tube(seat, head, 0.03, frameMat); tube(head, frontHub, 0.028, frameMat); tube(head, bar, 0.02, frameMat);
+        const hips = v3(-0.4, 1.07, 0), sh = v3(-0.08, 1.55, 0), hd = v3(0.0, 1.78, 0);
+        tube(hips, sh, 0.07, riderMat); tube(sh, bar, 0.035, riderMat); tube(hips, bb, 0.05, riderMat);
+        const headMesh = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20), skinMat); headMesh.position.copy(hd); headMesh.castShadow = true; bike.add(headMesh);
+
+        let phi = 0, phiv = 0, fallen = false, spin = 0;
+        document.getElementById("heroNudge").onclick = () => { if (fallen) { phi = 0; phiv = 0; fallen = false; } phiv += 0.9; };
+        document.getElementById("heroReset").onclick = () => { phi = 0; phiv = 0; fallen = false; };
+        const controls = new OrbitControls(camera, canvas); controls.enableDamping = true; controls.target.set(0, 0.75, 0);
+        function resize() { const r = canvas.getBoundingClientRect(); renderer.setSize(r.width, r.height, false); camera.aspect = r.width / r.height; camera.updateProjectionMatrix(); }
+        window.addEventListener("resize", resize); resize();
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let last = performance.now();
+        renderer.setAnimationLoop((now) => {
+          const dt = Math.min(0.05, (now - last) / 1000); last = now;
+          if (!reduce) {
+            spin += dt * 3.2; wRear.rotation.z = -spin; wFront.rotation.z = -spin;
+            if (!fallen) { const stiff = 7 * 7 * 0.6 * 0.7 - 9.8; phiv += (-stiff * Math.sin(phi) - 1.6 * phiv) * dt; phi += phiv * dt; if (Math.abs(phi) > 1.2) { fallen = true; phiv = 0; } }
+            bike.rotation.x = phi;
+          }
+          controls.update(); renderer.render(scene, camera);
+        });
       </script>
     </main>
   </body>
