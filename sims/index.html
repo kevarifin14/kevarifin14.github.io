@@ -7,7 +7,8 @@
     <meta name="description" content="Interactive simulations and explorables by Kevin Arifin." />
     <link rel="stylesheet" href="/styles.css" />
     <style>
-      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 8px; }
+      .wrap { max-width: 1120px; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 8px; }
       .card { display: block; border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-decoration: none; color: var(--fg); transition: border-color 0.15s ease; }
       .card:hover { border-color: var(--accent); }
       .card .tech { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.72rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; }
@@ -33,7 +34,14 @@
       <main>
         <p class="eyebrow">Interactive</p>
         <h1>Simulations</h1>
-        <p class="lead">Small interactive explorables — each one picks the tool that fits the phenomenon.</p>
+        <p class="lead">Small interactive explorables — each one picks the tool that fits the phenomenon. Start with a <strong>module</strong> below for a guided, build-from-first-principles path, or dive into any single sim.</p>
+
+        <section class="group"><h2>Modules — multi-lesson deep dives</h2><div class="grid">
+          <a class="card" href="/sims/modules/probability/"><img class="thumb" loading="lazy" alt="" src="/sims/thumbs/galton.png" /><span class="tech">Course · 5 lessons</span><h3>Randomness → the Bell Curve</h3><p>Monte Carlo → walks → Galton → CLT → Bayes.</p></a>
+          <a class="card" href="/sims/moon/"><span class="tech">Explorable · deep dive</span><h3>Why the Moon Has Phases</h3><p>Built up step by step; drag the Moon.</p></a>
+          <a class="card" href="/sims/bicycle/"><span class="tech">Explorable · deep dive</span><h3>Why a Bicycle Stays Up</h3><p>From falling pendulum to self-steering trail.</p></a>
+          <a class="card" href="/sims/road-to-serfdom/"><span class="tech">Explorable · deep dive</span><h3>The Road to Serfdom</h3><p>Hayek's argument as an interactive book.</p></a>
+        </div></section>
 
         <section class="group"><h2>Physics &amp; motion</h2><div class="grid">
           <a class="card" href="/sims/ripple/"><span class="tech">Canvas 2D</span><h3>Ripple Tank</h3><p>Two-source wave interference; drag a source.</p></a>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Randomness, from coin flips to the bell curve — Kevin Arifin</title>
+    <meta name="description" content="A guided module: build probability intuition from a single random draw up to the Central Limit Theorem and Bayesian reasoning." />
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .wrap { max-width: 820px; }
+      .modhead { border-bottom: 1px solid var(--border); padding-bottom: 22px; margin-bottom: 8px; }
+      .modhead .kicker { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+      .lesson { display: grid; grid-template-columns: 132px 1fr; gap: 18px; align-items: center; text-decoration: none; color: var(--fg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-top: 16px; transition: border-color 0.15s ease; }
+      .lesson:hover { border-color: var(--accent); }
+      .lesson img { width: 132px; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 8px; background: #0e0e10; border: 1px solid var(--border); }
+      .lesson .n { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; color: var(--accent); }
+      .lesson h3 { margin: 3px 0 5px; font-size: 1.05rem; }
+      .lesson p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+      .why { color: var(--muted); font-size: 0.92rem; margin: 18px 2px 0; padding-left: 14px; border-left: 2px solid var(--border); }
+      @media (max-width: 540px) { .lesson { grid-template-columns: 1fr; } .lesson img { width: 100%; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="site-nav">
+        <a class="brand" href="/">Kevin Arifin</a>
+        <div class="links">
+          <a href="/">Home</a>
+          <a href="/writing.html">Writing</a>
+          <a href="/sims/" aria-current="page">Sims</a>
+          <a href="/about.html">About</a>
+        </div>
+      </nav>
+
+      <main>
+        <div class="modhead">
+          <p class="kicker">Module · 5 lessons</p>
+          <h1>Randomness, from coin flips to the bell curve</h1>
+          <p class="lead">Five interactive lessons, in order. Each one is a single idea you can poke; together they build from "a coin flip" up to why the bell curve is everywhere and how evidence should change your mind. Do them top to bottom.</p>
+        </div>
+
+        <p class="why">Start with the most basic fact about randomness: even pure chance has structure you can measure.</p>
+        <a class="lesson" href="/sims/monte-carlo-pi/">
+          <img loading="lazy" alt="" src="/sims/thumbs/monte-carlo-pi.png" />
+          <div><div class="n">Lesson 1</div><h3>Monte Carlo π</h3><p>Throw random darts at a square; the fraction landing in a circle estimates π. Randomness can <em>compute</em>.</p></div>
+        </a>
+
+        <p class="why">One draw is unpredictable. But what happens when you take many independent random steps in a row?</p>
+        <a class="lesson" href="/sims/random-walk/">
+          <img loading="lazy" alt="" src="/sims/thumbs/random-walk.png" />
+          <div><div class="n">Lesson 2</div><h3>Random Walk</h3><p>Independent ± steps don't cancel to nothing — they spread into a widening, predictable cloud.</p></div>
+        </a>
+
+        <p class="why">Drop those steps through a lattice of pegs and the spread takes on a specific, familiar shape.</p>
+        <a class="lesson" href="/sims/galton/">
+          <img loading="lazy" alt="" src="/sims/thumbs/galton.png" />
+          <div><div class="n">Lesson 3</div><h3>Galton Board</h3><p>Thousands of coin-flip paths pile into a bell curve. Run the experiment and watch it emerge.</p></div>
+        </a>
+
+        <p class="why">The Galton board hints at something universal. Why does that exact curve keep showing up?</p>
+        <a class="lesson" href="/sims/clt/">
+          <img loading="lazy" alt="" src="/sims/thumbs/clt.png" />
+          <div><div class="n">Lesson 4</div><h3>Central Limit Theorem</h3><p>Average enough samples from <em>any</em> shape and the averages become a bell curve. The deep reason it's everywhere.</p></div>
+        </a>
+
+        <p class="why">Now that you trust the math of chance, use it to reason: how should a piece of evidence actually change a belief?</p>
+        <a class="lesson" href="/sims/bayes-test/">
+          <img loading="lazy" alt="" src="/sims/thumbs/bayes-test.png" />
+          <div><div class="n">Lesson 5</div><h3>Bayes &amp; Base Rates</h3><p>A 99%-accurate test for a rare disease is usually wrong when positive. See why the base rate dominates.</p></div>
+        </a>
+
+        <p class="why" style="margin-top:28px;border:0;padding:0;">Want more? <a href="/sims/gambler-ruin/">Gambler's Ruin</a> and the <a href="/sims/birthday-paradox/">Birthday Paradox</a> are good follow-ons. Back to <a href="/sims/">all sims</a>.</p>
+      </main>
+
+      <footer class="site-footer">
+        <span>© <span id="year">2026</span> Kevin Arifin</span>
+        <span class="spacer"></span>
+        <a href="https://github.com/kevarifin14" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://x.com/kevarifin" target="_blank" rel="noreferrer">X</a>
+      </footer>
+    </div>
+    <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  </body>
+</html>

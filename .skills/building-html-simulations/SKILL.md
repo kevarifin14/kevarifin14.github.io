@@ -175,11 +175,39 @@ To reach the bar of the best explorables, go past a single toy:
 - **Stay reachable.** Keyboard focus on controls, `aria-label` on the stage, captions, and `prefers-reduced-motion`.
 - **Build a path, not a pile.** Group sims by subject and sequence them simple → hard so the gallery reads like an interactive course, not a demo dump.
 
+## Lesson length & shape: single sims vs. modules
+
+Match the format to the concept — and **do not cap a lesson at ~6 steps.** A short step count is usually a planning failure, not a style choice. Plan the *whole* conceptual arc first, then give each idea its own figure.
+
+- **Single-page sim** — one mechanism, one interactive (Gears, GPS, Galton). A reader gets it in under a minute; don't pad it.
+- **Module (deep explainer)** — a concept that only lands when built from first principles. Ciechanowski's *Bicycle* is **10 sections** (forces → moments → load → braking → steering → stability → wheels → frame → bending → stress), each with several focused figures. When the idea has many prerequisite ideas, plan **8–15+ figures** and let the lesson be long. Length earned by one-idea-per-figure is good; length from padding is not.
+
+**Deciding:** count the distinct ideas a reader needs first. One or two → single page. Several that depend on each other → a module that builds them in order and ends on a figure combining them.
+
+**Two kinds of module:**
+1. **Long scrolly lesson** — one page, many figures in sequence (the `Sim.steps()` pattern, extended well past 6 steps). Best when the ideas form one continuous argument (Moon, Bicycle).
+2. **Course module** — a landing page that sequences several *standalone* sims as ordered lessons with connecting narrative (e.g. a Probability module: Monte Carlo → Random Walk → Galton → CLT → Bayes). Best when each lesson is independently useful. Lives at `/sims/modules/<name>/`.
+
+Plan the arc before building: write the section list (like Ciechanowski's headings), decide which need their own figure, then build figure by figure.
+
+## Ciechanowski's engineering (from his shared base.js)
+
+His whole site runs on one shared engine (`/js/base.js`, ~1,400 lines) plus a small per-article file — the same split as our `/sims/lib/simkit.js`. Worth copying:
+
+- **One shared engine, hand-built, no framework.** Reusable drawing primitives on a single helper (`D.arrow`, `D.strokeLine`, `D.fillEllipse`, `D.roundRect`, `D.feather`), a full **vector/matrix math** library (`vec_add/cross/dot/norm/lerp`, `rot_x/y/z_mat`, `lerp`, `clamp`, `smooth_step`), an **`ArcBall`** for drag-to-orbit 3D, and a **`Dragger`/`TwoAxis`** for dragging a 2D parameter directly.
+- **One global render loop (`tick`) drives every figure** on a page; offscreen figures idle. We get the equivalent per figure from `Sim.loop`'s visibility/offscreen pause.
+- **Unified mouse + touch** behind one handler (we use Pointer Events for the same).
+- **Exaggerate, then real.** Show an effect in "vastly exaggerated form" so it's visible, then dial it to realistic.
+- **Color-code magnitude** (bright = high stress/force), size arrows proportionally, use slow-motion and transparent cutaways to reveal hidden mechanism.
+- **Prose rhythm:** state the principle → isolated figure to manipulate → "Notice that…" → add one variable → real-world tie-in. Never a figure without a sentence framing what to look for.
+
+Grow `/sims/lib/simkit.js` with these primitives as you need them (e.g. `Sim.arrow`) instead of re-drawing arrowheads in every sim.
+
 ## Workflow
 
 ```
 Build Progress:
-- [ ] 1. Name the phenomenon and the ONE thing the reader should grasp
+- [ ] 1. Name the phenomenon and the ONE thing to grasp; choose single-page vs module and **plan the full figure arc** (list the sections — don't cap at ~6 steps)
 - [ ] 2. Do the research pass when needed: course source, existing explorable, or local reference → extract the mechanism to simulate
 - [ ] 3. Evaluate the request → pick the rendering + interaction method (decision table above)
 - [ ] 4. Render one static frame of the system (no motion yet)
