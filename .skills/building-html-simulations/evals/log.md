@@ -37,3 +37,11 @@ This log records evaluation runs that produced durable lessons for the skill. Ke
 - Lessons: When exposing support pages like _template in the gallery, they need the same live readout/caption affordance as real sims.
 - Decisions: Added the missing _template card and upgraded _template with a readout instead of leaving a lower-scoring visible page.
 - Run file: evals/runs/2026-06-14-gallery-coverage-audit-plus-stochastic-simulation-batch.md
+## 2026-06-14T05:07:56.073Z - Twenty-simulation expansion with thumbnail gallery
+
+- Status: strong
+- Result: 53/53 linked gallery pages scored 100/100 after adding a 20+ page expansion and refreshing thumbnails
+- Artifacts: sims/eval-results/latest.md, sims/index.html, sims/lib/mini-labs.js
+- Lessons: For large batches, a shared mini-lab engine keeps controls, readouts, reset behavior, and evaluator affordances consistent across many small simulations.
+- Decisions: Kept the shared mini-lab engine for compact algorithm/probability/queue/network labs; generated thumbnails as part of shipping.
+- Run file: evals/runs/2026-06-14-twenty-simulation-expansion-with-thumbnail-gallery.md
