@@ -208,6 +208,9 @@ These patterns are now **built into `/sims/lib/simkit.js` as core components** �
 - **Context draw primitives:** `ctx.arrow(x0,y0,x1,y1,head)`, `ctx.strokeLine`, `ctx.disc`, `ctx.ring`, `ctx.panel(x,y,w,h,r)`, `ctx.label(x,y,text,opts)`.
 - **Color by magnitude:** `Sim.heat(t)` (0→dark, mid→gold, 1→white), `Sim.mix(rgbA,rgbB,t)`.
 - **Light 3D:** `Sim.orbit(el)` (drag-to-orbit), `Sim.rot3(p,yaw,pitch)`, `Sim.project(p,opts)`.
+- **Audio (WebAudio):** `Sim.audio()` → `.tone(freq,{type})`, `.beep(freq,dur)`, `.analyser()` (call after a user gesture).
+
+A **use-case map** in `/sims/lib/README.md` decomposes his archive: his figures are mostly hand-rolled WebGL (→ use **three.js** or `Sim.orbit`/`rot3`/`project`), `Gears`/`Tesseract` are plain Canvas, `Airfoil`/ripple are `Float32Array` fields (→ ImageData), and only `Sound` uses WebAudio (→ `Sim.audio`). Reach for the lightest tool that fits.
 
 Copy-paste usage for each is in **`/sims/lib/README.md`**. Add new primitives there when a second sim needs them — never re-draw an arrowhead by hand again.
 

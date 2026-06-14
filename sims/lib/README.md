@@ -73,6 +73,36 @@ function render() {
 }
 ```
 
+## Audio — `Sim.audio()` (WebAudio)
+
+Make sound, but only after a user gesture (browsers block audio until a click/tap).
+
+```js
+const sound = Sim.audio();                       // lazy AudioContext
+playBtn.onclick = () => {
+  const t = sound.tone(440, { type: "sine" });   // A4; returns a live controller
+  freqSlider.oninput = e => t.freq(+e.target.value);
+  stopBtn.onclick = () => t.stop();
+};
+sound.beep(880, 150);                            // quick chirp
+const scope = sound.analyser();                  // const wave = scope.read(); → Float32 samples to plot
+```
+
+## Use-case map (decomposed from his archive)
+
+His `base.js` is **one shared file** loaded by every article; the per-article files (`moon.js`, `sound.js`, `airfoil.js`, …) are use-case-specific and almost all hand-rolled WebGL with ArcBall drag-orbit. Mapped to the lightest tool for us:
+
+| His use case (examples) | He uses | Reach for |
+|---|---|---|
+| 3D scenes — Moon, Watch, Engine, Lenses, GPS, Airfoil | hand-rolled WebGL + ArcBall | **three.js** (real 3D) or **`Sim.orbit`/`rot3`/`project`** (light wireframe) |
+| 2D mechanism figures — Gears | plain Canvas 2D | **Canvas 2D + simkit primitives** |
+| Abstract projection — Tesseract | Canvas 2D | **`Sim.rot3`/`project` + Canvas** |
+| Numeric field / sim — Airfoil (fluid), Ripple | `Float32Array` grids | **ImageData field render** (see `ripple`, `coulomb`) |
+| Sound / pitch — Sound | WebAudio (oscillators, analyser) | **`Sim.audio()`** |
+| Drag-to-orbit (nearly every figure) | ArcBall / TwoAxis | **`Sim.orbit(el)`** / three.js OrbitControls |
+
+Right tool for the job: pick the lightest one that expresses the phenomenon.
+
 ## Patterns worth keeping (from his articles)
 
 - **Exaggerate, then real.** Add an "exaggeration" slider; show the effect huge first, then dial to realistic.

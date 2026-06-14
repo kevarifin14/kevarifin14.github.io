@@ -220,9 +220,39 @@
     return st;
   }
 
+  // WebAudio (from his sound.js use case): tones, beeps, and a scope analyser.
+  // Call after a user gesture (browsers block audio until then).
+  function audio() {
+    var ctx = null, master = null;
+    function ensure() {
+      if (!ctx) { var AC = global.AudioContext || global.webkitAudioContext; ctx = new AC(); master = ctx.createGain(); master.gain.value = 0.12; master.connect(ctx.destination); }
+      if (ctx.state === "suspended") ctx.resume();
+      return ctx;
+    }
+    function tone(freq, opts) {
+      ensure(); opts = opts || {};
+      var osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = opts.type || "sine"; osc.frequency.value = freq; g.gain.value = 0;
+      g.connect(master); osc.connect(g); osc.start();
+      g.gain.linearRampToValueAtTime(opts.gain == null ? 1 : opts.gain, ctx.currentTime + 0.02);
+      return {
+        freq: function (f) { osc.frequency.setTargetAtTime(f, ctx.currentTime, 0.02); },
+        gain: function (val) { g.gain.setTargetAtTime(val, ctx.currentTime, 0.02); },
+        stop: function () { g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.05); osc.stop(ctx.currentTime + 0.09); },
+      };
+    }
+    return {
+      resume: ensure,
+      get ctx() { return ctx; }, get master() { return master; },
+      tone: tone,
+      beep: function (freq, dur, type) { var t = tone(freq, { type: type }); setTimeout(function () { t.stop(); }, dur || 150); },
+      analyser: function () { ensure(); var an = ctx.createAnalyser(); an.fftSize = 2048; master.connect(an); var buf = new Float32Array(an.fftSize); return { node: an, read: function () { an.getFloatTimeDomainData(buf); return buf; } }; },
+    };
+  }
+
   global.Sim = {
     palette: palette, fitCanvas: fitCanvas, rng: rng, loop: loop, pointer: pointer, bind: bind, steps: steps,
     clamp: clamp, saturate: saturate, lerp: lerp, smoothstep: smoothstep, map: map,
-    v: v, heat: heat, mix: mix, rot3: rot3, project: project, orbit: orbit, TAU: TAU,
+    v: v, heat: heat, mix: mix, rot3: rot3, project: project, orbit: orbit, audio: audio, TAU: TAU,
   };
 })(window);
