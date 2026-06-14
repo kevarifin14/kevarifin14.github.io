@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How GPS Finds You — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>How GPS Finds You</h1>
+      <p class="sub">In the spirit of Ciechanowski's GPS. Each satellite tells you your distance to it — a ring of possible positions. Stack enough rings and only one point fits. Drag the satellites or the receiver. <strong>Canvas 2D</strong> · signals.</p>
+
+      <div class="stage" aria-label="Satellites with distance rings intersecting at the receiver's position"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Satellites <strong id="nValue"></strong></span>
+          <input id="n" type="range" min="1" max="4" step="1" value="3" /></label>
+        <label class="row"><span>Clock error <strong id="biasValue"></strong></span>
+          <input id="bias" type="range" min="-40" max="40" step="1" value="0" /></label>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { n: 3, bias: 0 };
+        const cols = ["#e8c547", "#4fa3ff", "#5fcf80", "#e06a9a"];
+        let view = { w: 0, h: 0 }, sats = [], rx, drag = null;
+        const HOME = () => [[0.22, 0.26], [0.78, 0.3], [0.5, 0.82], [0.2, 0.7]];
+
+        function place() { sats = HOME().map(([fx, fy]) => ({ x: fx * view.w, y: fy * view.h })); rx = { x: view.w * 0.52, y: view.h * 0.5 }; }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); if (!sats.length) place(); render(); }
+        window.addEventListener("resize", resize);
+
+        function render() {
+          ctx.fillStyle = "#0b0b14"; ctx.fillRect(0, 0, view.w, view.h);
+          // distance rings
+          for (let i = 0; i < params.n; i++) {
+            const d = Math.hypot(sats[i].x - rx.x, sats[i].y - rx.y) + params.bias;
+            ctx.strokeStyle = cols[i]; ctx.globalAlpha = 0.85; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(sats[i].x, sats[i].y, Math.max(1, d), 0, 6.28); ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+          // satellites
+          for (let i = 0; i < params.n; i++) {
+            ctx.fillStyle = cols[i]; ctx.beginPath(); ctx.arc(sats[i].x, sats[i].y, 7, 0, 6.28); ctx.fill();
+            ctx.fillStyle = "#0b0b14"; ctx.font = "bold 9px ui-monospace, monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(i + 1, sats[i].x, sats[i].y);
+          }
+          // receiver (true position)
+          ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.beginPath();
+          ctx.arc(rx.x, rx.y, 6, 0, 6.28); ctx.moveTo(rx.x - 11, rx.y); ctx.lineTo(rx.x + 11, rx.y); ctx.moveTo(rx.x, rx.y - 11); ctx.lineTo(rx.x, rx.y + 11); ctx.stroke();
+          ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = "#8a8a8f"; ctx.font = "11px ui-monospace, monospace"; ctx.fillText("you", rx.x + 12, rx.y - 8);
+
+          let msg;
+          if (params.n === 1) msg = "One satellite: you're somewhere on this ring — distance known, direction unknown.";
+          else if (params.n === 2) msg = "Two satellites: the rings cross at two points. Still ambiguous.";
+          else msg = "Three+ satellites: the rings pin a single point — your location.";
+          if (params.bias !== 0 && params.n >= 3) msg += " But your clock is off, so every ring is wrong by the same amount and they no longer meet — that's what the 4th satellite fixes (solve for the clock too).";
+          ro.innerHTML = msg;
+        }
+
+        Sim.pointer(canvas, {
+          down(p) { drag = null; let best = 24; for (let i = 0; i < params.n; i++) { const dd = Math.hypot(p.x - sats[i].x, p.y - sats[i].y); if (dd < best) { best = dd; drag = { t: "s", i }; } } const dr = Math.hypot(p.x - rx.x, p.y - rx.y); if (dr < best) drag = { t: "r" }; },
+          move(p) { if (!drag) return; const o = drag.t === "r" ? rx : sats[drag.i]; o.x = Math.max(4, Math.min(view.w - 4, p.x)); o.y = Math.max(4, Math.min(view.h - 4, p.y)); render(); },
+          up() { drag = null; },
+        });
+
+        resize();
+        Sim.bind("n", params, "n", (v) => { render(); return v; });
+        Sim.bind("bias", params, "bias", (v) => { render(); return (+v > 0 ? "+" : "") + v; });
+        document.getElementById("reset").addEventListener("click", () => { place(); document.getElementById("bias").value = 0; params.bias = 0; document.getElementById("biasValue").textContent = "0"; render(); });
+      </script>
+    </main>
+  </body>
+</html>
