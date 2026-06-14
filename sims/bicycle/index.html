@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Why a Bicycle Stays Up — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <style>
+      .explain { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+      .figure { position: sticky; top: 16px; }
+      .figure .stage { aspect-ratio: 1 / 1; }
+      .figure .cap { margin-top: 8px; font-size: 0.8rem; color: var(--muted); min-height: 2.4em; }
+      .steps .step { min-height: 80vh; display: flex; flex-direction: column; justify-content: center;
+        border-left: 2px solid var(--border); padding-left: 18px; transition: border-color 0.2s ease; }
+      .steps .step.active { border-color: var(--accent); }
+      .steps .step h2 { font-size: 1.1rem; margin: 0 0 8px; }
+      .steps .step p { color: var(--muted); margin: 0; }
+      @media (max-width: 760px) {
+        .explain { grid-template-columns: 1fr; gap: 0; }
+        .figure { position: sticky; top: 0; z-index: 2; background: var(--bg); padding: 10px 0; }
+        .figure .stage { aspect-ratio: 3 / 2; }
+        .steps .step { min-height: 72vh; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Why a Bicycle Stays Up</h1>
+      <p class="sub">In the spirit of Bartosz Ciechanowski's bicycle. The surprise: a moving bike balances itself, and the reason is the steering <em>geometry</em> — the front wheel trails behind the steering axis, so a lean makes it steer back underneath you. <strong>Canvas 2D</strong> · physics.</p>
+
+      <div class="explain">
+        <div class="figure">
+          <div class="stage" aria-label="Rear view of a self-balancing bike with a side-view of the steering trail"><canvas id="c"></canvas></div>
+          <div class="cap" id="cap"></div>
+          <div class="controls">
+            <label class="row"><span>Speed <strong id="vValue"></strong></span>
+              <input id="v" type="range" min="0" max="12" step="0.2" value="6" /></label>
+            <label class="row"><span>Trail <strong id="trValue"></strong></span>
+              <input id="tr" type="range" min="0" max="1" step="0.02" value="0.6" /></label>
+            <button id="nudge">Nudge</button>
+            <button id="reset">Reset</button>
+          </div>
+        </div>
+        <div class="steps" id="steps">
+          <section class="step" data-step data-v="0" data-tr="0.6" data-kick="0.9"><h2>1 · Standing still, it falls</h2><p>A bike is an upside-down pendulum. Give a stationary one the smallest lean and gravity just keeps pulling it over. Speed = 0 here — watch it topple.</p></section>
+          <section class="step" data-step data-v="0" data-tr="0.6"><h2>2 · The secret is the geometry</h2><p>Look at the side view (inset). The steering axis, extended down, hits the ground <em>ahead</em> of where the tire touches. That gap is the <strong>trail</strong> — and it changes everything.</p></section>
+          <section class="step" data-step data-v="5" data-tr="0.6" data-kick="0.7"><h2>3 · A trailing wheel self-aligns</h2><p>Like a shopping-cart caster, a wheel dragged behind its pivot swings straight on its own. On a leaning bike, that same trail makes the front wheel flop <em>into</em> the lean.</p></section>
+          <section class="step" data-step data-v="7" data-tr="0.6" data-kick="0.9"><h2>4 · Steering into the lean rights it</h2><p>Rolling forward, steering into the lean drives the wheels back underneath the center of mass — and the bike stands itself up. Faster makes this stronger (it scales with speed²).</p></section>
+          <section class="step" data-step data-v="7" data-tr="0" data-kick="0.7"><h2>5 · No trail, no magic</h2><p>Set the trail to zero and the self-steering disappears. Even at speed, the same nudge now puts the bike on the ground. The geometry, not the gyroscope, is doing the work.</p></section>
+          <section class="step" data-step data-v="6" data-tr="0.6" data-interactive="1"><h2>6 · Your turn</h2><p>Use the sliders under the figure: drop the speed or the trail until it can't recover, then bring them back. Hit <em>Nudge</em> to perturb it.</p></section>
+        </div>
+      </div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), cap = document.getElementById("cap");
+        const params = { v: 6, tr: 0.6 };
+        let view = { w: 0, h: 0 }, phi = 0.06, phiv = 0, fallen = false, trace = [];
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); }
+        window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
+
+        function reset(kick) { phi = 0.04; phiv = kick || 0; fallen = false; trace = []; }
+        function update(dt) {
+          if (fallen) { phi += (Math.sign(phi) * 1.4 - phi) * Math.min(1, dt * 4); return; }
+          const g = 9.8, L = 1;
+          // gravity topples (+), steering-into-lean rights (−), scaled by v² and trail; plus steering damping
+          const stiffness = (params.v * params.v * params.tr * 0.7 - g) / L;
+          const acc = -stiffness * Math.sin(phi) - 1.6 * phiv;
+          phiv += acc * dt; phi += phiv * dt;
+          if (Math.abs(phi) > 1.25) { fallen = true; phiv = 0; }
+          trace.push(phi); if (trace.length > 240) trace.shift();
+        }
+        function bikePoint(P, lx, ly, S) { const c = Math.cos(phi), s = Math.sin(phi); return [P[0] + S * (lx * c + ly * s), P[1] + S * (lx * s - ly * c)]; }
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const groundY = view.h * 0.80, cx = view.w * 0.42, S = view.h * 0.42;
+          // ground + speed lines
+          ctx.strokeStyle = "#3a3a40"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(view.w, groundY); ctx.stroke();
+          if (params.v > 0.2 && !fallen) { ctx.strokeStyle = "rgba(79,163,255,0.25)"; for (let i = 0; i < 5; i++) { const yy = groundY - 8 - i * 26, off = (Date.now() / 1000 * params.v * 30) % 60; ctx.beginPath(); ctx.moveTo((i * 53 - off + view.w) % view.w - 40, yy); ctx.lineTo((i * 53 - off + view.w) % view.w, yy); ctx.stroke(); } }
+          const P = [cx, groundY];
+          // bike glyph (rear view) rotated by lean phi
+          const wheel = bikePoint(P, 0, 0.16, S), seat = bikePoint(P, -0.04, 0.6, S), bar = bikePoint(P, 0.05, 0.64, S), hip = bikePoint(P, 0, 0.62, S), sh = bikePoint(P, 0, 0.92, S), head = bikePoint(P, 0, 1.04, S);
+          // wheel (edge-on ellipse)
+          ctx.save(); ctx.translate(wheel[0], wheel[1]); ctx.rotate(phi); ctx.strokeStyle = "#cfcfd4"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, 0, S * 0.06, S * 0.16, 0, 0, 6.28); ctx.stroke(); ctx.restore();
+          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 3; ctx.beginPath();
+          ctx.moveTo(P[0], P[1]); ctx.lineTo(seat[0], seat[1]); ctx.lineTo(bar[0], bar[1]); ctx.moveTo(seat[0], seat[1]); ctx.lineTo(wheel[0], wheel[1]); ctx.stroke();
+          // rider
+          ctx.strokeStyle = "#9ad0ff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(hip[0], hip[1]); ctx.lineTo(sh[0], sh[1]); ctx.stroke();
+          ctx.fillStyle = "#9ad0ff"; ctx.beginPath(); ctx.arc(head[0], head[1], S * 0.06, 0, 6.28); ctx.fill();
+          // side-view trail inset (top-right)
+          drawTrailInset(view.w - 150, 18, 134, 96);
+          // balance trace
+          ctx.strokeStyle = "rgba(232,197,71,0.5)"; ctx.lineWidth = 1.5; ctx.beginPath();
+          for (let i = 0; i < trace.length; i++) { const xx = 16 + i, yy = groundY + 0.5 * (view.h - groundY) - trace[i] * 60; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+          ctx.stroke();
+          const deg = Math.abs(phi * 180 / Math.PI);
+          cap.textContent = (fallen ? "Fell over" : deg < 2 ? "Balanced" : "Lean " + deg.toFixed(0) + "°, correcting") + " · speed " + params.v.toFixed(1) + " · trail " + params.tr.toFixed(2);
+        }
+        function drawTrailInset(x, y, w, h) {
+          ctx.fillStyle = "rgba(0,0,0,0.35)"; ctx.fillRect(x, y, w, h);
+          const gy = y + h - 16, wheelX = x + w * 0.42, wheelR = 22;
+          ctx.strokeStyle = "#3a3a40"; ctx.beginPath(); ctx.moveTo(x + 6, gy); ctx.lineTo(x + w - 6, gy); ctx.stroke();
+          // wheel
+          ctx.strokeStyle = "#cfcfd4"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(wheelX, gy - wheelR, wheelR, 0, 6.28); ctx.stroke();
+          // steering axis (head angle), hits ground ahead of contact by trail
+          const trailPx = params.tr * 40, headPt = [wheelX + 10, gy - wheelR * 2.0], groundHit = [wheelX + trailPx, gy];
+          ctx.strokeStyle = "#8a8a8f"; ctx.setLineDash([3, 2]); ctx.beginPath(); ctx.moveTo(headPt[0], headPt[1]); ctx.lineTo(groundHit[0], groundHit[1]); ctx.stroke(); ctx.setLineDash([]);
+          // contact point + trail segment
+          ctx.fillStyle = "#cfcfd4"; ctx.beginPath(); ctx.arc(wheelX, gy, 2.5, 0, 6.28); ctx.fill();
+          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(wheelX, gy); ctx.lineTo(groundHit[0], gy); ctx.stroke();
+          ctx.fillStyle = "#e8c547"; ctx.font = "10px ui-monospace, monospace"; ctx.fillText("trail", (wheelX + groundHit[0]) / 2 - 10, gy + 12);
+        }
+
+        resize(); reset(0.6);
+        const sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.bind("v", params, "v", (x) => (+x).toFixed(1));
+        Sim.bind("tr", params, "tr", (x) => (+x).toFixed(2));
+        document.getElementById("nudge").addEventListener("click", () => { if (fallen) reset(0); phiv += 0.8; });
+        document.getElementById("reset").addEventListener("click", () => { reset(0.4); });
+
+        const stepsEl = document.getElementById("steps");
+        Sim.steps(stepsEl, (i, el) => {
+          stepsEl.querySelectorAll(".step").forEach((s) => s.classList.remove("active"));
+          el.classList.add("active");
+          if (el.dataset.interactive === "1") return;
+          if (el.dataset.v !== undefined) { params.v = +el.dataset.v; document.getElementById("v").value = params.v; document.getElementById("vValue").textContent = params.v.toFixed(1); }
+          if (el.dataset.tr !== undefined) { params.tr = +el.dataset.tr; document.getElementById("tr").value = params.tr; document.getElementById("trValue").textContent = params.tr.toFixed(2); }
+          reset(+el.dataset.kick || 0.5);
+        });
+      </script>
+    </main>
+  </body>
+</html>
