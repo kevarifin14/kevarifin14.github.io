@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simulation Template — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Simulation Template</h1>
+      <p class="sub">Copy this folder to <code>/sims/&lt;name&gt;/</code> and replace the model. It already wires HiDPI, a fixed-timestep loop, offscreen pause, pointer input, and themed controls.</p>
+
+      <div class="stage"><canvas id="c"></canvas></div>
+
+      <div class="controls">
+        <div class="row"><span>Count <strong id="countValue"></strong></span>
+          <input id="count" type="range" min="10" max="300" step="10" value="120" /></div>
+        <div class="row"><span>Speed <strong id="speedValue"></strong></span>
+          <input id="speed" type="range" min="0" max="2" step="0.01" value="1" /></div>
+        <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
+      </div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+        const P = Sim.palette;
+        const params = { count: 120, speed: 1 };
+        let view = { w: 0, h: 0 };
+        let particles = [];
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); }
+        window.addEventListener("resize", resize);
+        resize();
+
+        function reset() {
+          const rnd = Sim.rng(7);
+          particles = Array.from({ length: params.count }, () => ({
+            x: rnd() * view.w, y: rnd() * view.h,
+            vx: (rnd() - 0.5) * 120, vy: (rnd() - 0.5) * 120,
+            r: 2 + rnd() * 2.5,
+          }));
+        }
+
+        function update(dt) {
+          const s = params.speed;
+          for (const p of particles) {
+            p.x += p.vx * s * dt; p.y += p.vy * s * dt;
+            if (p.x < p.r || p.x > view.w - p.r) { p.vx *= -1; p.x = Math.max(p.r, Math.min(view.w - p.r, p.x)); }
+            if (p.y < p.r || p.y > view.h - p.r) { p.vy *= -1; p.y = Math.max(p.r, Math.min(view.h - p.r, p.y)); }
+          }
+        }
+
+        function render() {
+          ctx.fillStyle = "#0e0e10";
+          ctx.fillRect(0, 0, view.w, view.h);
+          ctx.fillStyle = P.accent;
+          for (const p of particles) {
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+
+        Sim.bind("count", params, "count", (v) => { reset(); return v; });
+        Sim.bind("speed", params, "speed", (v) => (+v).toFixed(2));
+        reset();
+
+        const sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        document.getElementById("toggle").addEventListener("click", function () {
+          sim.toggle(); this.textContent = sim.running ? "Pause" : "Play";
+        });
+        document.getElementById("reset").addEventListener("click", () => { reset(); sim.renderOnce(); });
+      </script>
+    </main>
+  </body>
+</html>

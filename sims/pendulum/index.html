@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pendulum — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Pendulum</h1>
+      <p class="sub">A damped pendulum. Drag the bob to set its angle, then let go. <strong>SVG</strong> — crisp vector geometry and a live label.</p>
+
+      <div class="stage">
+        <svg id="s" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet">
+          <line id="rod" x1="150" y1="40" x2="150" y2="150" stroke="#8a8a8f" stroke-width="2" />
+          <circle cx="150" cy="40" r="3" fill="#8a8a8f" />
+          <circle id="bob" cx="150" cy="150" r="13" fill="#e8c547" style="cursor:grab" />
+          <text id="lbl" x="150" y="16" fill="#8a8a8f" font-size="11" text-anchor="middle" font-family="monospace"></text>
+        </svg>
+      </div>
+
+      <div class="controls">
+        <div class="row"><span>Length <strong id="lenValue"></strong></span>
+          <input id="len" type="range" min="60" max="150" step="1" value="110" /></div>
+        <div class="row"><span>Gravity <strong id="gValue"></strong></span>
+          <input id="g" type="range" min="2" max="30" step="0.5" value="14" /></div>
+        <div class="row"><span>Damping <strong id="dmpValue"></strong></span>
+          <input id="dmp" type="range" min="0" max="0.6" step="0.01" value="0.08" /></div>
+        <button id="reset">Reset</button>
+      </div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const svg = document.getElementById("s");
+        const rod = document.getElementById("rod"), bob = document.getElementById("bob"), lbl = document.getElementById("lbl");
+        const PX = 150, PY = 40;                       // pivot, in SVG units
+        const params = { len: 110, g: 14, dmp: 0.08 };
+        let theta = Math.PI * 0.5, omega = 0, dragging = false;
+
+        function toSvg(e) {
+          const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+          return p.matrixTransform(svg.getScreenCTM().inverse());
+        }
+        function update(dt) {
+          if (dragging) return;
+          // theta measured from straight-down; restoring torque ~ -sin(theta).
+          // (g/len)*100 is a feel constant — units here are arbitrary SVG px.
+          const alpha = -(params.g / params.len * 100) * Math.sin(theta) - params.dmp * omega;
+          omega += alpha * dt; theta += omega * dt;
+        }
+        function render() {
+          const x = PX + params.len * Math.sin(theta), y = PY + params.len * Math.cos(theta);
+          bob.setAttribute("cx", x); bob.setAttribute("cy", y);
+          rod.setAttribute("x2", x); rod.setAttribute("y2", y);
+          lbl.textContent = "θ = " + (theta * 180 / Math.PI).toFixed(0) + "°";
+        }
+
+        bob.addEventListener("pointerdown", (e) => { dragging = true; omega = 0; bob.setPointerCapture(e.pointerId); });
+        svg.addEventListener("pointermove", (e) => { if (!dragging) return; const { x, y } = toSvg(e); theta = Math.atan2(x - PX, y - PY); render(); });
+        svg.addEventListener("pointerup", () => { dragging = false; });
+
+        Sim.bind("len", params, "len", (v) => v);
+        Sim.bind("g", params, "g", (v) => (+v).toFixed(1));
+        Sim.bind("dmp", params, "dmp", (v) => (+v).toFixed(2));
+        document.getElementById("reset").addEventListener("click", () => { theta = Math.PI * 0.5; omega = 0; });
+
+        Sim.loop({ update, render, stage: svg.parentElement });
+      </script>
+    </main>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 # Code Patterns — copy-paste building blocks
 
-Framework-free, GitHub-Pages-safe. Drop into a single HTML file.
+Framework-free, GitHub-Pages-safe. Drop into a single HTML file. These same helpers are packaged for reuse in the live component library at `/sims/lib/simkit.js` — copy from there instead of retyping.
 
 ## Contents
 - HiDPI canvas setup (crisp on retina/phones)
@@ -9,6 +9,7 @@ Framework-free, GitHub-Pages-safe. Drop into a single HTML file.
 - Slider bound to a live parameter
 - Pause when offscreen / tab hidden
 - Field rendering with ImageData
+- SVG draggable handle (vector path)
 - three.js minimal scene
 - p5.js sketch skeleton
 
@@ -90,6 +91,32 @@ function draw() {
   }
   ctx.putImageData(img, 0, 0);
 }
+```
+
+## SVG draggable handle (vector path)
+When crisp text, axes, or precise hit-targets matter, drive an SVG instead of a canvas. Bind model state to attributes; the browser handles redraw.
+
+```html
+<svg id="s" viewBox="0 0 300 200" style="width:100%">
+  <line id="rod" x1="150" y1="40" x2="150" y2="140" stroke="#8a8a8f" stroke-width="2"/>
+  <circle id="bob" cx="150" cy="140" r="12" fill="#e8c547" style="cursor:grab"/>
+</svg>
+<script>
+  const svg = document.getElementById("s"), bob = document.getElementById("bob"), rod = document.getElementById("rod");
+  function toSvg(e) {                       // client → SVG user units
+    const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+    return p.matrixTransform(svg.getScreenCTM().inverse());
+  }
+  let drag = false;
+  bob.addEventListener("pointerdown", e => { drag = true; bob.setPointerCapture(e.pointerId); });
+  svg.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const { x, y } = toSvg(e);
+    bob.setAttribute("cx", x); bob.setAttribute("cy", y);
+    rod.setAttribute("x2", x); rod.setAttribute("y2", y);
+  });
+  svg.addEventListener("pointerup", () => (drag = false));
+</script>
 ```
 
 ## three.js minimal scene (CDN)

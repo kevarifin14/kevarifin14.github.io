@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>3D Orbit — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <script type="importmap">
+      { "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      } }
+    </script>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>3D Orbit</h1>
+      <p class="sub">Drag to orbit, scroll to zoom. <strong>three.js / WebGL</strong> — the right tool when the phenomenon is genuinely 3D.</p>
+
+      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row check"><input id="spin" type="checkbox" checked /> <span>Auto-rotate</span></label>
+        <button id="home">Home view</button>
+      </div>
+      <div class="readout">Runs on three.js's own render loop — the fixed-timestep 2D toolkit isn't the right fit here.</div>
+
+      <script type="module">
+        import * as THREE from "three";
+        import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+        const canvas = document.getElementById("c");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0e0e10);
+        const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+        const HOME = new THREE.Vector3(0, 0, 4.5);
+        camera.position.copy(HOME);
+
+        const mesh = new THREE.Mesh(
+          new THREE.TorusKnotGeometry(1, 0.32, 180, 32),
+          new THREE.MeshStandardMaterial({ color: 0xe8c547, roughness: 0.35, metalness: 0.4 })
+        );
+        scene.add(mesh);
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x202028, 1.1));
+        const key = new THREE.DirectionalLight(0xffffff, 1.2); key.position.set(3, 4, 5); scene.add(key);
+
+        const controls = new OrbitControls(camera, canvas);
+        controls.enableDamping = true;
+
+        function resize() {
+          const r = canvas.getBoundingClientRect();
+          renderer.setSize(r.width, r.height, false);
+          camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+        }
+        window.addEventListener("resize", resize); resize();
+
+        let spin = true;
+        document.getElementById("spin").addEventListener("change", (e) => (spin = e.target.checked));
+        document.getElementById("home").addEventListener("click", () => {
+          camera.position.copy(HOME); controls.target.set(0, 0, 0); controls.update();
+        });
+
+        renderer.setAnimationLoop(() => {
+          if (spin) mesh.rotation.y += 0.006;
+          controls.update();
+          renderer.render(scene, camera);
+        });
+      </script>
+    </main>
+  </body>
+</html>

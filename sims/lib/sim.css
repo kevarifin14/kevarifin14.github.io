@@ -1,0 +1,87 @@
+/* sim.css — shared shell + control styling for simulations on kevinarifin.com */
+:root {
+  --bg: #0b0b0c;
+  --fg: #ededed;
+  --muted: #8a8a8f;
+  --border: #232326;
+  --accent: #e8c547;
+  --panel: #17171a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.sim { max-width: 960px; margin: 0 auto; padding: 28px 24px 64px; }
+
+.sim .back {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.sim .back:hover { opacity: 0.85; }
+
+.sim h1 { font-size: 1.5rem; letter-spacing: -0.01em; margin: 0 0 4px; }
+.sim .sub { color: var(--muted); margin: 0 0 18px; font-size: 0.95rem; }
+
+/* Stage: the simulation surface. touch-action:none so dragging doesn't scroll. */
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0e0e10;
+  touch-action: none;
+}
+.stage canvas, .stage svg { display: block; width: 100%; height: 100%; }
+
+/* Controls */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 16px;
+}
+.controls .row { display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem; color: var(--muted); }
+.controls .row span strong { color: var(--fg); font-variant-numeric: tabular-nums; }
+.controls input[type="range"] { width: 160px; accent-color: var(--accent); }
+.controls label.check { flex-direction: row; align-items: center; gap: 8px; color: var(--fg); }
+
+.controls button {
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 7px 13px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.controls button:hover { border-color: var(--accent); }
+.controls .presets { display: flex; gap: 8px; }
+.controls .presets button { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.78rem; }
+
+.readout {
+  margin-top: 12px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.readout strong { color: var(--fg); }
+
+.note { margin-top: 18px; font-size: 0.82rem; color: var(--muted); }
+.note code { color: var(--fg); background: var(--panel); padding: 1px 5px; border-radius: 4px; }
+
+@media (max-width: 520px) {
+  .controls input[type="range"] { width: 132px; }
+}

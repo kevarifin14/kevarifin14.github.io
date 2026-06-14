@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simulations — Kevin Arifin</title>
+    <meta name="description" content="Interactive simulations and explorables by Kevin Arifin." />
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 8px; }
+      .card { display: block; border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-decoration: none; color: var(--fg); transition: border-color 0.15s ease; }
+      .card:hover { border-color: var(--accent); }
+      .card .tech { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.72rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; }
+      .card h3 { margin: 6px 0 4px; font-size: 1.05rem; }
+      .card p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="site-nav">
+        <a class="brand" href="/">Kevin Arifin</a>
+        <div class="links">
+          <a href="/">Home</a>
+          <a href="/writing.html">Writing</a>
+          <a href="/sims/" aria-current="page">Sims</a>
+          <a href="/about.html">About</a>
+        </div>
+      </nav>
+
+      <main>
+        <p class="eyebrow">Interactive</p>
+        <h1>Simulations</h1>
+        <p class="lead">Small interactive explorables — each one picks the tool that fits the phenomenon.</p>
+
+        <div class="grid">
+          <a class="card" href="/sims/ripple/"><span class="tech">Canvas 2D</span><h3>Ripple Tank</h3><p>Two-source wave interference; drag a source.</p></a>
+          <a class="card" href="/sims/pendulum/"><span class="tech">SVG</span><h3>Pendulum</h3><p>Damped pendulum; drag the bob to set the angle.</p></a>
+          <a class="card" href="/sims/orbit/"><span class="tech">three.js</span><h3>3D Orbit</h3><p>Orbit and zoom a 3D mesh.</p></a>
+          <a class="card" href="/sims/flow-field/"><span class="tech">p5.js</span><h3>Flow Field</h3><p>Particles drifting along Perlin noise.</p></a>
+          <a class="card" href="/sims/bars/"><span class="tech">D3</span><h3>Interactive Bars</h3><p>Data-driven chart with hover + regen.</p></a>
+          <a class="card" href="/sims/stack/"><span class="tech">Matter.js</span><h3>Physics Stack</h3><p>Drop and drag rigid bodies.</p></a>
+          <a class="card" href="/sims/_explainer/"><span class="tech">Explorable</span><h3>Explained: Waves</h3><p>Scrollytelling — narrative paired with a sim.</p></a>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <span>© <span id="year">2026</span> Kevin Arifin</span>
+        <span class="spacer"></span>
+        <a href="https://github.com/kevarifin14" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://x.com/kevarifin" target="_blank" rel="noreferrer">X</a>
+      </footer>
+    </div>
+    <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ripple Tank — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Ripple Tank</h1>
+      <p class="sub">Two wave sources interfering. Drag a source to move it and watch the pattern shift. <strong>Canvas 2D</strong> with per-pixel field rendering.</p>
+
+      <div class="stage"><canvas id="c"></canvas></div>
+
+      <div class="controls">
+        <div class="row"><span>Wavelength <strong id="wlValue"></strong></span>
+          <input id="wl" type="range" min="6" max="40" step="1" value="16" /></div>
+        <div class="row"><span>Speed <strong id="spdValue"></strong></span>
+          <input id="spd" type="range" min="0" max="6" step="0.1" value="3" /></div>
+        <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout">Drag either dot. Bright bands = constructive interference, dark = destructive.</div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+        const params = { wl: 16, spd: 3 };
+        const GW = 220;                 // field buffer width in cells
+        let view = { w: 0, h: 0 }, GH = 147, t = 0;
+        let buf, bctx, img, sources = [];
+
+        function buildBuffer() {
+          GH = Math.max(1, Math.round(GW * view.h / view.w));
+          buf = document.createElement("canvas"); buf.width = GW; buf.height = GH;
+          bctx = buf.getContext("2d"); img = bctx.createImageData(GW, GH);
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); buildBuffer(); }
+        window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
+
+        function reset() { sources = [{ x: GW * 0.38, y: GH * 0.5 }, { x: GW * 0.62, y: GH * 0.5 }]; t = 0; }
+        function update(dt) { t += params.spd * dt; }
+
+        function render() {
+          const k = (Math.PI * 2) / params.wl, d = img.data;
+          for (let y = 0, idx = 0; y < GH; y++) {
+            for (let x = 0; x < GW; x++, idx += 4) {
+              let sum = 0;
+              for (let i = 0; i < sources.length; i++) {
+                const dx = x - sources[i].x, dy = y - sources[i].y;
+                sum += Math.sin(Math.sqrt(dx * dx + dy * dy) * k - t);
+              }
+              const v = sum / sources.length * 0.5 + 0.5;   // 0..1
+              d[idx] = 79 * v; d[idx + 1] = 163 * v; d[idx + 2] = 60 + 195 * v; d[idx + 3] = 255;
+            }
+          }
+          bctx.putImageData(img, 0, 0);
+          ctx.imageSmoothingEnabled = true;
+          ctx.drawImage(buf, 0, 0, view.w, view.h);
+          ctx.fillStyle = "#e8c547";
+          for (const s of sources) {
+            ctx.beginPath(); ctx.arc(s.x / GW * view.w, s.y / GH * view.h, 5, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+
+        let dragIdx = -1;
+        Sim.pointer(canvas, {
+          down(p) {
+            let best = 40;
+            sources.forEach((s, i) => {
+              const dd = Math.hypot(p.x - s.x / GW * view.w, p.y - s.y / GH * view.h);
+              if (dd < best) { best = dd; dragIdx = i; }
+            });
+          },
+          move(p) {
+            if (dragIdx < 0) return;
+            sources[dragIdx].x = Math.max(0, Math.min(GW, p.x / view.w * GW));
+            sources[dragIdx].y = Math.max(0, Math.min(GH, p.y / view.h * GH));
+            sim.renderOnce();
+          },
+          up() { dragIdx = -1; },
+        });
+
+        resize();
+        Sim.bind("wl", params, "wl", (v) => v);
+        Sim.bind("spd", params, "spd", (v) => (+v).toFixed(1));
+        reset();
+        const sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("reset").addEventListener("click", () => { reset(); sim.renderOnce(); });
+      </script>
+    </main>
+  </body>
+</html>

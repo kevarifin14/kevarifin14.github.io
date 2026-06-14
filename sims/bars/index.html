@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interactive Bars — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Interactive Bars</h1>
+      <p class="sub">A data-driven chart with hover and live regeneration. <strong>D3</strong> — scales, axes, and data joins.</p>
+
+      <div class="stage"><svg id="chart"></svg></div>
+      <div class="controls">
+        <div class="row"><span>Bars <strong id="nValue">12</strong></span>
+          <input id="n" type="range" min="4" max="32" step="1" value="12" /></div>
+        <button id="shuffle">Reshuffle</button>
+      </div>
+      <div class="readout" id="ro">Hover a bar to read its value.</div>
+
+      <script>
+        const svg = d3.select("#chart"), ro = document.getElementById("ro");
+        const M = { t: 14, r: 14, b: 16, l: 30 };
+        let n = 12, data = [];
+
+        function gen() { data = d3.range(n).map((i) => ({ i, v: 10 + Math.round(Math.random() * 90) })); }
+        function size() { const r = document.getElementById("chart").getBoundingClientRect(); return { w: r.width, h: r.height }; }
+
+        function draw() {
+          const { w, h } = size();
+          svg.attr("viewBox", `0 0 ${w} ${h}`);
+          const x = d3.scaleBand().domain(data.map((d) => d.i)).range([M.l, w - M.r]).padding(0.18);
+          const y = d3.scaleLinear().domain([0, 100]).range([h - M.b, M.t]);
+
+          svg.selectAll("rect.bar").data(data, (d) => d.i).join(
+            (enter) => enter.append("rect").attr("class", "bar").attr("fill", "#e8c547"),
+            (update) => update,
+            (exit) => exit.remove()
+          )
+            .attr("x", (d) => x(d.i)).attr("width", x.bandwidth())
+            .attr("y", (d) => y(d.v)).attr("height", (d) => y(0) - y(d.v))
+            .on("pointerenter", (e, d) => { d3.select(e.currentTarget).attr("fill", "#fff"); ro.innerHTML = `Bar ${d.i}: <strong>${d.v}</strong>`; })
+            .on("pointerleave", (e) => d3.select(e.currentTarget).attr("fill", "#e8c547"));
+
+          svg.selectAll("line.base").data([0]).join("line").attr("class", "base")
+            .attr("x1", M.l).attr("x2", w - M.r).attr("y1", y(0)).attr("y2", y(0)).attr("stroke", "#232326");
+        }
+
+        document.getElementById("n").addEventListener("input", (e) => { n = +e.target.value; document.getElementById("nValue").textContent = n; gen(); draw(); });
+        document.getElementById("shuffle").addEventListener("click", () => { gen(); draw(); });
+        window.addEventListener("resize", draw);
+        gen(); draw();
+      </script>
+    </main>
+  </body>
+</html>

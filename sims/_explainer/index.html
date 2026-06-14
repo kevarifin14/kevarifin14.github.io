@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Explained: Wave Interference — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <style>
+      .explain { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+      .figure { position: sticky; top: 16px; }
+      .figure .stage { aspect-ratio: 1 / 1; }
+      .figure .cap { margin-top: 8px; font-size: 0.8rem; color: var(--muted); min-height: 2.4em; }
+      .steps .step { min-height: 78vh; display: flex; flex-direction: column; justify-content: center;
+        border-left: 2px solid var(--border); padding-left: 18px; transition: border-color 0.2s ease; }
+      .steps .step.active { border-color: var(--accent); }
+      .steps .step h2 { font-size: 1.1rem; margin: 0 0 8px; }
+      .steps .step p { color: var(--muted); margin: 0; }
+      .steps .sandbox { display: none; margin-top: 14px; }
+      .steps .step.active .sandbox { display: flex; }
+      @media (max-width: 760px) {
+        .explain { grid-template-columns: 1fr; gap: 0; }
+        .figure { position: sticky; top: 0; z-index: 2; background: var(--bg); padding: 10px 0; }
+        .figure .stage { aspect-ratio: 3 / 2; }
+        .steps .step { min-height: 70vh; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Explained: Wave Interference</h1>
+      <p class="sub">A worked example of the <strong>explorable</strong> format — a sticky simulation paired with scrolling narrative. Copy this folder to explain your own sim.</p>
+
+      <div class="explain">
+        <div class="figure">
+          <div class="stage"><canvas id="c"></canvas></div>
+          <div class="cap" id="cap"></div>
+        </div>
+
+        <div class="steps" id="steps">
+          <section class="step" data-step data-sources="1" data-wl="18">
+            <h2>1 · A single source</h2>
+            <p>One oscillating source sends out circular waves — crests (bright) and troughs (dark) spreading outward at a fixed wavelength.</p>
+          </section>
+          <section class="step" data-step data-sources="2" data-wl="18">
+            <h2>2 · Add a second source</h2>
+            <p>Two sources, same wavelength. Watch the regions where their waves overlap.</p>
+          </section>
+          <section class="step" data-step data-sources="2" data-wl="11">
+            <h2>3 · Constructive &amp; destructive</h2>
+            <p>Where crest meets crest the waves reinforce — bright bands. Where crest meets trough they cancel — dark channels. A shorter wavelength packs the bands tighter.</p>
+          </section>
+          <section class="step" data-step data-sources="2" data-wl="18" data-interactive="1">
+            <h2>4 · Your turn</h2>
+            <p>Drag either source and change the wavelength. Handing the reader the controls at the end is what turns an animation into an explorable.</p>
+            <div class="controls sandbox">
+              <div class="row"><span>Wavelength <strong id="wlValue"></strong></span>
+                <input id="wl" type="range" min="6" max="40" step="1" value="18" /></div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), cap = document.getElementById("cap");
+        const GW = 180;
+        let view = { w: 0, h: 0 }, GH = 180, t = 0, buf, bctx, img;
+        const stateModel = { wl: 18, n: 1, interactive: false };
+        const sources = [{ x: GW * 0.5, y: GH * 0.42 }, { x: GW * 0.5, y: GH * 0.58 }];
+
+        function buildBuffer() {
+          GH = Math.max(1, Math.round(GW * view.h / view.w));
+          buf = document.createElement("canvas"); buf.width = GW; buf.height = GH;
+          bctx = buf.getContext("2d"); img = bctx.createImageData(GW, GH);
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); buildBuffer(); }
+        window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
+
+        function update(dt) { t += 3 * dt; }
+        function render() {
+          const k = (Math.PI * 2) / stateModel.wl, d = img.data, n = stateModel.n;
+          for (let y = 0, idx = 0; y < GH; y++) for (let x = 0; x < GW; x++, idx += 4) {
+            let sum = 0;
+            for (let i = 0; i < n; i++) { const dx = x - sources[i].x, dy = y - sources[i].y; sum += Math.sin(Math.sqrt(dx * dx + dy * dy) * k - t); }
+            const v = sum / n * 0.5 + 0.5;
+            d[idx] = 79 * v; d[idx + 1] = 163 * v; d[idx + 2] = 60 + 195 * v; d[idx + 3] = 255;
+          }
+          bctx.putImageData(img, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(buf, 0, 0, view.w, view.h);
+          ctx.fillStyle = "#e8c547";
+          for (let i = 0; i < n; i++) { ctx.beginPath(); ctx.arc(sources[i].x / GW * view.w, sources[i].y / GH * view.h, 5, 0, Math.PI * 2); ctx.fill(); }
+        }
+
+        resize();
+        const sim = Sim.loop({ update, render, stage: canvas.parentElement });
+
+        let drag = -1;
+        Sim.pointer(canvas, {
+          down(p) { if (!stateModel.interactive) return; let best = 40; for (let i = 0; i < stateModel.n; i++) { const dd = Math.hypot(p.x - sources[i].x / GW * view.w, p.y - sources[i].y / GH * view.h); if (dd < best) { best = dd; drag = i; } } },
+          move(p) { if (drag < 0) return; sources[drag].x = Math.max(0, Math.min(GW, p.x / view.w * GW)); sources[drag].y = Math.max(0, Math.min(GH, p.y / view.h * GH)); sim.renderOnce(); },
+          up() { drag = -1; },
+        });
+        Sim.bind("wl", stateModel, "wl", (v) => v);
+
+        const captions = [
+          "One source · circular wavefronts.",
+          "Two sources · overlap begins.",
+          "Tighter bands · interference is clearest.",
+          "Sandbox · drag the sources, change the wavelength.",
+        ];
+        const stepsEl = document.getElementById("steps");
+        Sim.steps(stepsEl, (i, el) => {
+          stepsEl.querySelectorAll(".step").forEach((s) => s.classList.remove("active"));
+          el.classList.add("active");
+          stateModel.n = +el.dataset.sources;
+          stateModel.interactive = el.dataset.interactive === "1";
+          if (!stateModel.interactive) {
+            stateModel.wl = +el.dataset.wl;
+            const wl = document.getElementById("wl"); if (wl) wl.value = stateModel.wl;
+            const wv = document.getElementById("wlValue"); if (wv) wv.textContent = stateModel.wl;
+          }
+          cap.textContent = captions[i] || "";
+        });
+      </script>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Physics Stack — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Physics Stack</h1>
+      <p class="sub">Click empty space to drop a block; drag blocks around. <strong>Matter.js</strong> — don't hand-roll rigid-body physics.</p>
+
+      <div class="stage" id="stage"></div>
+      <div class="controls">
+        <div class="row"><span>Gravity <strong id="gValue">1.00</strong></span>
+          <input id="g" type="range" min="0" max="2" step="0.05" value="1" /></div>
+        <button id="reset">Clear</button>
+      </div>
+
+      <script>
+        const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint } = Matter;
+        const stage = document.getElementById("stage");
+        const W = stage.clientWidth, H = stage.clientHeight;
+
+        const engine = Engine.create();
+        const render = Render.create({
+          element: stage, engine,
+          options: { width: W, height: H, background: "#0e0e10", wireframes: false, pixelRatio: Math.min(window.devicePixelRatio, 2) },
+        });
+        Render.run(render);
+        Runner.run(Runner.create(), engine);
+
+        function walls() {
+          const t = 60;
+          return [
+            Bodies.rectangle(W / 2, H + t / 2, W * 2, t, { isStatic: true }),
+            Bodies.rectangle(-t / 2, H / 2, t, H * 2, { isStatic: true }),
+            Bodies.rectangle(W + t / 2, H / 2, t, H * 2, { isStatic: true }),
+          ];
+        }
+        function addBox(x, y) {
+          const s = 18 + Math.random() * 26;
+          Composite.add(engine.world, Bodies.rectangle(x, y, s, s, { restitution: 0.2, friction: 0.6, render: { fillStyle: "#e8c547" } }));
+        }
+
+        Composite.add(engine.world, walls());
+        for (let i = 0; i < 6; i++) addBox(W / 2 + (i - 3) * 22, 40);
+
+        const mouse = Mouse.create(render.canvas);
+        const mc = MouseConstraint.create(engine, { mouse, constraint: { stiffness: 0.2, render: { visible: false } } });
+        Composite.add(engine.world, mc);
+        render.mouse = mouse;
+
+        // Drop a box only when not grabbing an existing body.
+        render.canvas.addEventListener("mousedown", (e) => {
+          if (mc.body) return;
+          const r = render.canvas.getBoundingClientRect();
+          addBox(e.clientX - r.left, e.clientY - r.top);
+        });
+
+        document.getElementById("g").addEventListener("input", (e) => {
+          engine.gravity.y = +e.target.value;
+          document.getElementById("gValue").textContent = (+e.target.value).toFixed(2);
+        });
+        document.getElementById("reset").addEventListener("click", () => {
+          Composite.clear(engine.world, false);
+          Composite.add(engine.world, walls());
+          Composite.add(engine.world, mc);
+        });
+      </script>
+    </main>
+  </body>
+</html>
