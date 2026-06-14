@@ -5,69 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gears — Kevin Arifin</title>
     <link rel="stylesheet" href="../lib/sim.css" />
+    <script type="importmap">
+      { "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      } }
+    </script>
   </head>
   <body>
     <main class="sim">
       <a class="back" href="/sims/">← Sims</a>
       <h1>Gears</h1>
-      <p class="sub">In the spirit of Ciechanowski's gears. Two meshing gears must move the same teeth-per-second, so a small gear spins faster — trading speed for torque. Change the teeth and watch the ratio. <strong>Canvas 2D</strong> · mechanisms.</p>
+      <p class="sub">Two meshing gears must move the same teeth per second, so the small one spins faster — trading speed for torque. Re-tooth either gear and watch the ratio. Drag to orbit. <strong>three.js</strong> · mechanisms.</p>
 
-      <div class="stage" aria-label="Two meshing gears with marked teeth and revolution counters"><canvas id="c"></canvas></div>
+      <div class="stage" aria-label="Two meshing 3D gears, lit and shadowed"><canvas id="c"></canvas></div>
       <div class="controls">
-        <label class="row"><span>Driver teeth <strong id="naValue"></strong></span>
-          <input id="na" type="range" min="8" max="36" step="1" value="12" /></label>
-        <label class="row"><span>Driven teeth <strong id="nbValue"></strong></span>
-          <input id="nb" type="range" min="8" max="36" step="1" value="24" /></label>
-        <label class="row"><span>Speed <strong id="spdValue"></strong></span>
-          <input id="spd" type="range" min="0" max="2" step="0.01" value="1" /></label>
+        <label class="row"><span>Driver teeth <strong id="naValue"></strong></span><input id="na" type="range" min="8" max="30" step="1" value="12" /></label>
+        <label class="row"><span>Driven teeth <strong id="nbValue"></strong></span><input id="nb" type="range" min="8" max="30" step="1" value="20" /></label>
+        <label class="row"><span>Speed <strong id="spdValue"></strong></span><input id="spd" type="range" min="0" max="2" step="0.01" value="1" /></label>
         <button id="toggle">Pause</button>
-        <button id="reset">Reset</button>
       </div>
       <div class="readout" id="ro"></div>
 
-      <script src="../lib/simkit.js"></script>
-      <script>
-        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
-        const params = { na: 12, nb: 24, spd: 1 };
-        let view = { w: 0, h: 0 }, theta = 0, revA = 0, revB = 0;
-        const MODULE = 4.2; // px per tooth of pitch radius scale
+      <script type="module">
+        import * as THREE from "three";
+        import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-        function resize() { view = Sim.fitCanvas(canvas, ctx); }
-        window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
+        const canvas = document.getElementById("c");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
 
-        function update(dt) { const d = params.spd * dt * 1.4; theta += d; revA += d / (2 * Math.PI); revB += d * (params.na / params.nb) / (2 * Math.PI); }
-        function drawGear(cx, cy, R, teeth, angle, body) {
-          const h = R * 0.10;
-          ctx.beginPath();
-          const seg = teeth * 14;
-          for (let i = 0; i <= seg; i++) { const a = angle + i / seg * 2 * Math.PI; const rr = R + h * Math.tanh(Math.cos(a * teeth) * 5); const x = cx + rr * Math.cos(a), y = cy + rr * Math.sin(a); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
-          ctx.closePath(); ctx.fillStyle = body; ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,0.4)"; ctx.lineWidth = 1; ctx.stroke();
-          ctx.fillStyle = "#0e0e10"; ctx.beginPath(); ctx.arc(cx, cy, R * 0.2, 0, 6.28); ctx.fill();
-          // one marked tooth (spoke) to read rotation
-          ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + (R - h) * Math.cos(angle), cy + (R - h) * Math.sin(angle)); ctx.stroke();
+        const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0e0e10);
+        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100); camera.position.set(0, 2.2, 11);
+        scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x14141a, 0.55));
+        const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(5, 9, 7); key.castShadow = true;
+        key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004; key.shadow.camera.near = 1; key.shadow.camera.far = 40;
+        key.shadow.camera.left = key.shadow.camera.bottom = -10; key.shadow.camera.right = key.shadow.camera.top = 10; scene.add(key);
+        const rim = new THREE.DirectionalLight(0x88aaff, 0.5); rim.position.set(-6, 2, -5); scene.add(rim);
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.4 }));
+        ground.rotation.x = -Math.PI / 2; ground.position.y = -3.4; ground.receiveShadow = true; scene.add(ground);
+
+        const MOD = 0.18, TH = 0.5;
+        function gearMesh(teeth, color) {
+          const rP = teeth * MOD * 0.5, rO = rP + MOD * 0.95, rR = rP - MOD, hub = Math.max(0.18, rR * 0.4);
+          const shape = new THREE.Shape(); const N = teeth, step = Math.PI * 2 / N;
+          const pts = [];
+          for (let i = 0; i < N; i++) { const a = i * step;
+            pts.push([rR, a], [rO, a + step * 0.16], [rO, a + step * 0.34], [rR, a + step * 0.5]); }
+          shape.moveTo(pts[0][0] * Math.cos(pts[0][1]), pts[0][0] * Math.sin(pts[0][1]));
+          for (let i = 1; i < pts.length; i++) shape.lineTo(pts[i][0] * Math.cos(pts[i][1]), pts[i][0] * Math.sin(pts[i][1]));
+          shape.closePath();
+          shape.holes.push(new THREE.Path().absarc(0, 0, hub, 0, Math.PI * 2, true));
+          const geo = new THREE.ExtrudeGeometry(shape, { depth: TH, bevelEnabled: true, bevelSize: MOD * 0.12, bevelThickness: MOD * 0.12, bevelSegments: 2, curveSegments: 4 });
+          geo.translate(0, 0, -TH / 2);
+          const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: color, roughness: 0.45, metalness: 0.35 }));
+          m.castShadow = true; m.receiveShadow = true; m.userData.rP = rP; return m;
         }
-        function render() {
-          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
-          const RA = params.na * MODULE, RB = params.nb * MODULE;
-          const cy = view.h * 0.46, totalW = RA + RB, startX = (view.w - totalW) / 2;
-          const ax = startX + RA, bx = ax + RA + RB + 1.5;
-          drawGear(ax, cy, RA, params.na, theta, "#e8c547");
-          drawGear(bx, cy, RB, params.nb, -theta * params.na / params.nb + Math.PI / params.nb, "#4fa3ff");
-          ctx.fillStyle = "#8a8a8f"; ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
-          ctx.fillText("driver " + params.na + "T", ax, cy + RA + 18); ctx.fillText("driven " + params.nb + "T", bx, cy + RB + 18);
-          ctx.fillStyle = "#ededed"; ctx.fillText(revA.toFixed(1) + " rev", ax, cy - RA - 8); ctx.fillText(revB.toFixed(1) + " rev", bx, cy - RB - 8);
-          ctx.textAlign = "left";
-          const ratio = params.nb / params.na;
-          ro.innerHTML = "Ratio <strong>" + params.nb + ":" + params.na + "</strong> = <strong>" + ratio.toFixed(2) + "×</strong>. The driven gear turns <strong>" + ratio.toFixed(2) + "× slower</strong> with <strong>" + ratio.toFixed(2) + "× the torque</strong>.";
-        }
 
-        resize();
-        const sim = Sim.loop({ update, render, stage: canvas.parentElement });
-        Sim.bind("na", params, "na", (v) => v + "T");
-        Sim.bind("nb", params, "nb", (v) => v + "T");
-        Sim.bind("spd", params, "spd", (v) => (+v).toFixed(2));
-        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
-        document.getElementById("reset").addEventListener("click", () => { theta = 0; revA = 0; revB = 0; sim.renderOnce(); });
+        let gearA, gearB, theta = 0;
+        const params = { na: 12, nb: 20, spd: 1, run: true };
+        function rebuild() {
+          if (gearA) { scene.remove(gearA); gearA.geometry.dispose(); scene.remove(gearB); gearB.geometry.dispose(); }
+          gearA = gearMesh(params.na, 0xe8c547); gearB = gearMesh(params.nb, 0x4fa3ff);
+          const sep = gearA.userData.rP + gearB.userData.rP;
+          gearA.position.set(-sep / 2, 0, 0); gearB.position.set(sep / 2, 0, 0);
+          scene.add(gearA); scene.add(gearB);
+        }
+        rebuild();
+
+        const controls = new OrbitControls(camera, canvas); controls.enableDamping = true; controls.target.set(0, 0, 0);
+        function resize() { const r = canvas.getBoundingClientRect(); renderer.setSize(r.width, r.height, false); camera.aspect = r.width / r.height; camera.updateProjectionMatrix(); }
+        window.addEventListener("resize", resize); resize();
+
+        const ro = document.getElementById("ro");
+        function readout() { const ratio = params.nb / params.na; ro.innerHTML = "Ratio <strong>" + params.nb + ":" + params.na + "</strong> = <strong>" + ratio.toFixed(2) + "×</strong> — driven turns " + ratio.toFixed(2) + "× slower, with " + ratio.toFixed(2) + "× the torque."; }
+        function bind(id, key, fmt) { const el = document.getElementById(id), out = document.getElementById(id + "Value"); const f = () => { params[key] = +el.value; out.textContent = fmt ? fmt(+el.value) : el.value; }; el.addEventListener("input", () => { f(); if (id === "na" || id === "nb") rebuild(); readout(); }); f(); }
+        bind("na", "na", v => v + "T"); bind("nb", "nb", v => v + "T"); bind("spd", "spd", v => v.toFixed(2)); readout();
+        document.getElementById("toggle").addEventListener("click", function () { params.run = !params.run; this.textContent = params.run ? "Pause" : "Play"; });
+
+        renderer.setAnimationLoop(() => {
+          if (params.run) { theta += params.spd * 0.012; gearA.rotation.z = theta; gearB.rotation.z = -theta * params.na / params.nb + Math.PI / params.nb; }
+          controls.update(); renderer.render(scene, camera);
+        });
       </script>
     </main>
   </body>
