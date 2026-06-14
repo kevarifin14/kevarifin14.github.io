@@ -151,6 +151,19 @@ A bare sim rarely teaches on its own — the best explorables wrap the interacti
 
 Design rules: one idea per step; the sim's state should always match what the text is describing; hand the reader the controls at the end (sandbox); keep prose as labels and prompts, not walls of text.
 
+### The Ciechanowski method (the bar for explainers)
+
+Bartosz Ciechanowski's articles (Moon, Bicycle, Gears, Mechanical Watch, GPS, Internal Combustion Engine — full archive in `reference/inspiration.md`) are the high-water mark. Steal the *method*, not the topic:
+
+- **Many small figures, not one big toy.** An article is a dozen-plus tiny interactives, each isolating exactly one idea. Prefer a sequence of focused figures over one knob-covered megasim.
+- **One new variable at a time.** Start from the simplest version that shows nothing surprising, then add a single degree of freedom per step until the full picture emerges (our `/sims/moon/`: orbit → lit half → viewing angle → new → full → drag).
+- **Everything is draggable.** Don't show an animation the reader watches — give them the handle. A hand on the parameter is what builds intuition.
+- **Two synced views.** Pair the "god's-eye" mechanism with the "what you'd actually see" view, locked to the same state (Moon: top-down orbit + the phase disc from Earth). The link between them is the lesson.
+- **Calm, first-principles prose between figures.** Short text, then a thing to play with, then the next idea — never a wall of text, never a figure without a sentence telling you what to notice.
+- **End with the combined figure.** The final interactive lets the reader drive the whole system at once.
+
+It's all hand-built Canvas/WebGL with no framework — exactly our `/sims/` constraint. Use `Sim.steps()` for the scroll narrative with a sticky figure.
+
 ## Make it a place to experiment & learn
 
 To reach the bar of the best explorables, go past a single toy:
