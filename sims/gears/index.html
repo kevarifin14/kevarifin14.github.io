@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gears — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Gears</h1>
+      <p class="sub">In the spirit of Ciechanowski's gears. Two meshing gears must move the same teeth-per-second, so a small gear spins faster — trading speed for torque. Change the teeth and watch the ratio. <strong>Canvas 2D</strong> · mechanisms.</p>
+
+      <div class="stage" aria-label="Two meshing gears with marked teeth and revolution counters"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Driver teeth <strong id="naValue"></strong></span>
+          <input id="na" type="range" min="8" max="36" step="1" value="12" /></label>
+        <label class="row"><span>Driven teeth <strong id="nbValue"></strong></span>
+          <input id="nb" type="range" min="8" max="36" step="1" value="24" /></label>
+        <label class="row"><span>Speed <strong id="spdValue"></strong></span>
+          <input id="spd" type="range" min="0" max="2" step="0.01" value="1" /></label>
+        <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { na: 12, nb: 24, spd: 1 };
+        let view = { w: 0, h: 0 }, theta = 0, revA = 0, revB = 0;
+        const MODULE = 4.2; // px per tooth of pitch radius scale
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); }
+        window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
+
+        function update(dt) { const d = params.spd * dt * 1.4; theta += d; revA += d / (2 * Math.PI); revB += d * (params.na / params.nb) / (2 * Math.PI); }
+        function drawGear(cx, cy, R, teeth, angle, body) {
+          const h = R * 0.10;
+          ctx.beginPath();
+          const seg = teeth * 14;
+          for (let i = 0; i <= seg; i++) { const a = angle + i / seg * 2 * Math.PI; const rr = R + h * Math.tanh(Math.cos(a * teeth) * 5); const x = cx + rr * Math.cos(a), y = cy + rr * Math.sin(a); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+          ctx.closePath(); ctx.fillStyle = body; ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,0.4)"; ctx.lineWidth = 1; ctx.stroke();
+          ctx.fillStyle = "#0e0e10"; ctx.beginPath(); ctx.arc(cx, cy, R * 0.2, 0, 6.28); ctx.fill();
+          // one marked tooth (spoke) to read rotation
+          ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + (R - h) * Math.cos(angle), cy + (R - h) * Math.sin(angle)); ctx.stroke();
+        }
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const RA = params.na * MODULE, RB = params.nb * MODULE;
+          const cy = view.h * 0.46, totalW = RA + RB, startX = (view.w - totalW) / 2;
+          const ax = startX + RA, bx = ax + RA + RB + 1.5;
+          drawGear(ax, cy, RA, params.na, theta, "#e8c547");
+          drawGear(bx, cy, RB, params.nb, -theta * params.na / params.nb + Math.PI / params.nb, "#4fa3ff");
+          ctx.fillStyle = "#8a8a8f"; ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+          ctx.fillText("driver " + params.na + "T", ax, cy + RA + 18); ctx.fillText("driven " + params.nb + "T", bx, cy + RB + 18);
+          ctx.fillStyle = "#ededed"; ctx.fillText(revA.toFixed(1) + " rev", ax, cy - RA - 8); ctx.fillText(revB.toFixed(1) + " rev", bx, cy - RB - 8);
+          ctx.textAlign = "left";
+          const ratio = params.nb / params.na;
+          ro.innerHTML = "Ratio <strong>" + params.nb + ":" + params.na + "</strong> = <strong>" + ratio.toFixed(2) + "×</strong>. The driven gear turns <strong>" + ratio.toFixed(2) + "× slower</strong> with <strong>" + ratio.toFixed(2) + "× the torque</strong>.";
+        }
+
+        resize();
+        const sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.bind("na", params, "na", (v) => v + "T");
+        Sim.bind("nb", params, "nb", (v) => v + "T");
+        Sim.bind("spd", params, "spd", (v) => (+v).toFixed(2));
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("reset").addEventListener("click", () => { theta = 0; revA = 0; revB = 0; sim.renderOnce(); });
+      </script>
+    </main>
+  </body>
+</html>
