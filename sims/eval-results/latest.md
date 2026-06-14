@@ -1,8 +1,8 @@
 # Simulation Eval Report
 
-Run: 2026-06-14T03:10:54.041Z
-Base URL: http://127.0.0.1:62391
-Overall: **100/100** (strong) across 26 sims.
+Run: 2026-06-14T03:24:05.742Z
+Base URL: http://127.0.0.1:63060
+Overall: **100/100** (strong) across 31 sims.
 
 ## Rubric
 
@@ -31,6 +31,10 @@ Overall: **100/100** (strong) across 26 sims.
 | [PID Control](/sims/pid-control/) | Canvas 2D | 100 | strong | None |
 | [Kalman Filter](/sims/kalman/) | Canvas 2D | 100 | strong | None |
 | [Reaction-Diffusion](/sims/reaction-diffusion/) | Canvas 2D | 100 | strong | None |
+| [Predator-Prey Cycles](/sims/predator-prey/) | Canvas 2D | 100 | strong | None |
+| [Markov Chain Mixing](/sims/markov-chain/) | Canvas 2D | 100 | strong | None |
+| [Random Walk Diffusion](/sims/random-walk/) | Canvas 2D | 100 | strong | None |
+| [Monte Carlo Pi](/sims/monte-carlo-pi/) | Canvas 2D | 100 | strong | None |
 | [Bayes Test](/sims/bayes-test/) | Canvas 2D | 100 | strong | None |
 | [Galton Board](/sims/galton/) | Canvas 2D | 100 | strong | None |
 | [Central Limit Theorem](/sims/clt/) | Canvas 2D | 100 | strong | None |
@@ -43,6 +47,7 @@ Overall: **100/100** (strong) across 26 sims.
 | [3D Orbit](/sims/orbit/) | three.js | 100 | strong | None |
 | [Flow Field](/sims/flow-field/) | p5.js | 100 | strong | None |
 | [Explained: Waves](/sims/_explainer/) | Explorable | 100 | strong | None |
+| [Canvas Template](/sims/_template/) | Canvas 2D | 100 | strong | None |
 
 ## Common Failure Modes
 

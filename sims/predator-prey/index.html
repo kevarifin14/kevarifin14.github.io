@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Predator-Prey Cycles - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Predator-Prey Cycles</h1>
+      <p class="sub">Prey growth feeds predators; predators suppress prey. The coupled feedback traces loops in phase space and oscillations over time. <strong>Canvas 2D</strong> · differential equations.</p>
+
+      <div class="stage" aria-label="Lotka Volterra predator prey phase plot and population time series"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Prey growth <strong id="alphaValue"></strong></span>
+          <input id="alpha" type="range" min="0.4" max="1.8" step="0.01" value="1.05" /></label>
+        <label class="row"><span>Predation <strong id="betaValue"></strong></span>
+          <input id="beta" type="range" min="0.25" max="1.4" step="0.01" value="0.72" /></label>
+        <label class="row"><span>Predator death <strong id="gammaValue"></strong></span>
+          <input id="gamma" type="range" min="0.4" max="1.8" step="0.01" value="1.02" /></label>
+        <button id="toggle">Pause</button>
+        <button id="nudge">Nudge</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { alpha: 1.05, beta: 0.72, gamma: 1.02, delta: 0.62 };
+        let view = { w: 0, h: 0 }, state, history = [], sim;
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        function reset() {
+          state = { x: 1.32, y: 0.62, t: 0 };
+          history = [];
+          for (let i = 0; i < 120; i++) integrate(1 / 90);
+          sim && sim.renderOnce();
+        }
+        function deriv(x, y) {
+          return {
+            dx: params.alpha * x - params.beta * x * y,
+            dy: params.delta * x * y - params.gamma * y,
+          };
+        }
+        function integrate(dt) {
+          const a = deriv(state.x, state.y);
+          state.x = Math.max(0.02, Math.min(3.2, state.x + a.dx * dt));
+          state.y = Math.max(0.02, Math.min(3.2, state.y + a.dy * dt));
+          state.t += dt;
+          if (!history.length || state.t - history[history.length - 1].t > 0.035) {
+            history.push({ x: state.x, y: state.y, t: state.t });
+            if (history.length > 300) history.shift();
+          }
+        }
+        function update(dt) {
+          for (let i = 0; i < 4; i++) integrate(dt * 0.9);
+        }
+        function phaseRect() {
+          return { x: 42, y: 38, w: view.w * 0.45, h: view.h - 82 };
+        }
+        function toPhase(p) {
+          const r = phaseRect();
+          return { x: r.x + p.x / 3.2 * r.w, y: r.y + r.h - p.y / 3.2 * r.h };
+        }
+        function render() {
+          if (!state) return;
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const r = phaseRect();
+          ctx.strokeStyle = "#232326"; ctx.strokeRect(r.x, r.y, r.w, r.h);
+          ctx.fillStyle = "#8a8a8f"; ctx.font = "12px ui-monospace, monospace";
+          ctx.fillText("phase plane: prey -> predators", r.x, r.y - 14);
+          ctx.strokeStyle = "rgba(255,255,255,0.07)";
+          for (let i = 1; i < 4; i++) {
+            ctx.beginPath(); ctx.moveTo(r.x + i * r.w / 4, r.y); ctx.lineTo(r.x + i * r.w / 4, r.y + r.h); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(r.x, r.y + i * r.h / 4); ctx.lineTo(r.x + r.w, r.y + i * r.h / 4); ctx.stroke();
+          }
+          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 2; ctx.beginPath();
+          history.forEach((p, i) => {
+            const q = toPhase(p);
+            i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y);
+          });
+          ctx.stroke();
+          const cur = toPhase(state);
+          ctx.fillStyle = "#ff6a3d"; ctx.beginPath(); ctx.arc(cur.x, cur.y, 6, 0, Math.PI * 2); ctx.fill();
+
+          const left = r.x + r.w + 52, top = r.y, w = view.w - left - 36, h = r.h;
+          ctx.strokeStyle = "#232326"; ctx.strokeRect(left, top, w, h);
+          ctx.fillStyle = "#8a8a8f"; ctx.fillText("time series", left, top - 14);
+          function line(key, color) {
+            ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+            history.forEach((p, i) => {
+              const x = left + i / Math.max(1, 299) * w;
+              const y = top + h - p[key] / 3.2 * h;
+              i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+            });
+            ctx.stroke();
+          }
+          line("x", "#4fa3ff"); line("y", "#e8c547");
+          ctx.fillStyle = "#4fa3ff"; ctx.fillText("prey", left, top + h + 18);
+          ctx.fillStyle = "#e8c547"; ctx.fillText("predators", left + 52, top + h + 18);
+          const eqX = params.gamma / params.delta, eqY = params.alpha / params.beta;
+          ro.innerHTML = "prey <strong>" + state.x.toFixed(2) + "</strong> · predators <strong>" + state.y.toFixed(2) + "</strong> · coexistence point <strong>(" + eqX.toFixed(2) + ", " + eqY.toFixed(2) + ")</strong>";
+        }
+        function setState(p) {
+          const r = phaseRect();
+          if (p.x < r.x || p.x > r.x + r.w || p.y < r.y || p.y > r.y + r.h) return;
+          state.x = Math.max(0.05, Math.min(3.15, (p.x - r.x) / r.w * 3.2));
+          state.y = Math.max(0.05, Math.min(3.15, (r.y + r.h - p.y) / r.h * 3.2));
+          history = [];
+          sim.renderOnce();
+        }
+
+        resize();
+        reset();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.bind("alpha", params, "alpha", (v) => (+v).toFixed(2));
+        Sim.bind("beta", params, "beta", (v) => (+v).toFixed(2));
+        Sim.bind("gamma", params, "gamma", (v) => (+v).toFixed(2));
+        Sim.pointer(canvas, { down: setState, move(p) { if (p.down) setState(p); } });
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("nudge").addEventListener("click", () => { state.x *= 1.18; state.y *= 0.88; sim.renderOnce(); });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>

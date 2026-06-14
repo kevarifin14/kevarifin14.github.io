@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monte Carlo Pi - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Monte Carlo Pi</h1>
+      <p class="sub">Throw random points into a square. The fraction landing inside the quarter-circle estimates area, and four times that area estimates pi. <strong>Canvas 2D</strong> · numerical methods.</p>
+
+      <div class="stage" aria-label="Monte Carlo pi estimate with random points inside and outside a quarter circle"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Batch <strong id="batchValue"></strong></span>
+          <input id="batch" type="range" min="10" max="900" step="10" value="160" /></label>
+        <label class="row"><span>Speed <strong id="speedValue"></strong></span>
+          <input id="speed" type="range" min="0.2" max="4" step="0.1" value="1.5" /></label>
+        <label class="row check"><input id="antithetic" type="checkbox" /> antithetic pairs</label>
+        <button id="toggle">Pause</button>
+        <button id="sample">Sample</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { batch: 160, speed: 1.5, antithetic: false };
+        let view = { w: 0, h: 0 }, rng = Sim.rng(314), points = [], total = 0, inside = 0, history = [], acc = 0, sim;
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        function reset() {
+          rng = Sim.rng(314); points = []; total = 0; inside = 0; history = []; acc = 0;
+          addSamples(400);
+          sim && sim.renderOnce();
+        }
+        function addPoint(x, y) {
+          const hit = x * x + y * y <= 1;
+          points.push({ x, y, hit });
+          if (points.length > 3200) points.shift();
+          total++; if (hit) inside++;
+        }
+        function addSamples(n) {
+          for (let i = 0; i < n; i++) {
+            const x = rng(), y = rng();
+            addPoint(x, y);
+            if (params.antithetic) addPoint(1 - x, 1 - y);
+          }
+          if (total) history.push({ n: total, pi: 4 * inside / total });
+          if (history.length > 160) history.shift();
+        }
+        function update(dt) {
+          acc += dt * params.speed;
+          while (acc > 0.16) { addSamples(Math.round(params.batch / 4)); acc -= 0.16; }
+        }
+        function estimate() { return total ? 4 * inside / total : 0; }
+        function ci() {
+          if (!total) return 0;
+          const p = inside / total;
+          return 4 * 1.96 * Math.sqrt(Math.max(0, p * (1 - p)) / total);
+        }
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const size = Math.min(view.w * 0.48, view.h - 52);
+          const left = 42, top = (view.h - size) / 2;
+          ctx.fillStyle = "#151519"; ctx.fillRect(left, top, size, size);
+          ctx.strokeStyle = "#232326"; ctx.strokeRect(left, top, size, size);
+          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(left, top + size, size, -Math.PI / 2, 0); ctx.stroke();
+          for (const p of points) {
+            ctx.fillStyle = p.hit ? "rgba(79,163,255,0.58)" : "rgba(255,106,61,0.54)";
+            ctx.fillRect(left + p.x * size, top + size - p.y * size, 2, 2);
+          }
+          const graphLeft = left + size + 48, graphTop = 52, graphW = view.w - graphLeft - 34, graphH = view.h - 112;
+          ctx.strokeStyle = "#232326"; ctx.strokeRect(graphLeft, graphTop, graphW, graphH);
+          const yPi = graphTop + graphH - (Math.PI - 2.7) / 0.9 * graphH;
+          ctx.strokeStyle = "rgba(232,197,71,0.45)";
+          ctx.beginPath(); ctx.moveTo(graphLeft, yPi); ctx.lineTo(graphLeft + graphW, yPi); ctx.stroke();
+          ctx.strokeStyle = "#4fa3ff"; ctx.lineWidth = 2; ctx.beginPath();
+          history.forEach((p, i) => {
+            const x = graphLeft + i / Math.max(1, 159) * graphW;
+            const y = graphTop + graphH - Math.max(0, Math.min(1, (p.pi - 2.7) / 0.9)) * graphH;
+            i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+          });
+          ctx.stroke();
+          ctx.fillStyle = "#8a8a8f"; ctx.font = "12px ui-monospace, monospace";
+          ctx.fillText("estimate history", graphLeft, graphTop - 14);
+          ctx.fillStyle = "#e8c547"; ctx.fillText("pi", graphLeft + graphW - 18, yPi - 5);
+          ro.innerHTML = "samples <strong>" + total + "</strong> · estimate <strong>" + estimate().toFixed(5) + "</strong> · 95% half-width <strong>" + ci().toFixed(4) + "</strong>";
+        }
+
+        resize();
+        reset();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.bind("batch", params, "batch", (v) => v);
+        Sim.bind("speed", params, "speed", (v) => (+v).toFixed(1));
+        Sim.bind("antithetic", params, "antithetic", (v) => v ? "on" : "off");
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("sample").addEventListener("click", () => { addSamples(params.batch); sim.renderOnce(); });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>

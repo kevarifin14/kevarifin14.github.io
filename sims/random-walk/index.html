@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Random Walk Diffusion - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Random Walk Diffusion</h1>
+      <p class="sub">Many tiny independent steps spread into a cloud whose width grows like the square root of time. Bias and persistence bend that diffusion. <strong>Canvas 2D</strong> · stochastic processes.</p>
+
+      <div class="stage" aria-label="Random walk particle cloud and variance history"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Walkers <strong id="walkersValue"></strong></span>
+          <input id="walkers" type="range" min="120" max="1400" step="20" value="620" /></label>
+        <label class="row"><span>Right bias <strong id="biasValue"></strong></span>
+          <input id="bias" type="range" min="-0.55" max="0.55" step="0.01" value="0.08" /></label>
+        <label class="row"><span>Persistence <strong id="persistValue"></strong></span>
+          <input id="persist" type="range" min="0" max="0.92" step="0.01" value="0.38" /></label>
+        <button id="toggle">Pause</button>
+        <button id="burst">Burst</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { walkers: 620, bias: 0.08, persist: 0.38 };
+        let view = { w: 0, h: 0 }, rng = Sim.rng(202), walkers = [], t = 0, history = [], sim;
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        function reset() {
+          rng = Sim.rng(202); t = 0; history = [];
+          walkers = Array.from({ length: params.walkers }, () => ({ x: 0, y: 0, dx: 1, dy: 0 }));
+          for (let i = 0; i < 20; i++) stepWalk();
+          sim && sim.renderOnce();
+        }
+        function chooseDir(w) {
+          if (rng() < params.persist) return;
+          const pRight = 0.25 + params.bias * 0.38;
+          const pLeft = 0.25 - params.bias * 0.38;
+          const r = rng();
+          if (r < pRight) { w.dx = 1; w.dy = 0; }
+          else if (r < pRight + pLeft) { w.dx = -1; w.dy = 0; }
+          else if (r < pRight + pLeft + 0.25) { w.dx = 0; w.dy = -1; }
+          else { w.dx = 0; w.dy = 1; }
+        }
+        function stats() {
+          let mx = 0, my = 0;
+          for (const w of walkers) { mx += w.x; my += w.y; }
+          mx /= walkers.length; my /= walkers.length;
+          let varr = 0;
+          for (const w of walkers) varr += (w.x - mx) ** 2 + (w.y - my) ** 2;
+          return { mx, my, variance: varr / walkers.length };
+        }
+        function stepWalk() {
+          for (const w of walkers) {
+            chooseDir(w);
+            w.x += w.dx; w.y += w.dy;
+          }
+          t++;
+          if (t % 4 === 0) {
+            history.push({ t, ...stats() });
+            if (history.length > 150) history.shift();
+          }
+        }
+        function update() {
+          for (let i = 0; i < 3; i++) stepWalk();
+        }
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const s = Math.min(view.w, view.h) / 96, cx = view.w * 0.38, cy = view.h * 0.48;
+          ctx.strokeStyle = "rgba(255,255,255,0.08)"; ctx.lineWidth = 1;
+          for (let x = -40; x <= 40; x += 10) { ctx.beginPath(); ctx.moveTo(cx + x * s, 24); ctx.lineTo(cx + x * s, view.h - 24); ctx.stroke(); }
+          for (let y = -30; y <= 30; y += 10) { ctx.beginPath(); ctx.moveTo(24, cy + y * s); ctx.lineTo(view.w * 0.72, cy + y * s); ctx.stroke(); }
+          ctx.fillStyle = "rgba(79,163,255,0.42)";
+          for (const w of walkers) {
+            const x = cx + w.x * s, y = cy + w.y * s;
+            if (x > 0 && x < view.w * 0.72 && y > 0 && y < view.h) ctx.fillRect(x, y, 2, 2);
+          }
+          const st = stats();
+          ctx.fillStyle = "#e8c547";
+          ctx.beginPath(); ctx.arc(cx + st.mx * s, cy + st.my * s, 6, 0, Math.PI * 2); ctx.fill();
+
+          const left = view.w * 0.76, top = 42, w = view.w * 0.18, h = view.h - 92;
+          ctx.strokeStyle = "#232326"; ctx.strokeRect(left, top, w, h);
+          const maxV = Math.max(20, ...history.map((p) => p.variance));
+          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 2; ctx.beginPath();
+          history.forEach((p, i) => {
+            const x = left + i / Math.max(1, 149) * w;
+            const y = top + h - p.variance / maxV * h;
+            i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+          });
+          ctx.stroke();
+          ctx.fillStyle = "#8a8a8f"; ctx.font = "12px ui-monospace, monospace"; ctx.fillText("variance", left, top - 12);
+          ro.innerHTML = "steps <strong>" + t + "</strong> · mean x <strong>" + st.mx.toFixed(2) + "</strong> · variance <strong>" + st.variance.toFixed(1) + "</strong>";
+        }
+
+        resize();
+        reset();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.bind("walkers", params, "walkers", (v) => { reset(); return v; });
+        Sim.bind("bias", params, "bias", (v) => (+v).toFixed(2));
+        Sim.bind("persist", params, "persist", (v) => (+v).toFixed(2));
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("burst").addEventListener("click", () => { for (let i = 0; i < 30; i++) stepWalk(); sim.renderOnce(); });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>

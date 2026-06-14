@@ -29,3 +29,11 @@ This log records evaluation runs that produced durable lessons for the skill. Ke
 - Lessons: The strongest next topics had visible frontier, uncertainty, pattern-formation, or clustering dynamics, plus a direct parameter to manipulate.
 - Decisions: No skill instruction change needed; the existing research pass, Canvas starter pattern, and evaluator covered this batch.
 - Run file: evals/runs/2026-06-14-additional-course-inspired-simulation-batch.md
+## 2026-06-14T03:24:17.356Z - Gallery coverage audit plus stochastic simulation batch
+
+- Status: strong
+- Result: All navigable sims are linked from the gallery; 31/31 gallery pages scored 100/100
+- Artifacts: sims/eval-results/latest.md, sims/index.html, sims/markov-chain/index.html, sims/random-walk/index.html, sims/monte-carlo-pi/index.html, sims/predator-prey/index.html
+- Lessons: When exposing support pages like _template in the gallery, they need the same live readout/caption affordance as real sims.
+- Decisions: Added the missing _template card and upgraded _template with a readout instead of leaving a lower-scoring visible page.
+- Run file: evals/runs/2026-06-14-gallery-coverage-audit-plus-stochastic-simulation-batch.md

@@ -21,16 +21,20 @@ No build step: each folder is plain HTML/JS/CSS that runs as static files on Git
   - `gridworld` — Canvas 2D (MDP value iteration)
   - `pagerank` — Canvas 2D (random-surfer graph ranking)
   - `astar` — Canvas 2D (heuristic shortest-path search)
+  - `markov-chain` — Canvas 2D (stationary distribution and mixing)
+  - `random-walk` — Canvas 2D (diffusion from independent steps)
+  - `monte-carlo-pi` — Canvas 2D (Monte Carlo area estimation)
   - `bayes-test` — Canvas 2D (Bayes theorem and base rates)
   - `sir` — Canvas 2D (differential-equation model)
   - `pid-control` — Canvas 2D (feedback control)
   - `kalman` — Canvas 2D (state estimation under noise)
   - `reaction-diffusion` — Canvas 2D (Turing-style pattern formation)
+  - `predator-prey` — Canvas 2D (Lotka-Volterra population cycles)
   - `schelling` — Canvas 2D (agent-based local preference model)
 
 ## Research sources
 
-The gallery uses the shared skill research notes in `.skills/building-html-simulations/reference/`. Recent course-inspired sims draw from Stanford CS229 model selection and bias/variance notes, Stanford CS221 MDP/value-iteration notes, Stanford CS224W graph/PageRank material, MIT OCW stochastic-processes material, Stanford CS106B Dijkstra/A* material, MIT OCW Kalman-filter notes, MIT OCW reaction-diffusion/pattern-formation notes, and Stanford Nifty/agent-based Schelling model material.
+The gallery uses the shared skill research notes in `.skills/building-html-simulations/reference/`. Recent course-inspired sims draw from Stanford CS229 model selection and bias/variance notes, Stanford CS221 MDP/value-iteration notes, Stanford CS224W graph/PageRank material, MIT OCW stochastic-processes material, Stanford CS106B Dijkstra/A* material, MIT OCW Kalman-filter notes, MIT OCW reaction-diffusion/pattern-formation notes, Stanford Nifty/agent-based Schelling model material, Stanford CS109 Markov-chain material, MIT OCW random-walk/diffusion notes, MIT OCW Monte Carlo notes, and MIT OCW Systems Biology predator-prey material.
 
 ## Add a new sim
 1. `cp -r _template my-sim` (or copy the example closest to your method).

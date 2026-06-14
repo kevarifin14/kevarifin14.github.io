@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Markov Chain Mixing - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Markov Chain Mixing</h1>
+      <p class="sub">Probability mass moves through a transition graph until each step leaves the distribution almost unchanged. Click a node to restart from there. <strong>Canvas 2D</strong> · probability.</p>
+
+      <div class="stage" aria-label="Markov chain graph with probability mass and stationary distribution bars"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Stickiness <strong id="stayValue"></strong></span>
+          <input id="stay" type="range" min="0" max="0.86" step="0.01" value="0.34" /></label>
+        <label class="row"><span>Hub pull <strong id="hubValue"></strong></span>
+          <input id="hub" type="range" min="0" max="0.72" step="0.01" value="0.28" /></label>
+        <label class="row"><span>Clockwise bias <strong id="biasValue"></strong></span>
+          <input id="bias" type="range" min="-0.85" max="0.85" step="0.01" value="0.18" /></label>
+        <button id="step">Step</button>
+        <button id="toggle">Run</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { stay: 0.34, hub: 0.28, bias: 0.18 };
+        const n = 5;
+        let view = { w: 0, h: 0 }, mass = [], stationary = [], tick = 0, acc = 0, sim;
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        function transition() {
+          const P = Array.from({ length: n }, () => Array(n).fill(0));
+          for (let i = 0; i < n; i++) {
+            const move = 1 - params.stay;
+            const hub = i === 0 ? 0 : move * params.hub;
+            const ring = move - hub;
+            const cw = ring * (0.5 + params.bias * 0.5);
+            const ccw = ring - cw;
+            P[i][i] += params.stay;
+            P[i][(i + 1) % n] += cw;
+            P[i][(i + n - 1) % n] += ccw;
+            P[i][0] += hub;
+          }
+          return P;
+        }
+        function normalize(a) {
+          const s = a.reduce((x, y) => x + y, 0) || 1;
+          return a.map((v) => v / s);
+        }
+        function applyStep(vec, P) {
+          const next = Array(n).fill(0);
+          for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) next[j] += vec[i] * P[i][j];
+          return normalize(next);
+        }
+        function computeStationary() {
+          let v = Array(n).fill(1 / n);
+          const P = transition();
+          for (let k = 0; k < 260; k++) v = applyStep(v, P);
+          stationary = v;
+        }
+        function reset(from) {
+          mass = Array(n).fill(0);
+          mass[from ?? 3] = 1;
+          tick = 0; acc = 0;
+          computeStationary();
+          sim && sim.renderOnce();
+        }
+        function doStep() {
+          mass = applyStep(mass, transition());
+          tick++;
+        }
+        function update(dt) {
+          acc += dt;
+          while (acc > 0.12) { doStep(); acc -= 0.12; }
+        }
+        function nodes() {
+          const cx = view.w * 0.34, cy = view.h * 0.46, r = Math.min(view.w, view.h) * 0.23;
+          return Array.from({ length: n }, (_, i) => {
+            const a = -Math.PI / 2 + i * Math.PI * 2 / n;
+            return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r };
+          });
+        }
+        function tvDistance() {
+          let s = 0;
+          for (let i = 0; i < n; i++) s += Math.abs(mass[i] - stationary[i]);
+          return s / 2;
+        }
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const pts = nodes();
+          ctx.strokeStyle = "rgba(255,255,255,0.14)"; ctx.lineWidth = 2;
+          for (let i = 0; i < n; i++) {
+            const a = pts[i], b = pts[(i + 1) % n];
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+            if (i !== 0) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(pts[0].x, pts[0].y); ctx.stroke(); }
+          }
+          for (let i = 0; i < n; i++) {
+            const p = pts[i], rad = 16 + mass[i] * 42;
+            ctx.fillStyle = i === 0 ? "rgba(255,106,61,0.38)" : "rgba(79,163,255,0.24)";
+            ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = "#e8c547"; ctx.stroke();
+            ctx.fillStyle = "#ededed"; ctx.font = "13px ui-monospace, monospace"; ctx.textAlign = "center";
+            ctx.fillText(String(i), p.x, p.y + 4);
+            ctx.fillStyle = "#8a8a8f"; ctx.fillText(mass[i].toFixed(2), p.x, p.y + rad + 15);
+          }
+          const left = view.w * 0.62, top = view.h * 0.18, w = view.w * 0.28, h = view.h * 0.54;
+          ctx.textAlign = "left"; ctx.fillStyle = "#ededed"; ctx.fillText("current vs stationary", left, top - 16);
+          for (let i = 0; i < n; i++) {
+            const y = top + i * h / n, bh = h / n * 0.34;
+            ctx.fillStyle = "#232326"; ctx.fillRect(left, y, w, bh);
+            ctx.fillStyle = "#4fa3ff"; ctx.fillRect(left, y, w * mass[i], bh);
+            ctx.fillStyle = "#e8c547"; ctx.fillRect(left, y + bh + 3, w * stationary[i], bh);
+            ctx.fillStyle = "#8a8a8f"; ctx.fillText(String(i), left - 18, y + bh);
+          }
+          ro.innerHTML = "step <strong>" + tick + "</strong> · total variation distance <strong>" + tvDistance().toFixed(3) + "</strong> · hub stationary mass <strong>" + stationary[0].toFixed(2) + "</strong>";
+        }
+        function pickNode(p) {
+          const pts = nodes();
+          for (let i = 0; i < pts.length; i++) {
+            const dx = p.x - pts[i].x, dy = p.y - pts[i].y;
+            if (dx * dx + dy * dy < 42 * 42) { reset(i); break; }
+          }
+        }
+
+        resize();
+        reset();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement, autoplay: false });
+        Sim.bind("stay", params, "stay", (v) => { computeStationary(); sim.renderOnce(); return (+v).toFixed(2); });
+        Sim.bind("hub", params, "hub", (v) => { computeStationary(); sim.renderOnce(); return (+v).toFixed(2); });
+        Sim.bind("bias", params, "bias", (v) => { computeStationary(); sim.renderOnce(); return (+v).toFixed(2); });
+        Sim.pointer(canvas, { down: pickNode });
+        document.getElementById("step").addEventListener("click", () => { doStep(); sim.renderOnce(); });
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Run"; });
+        document.getElementById("reset").addEventListener("click", () => reset());
+      </script>
+    </main>
+  </body>
+</html>

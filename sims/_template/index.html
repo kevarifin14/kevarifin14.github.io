@@ -22,11 +22,13 @@
         <button id="toggle">Pause</button>
         <button id="reset">Reset</button>
       </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
 
       <script src="../lib/simkit.js"></script>
       <script>
         const canvas = document.getElementById("c");
         const ctx = canvas.getContext("2d");
+        const ro = document.getElementById("ro");
         const P = Sim.palette;
         const params = { count: 120, speed: 1 };
         let view = { w: 0, h: 0 };
@@ -61,6 +63,7 @@
           for (const p of particles) {
             ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
           }
+          ro.innerHTML = "particles <strong>" + particles.length + "</strong> · speed <strong>" + params.speed.toFixed(2) + "</strong> · fixed-timestep loop active";
         }
 
         Sim.bind("count", params, "count", (v) => { reset(); return v; });
