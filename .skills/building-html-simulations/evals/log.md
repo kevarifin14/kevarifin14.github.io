@@ -45,3 +45,11 @@ This log records evaluation runs that produced durable lessons for the skill. Ke
 - Lessons: For large batches, a shared mini-lab engine keeps controls, readouts, reset behavior, and evaluator affordances consistent across many small simulations.
 - Decisions: Kept the shared mini-lab engine for compact algorithm/probability/queue/network labs; generated thumbnails as part of shipping.
 - Run file: evals/runs/2026-06-14-twenty-simulation-expansion-with-thumbnail-gallery.md
+## 2026-06-14T16:51:34.969Z - Ciechanowski archive study
+
+- Status: strong
+- Result: Mapped 22 archive articles into reusable simulation and explainer patterns
+- Artifacts: reference/ciechanowski-archive.md
+- Lessons: Long explainers should be planned as prerequisite ladders with one focused draggable figure per concept and a final composed figure.
+- Decisions: Added an article-level archive map reference instead of further bloating SKILL.md.
+- Run file: evals/runs/2026-06-14-ciechanowski-archive-study.md

@@ -1,6 +1,6 @@
 ---
 name: building-html-simulations
-description: This skill should be used whenever the user wants to build, repair, review, evaluate, or extend an interactive HTML simulation, explorable explanation, physics/math visualization, generative-art toy, data map, city atlas, or 3D/WebGL experience for the web — e.g. "make a ripple tank", "build a double-pendulum sim", "grade these sims", "add an interactive visualization to the site", "create an explorable explanation", "do something with three.js/canvas/shaders", "turn this course topic into a sim". Evaluates each request to choose SVG/HTML, Canvas 2D, WebGL/three.js/Babylon, D3, Matter/Rapier, p5, or a data-build pipeline. Covers render loops, direct manipulation, explorable design, performance, accessibility, verification, eval grading, GitHub Pages static delivery, and the local `/sims/` toolkit. See reference/inspiration.md, reference/patterns.md, reference/verification.md, reference/evaluation.md, reference/data-webgl.md, and reference/idea-bank.md.
+description: This skill should be used whenever the user wants to build, repair, review, evaluate, or extend an interactive HTML simulation, explorable explanation, physics/math visualization, generative-art toy, data map, city atlas, or 3D/WebGL experience for the web — e.g. "make a ripple tank", "build a double-pendulum sim", "grade these sims", "add an interactive visualization to the site", "create an explorable explanation", "do something with three.js/canvas/shaders", "turn this course topic into a sim". Evaluates each request to choose SVG/HTML, Canvas 2D, WebGL/three.js/Babylon, D3, Matter/Rapier, p5, or a data-build pipeline. Covers render loops, direct manipulation, explorable design, performance, accessibility, verification, eval grading, GitHub Pages delivery, Ciechanowski planning, and the local `/sims/` toolkit. See reference/inspiration.md, reference/ciechanowski-archive.md, reference/patterns.md, reference/verification.md, reference/evaluation.md, reference/data-webgl.md, and reference/idea-bank.md.
 ---
 
 # Building HTML Simulations
@@ -166,7 +166,7 @@ Design rules: one idea per step; the sim's state should always match what the te
 
 ### The Ciechanowski method (the bar for explainers)
 
-Bartosz Ciechanowski's articles (Moon, Bicycle, Gears, Mechanical Watch, GPS, Internal Combustion Engine — full archive in `reference/inspiration.md`) are the high-water mark. Steal the *method*, not the topic:
+Bartosz Ciechanowski's articles (Moon, Bicycle, Gears, Mechanical Watch, GPS, Internal Combustion Engine — article-by-article archive map in `reference/ciechanowski-archive.md`) are the high-water mark. Steal the *method*, not the topic:
 
 - **Many small figures, not one big toy.** An article is a dozen-plus tiny interactives, each isolating exactly one idea. Prefer a sequence of focused figures over one knob-covered megasim.
 - **One new variable at a time.** Start from the simplest version that shows nothing surprising, then add a single degree of freedom per step until the full picture emerges (our `/sims/moon/`: orbit → lit half → viewing angle → new → full → drag).
@@ -272,6 +272,7 @@ Build Progress:
 ## References
 
 - **Inspiration catalog** (who to study + what to steal): [reference/inspiration.md](reference/inspiration.md)
+- **Ciechanowski archive map** (22 article lessons, planning templates, and module quality bar): [reference/ciechanowski-archive.md](reference/ciechanowski-archive.md)
 - **Copy-paste code patterns** (HiDPI canvas, fixed-timestep loop, pointer drag, SVG binding, three.js/p5 skeletons): [reference/patterns.md](reference/patterns.md)
 - **Verification checklist** (run, visual, interaction, 3D/WebGL, blank-canvas debugging, automated Playwright checks): [reference/verification.md](reference/verification.md)
 - **Evaluation rubric & independent grader workflow** (deterministic Playwright grader, saved artifacts, agent review prompt): [reference/evaluation.md](reference/evaluation.md)

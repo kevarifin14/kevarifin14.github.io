@@ -12,7 +12,7 @@ Study these for *what good feels like*, then steal the interaction, not the code
 - Curated lists
 
 ## Gold standard (interactive articles)
-- **Bartosz Ciechanowski** — https://ciechanow.ski/ — the benchmark; every diagram is a draggable real-time sim ([Mechanical Watch](https://ciechanow.ski/mechanical-watch/), [GPS](https://ciechanow.ski/gps/), [Gears](https://ciechanow.ski/gears/)). Hand-coded canvas/WebGL, no frameworks. **Steal:** scroll-linked sims that each isolate one idea.
+- **Bartosz Ciechanowski** — https://ciechanow.ski/ — the benchmark; every diagram is a draggable real-time sim ([Mechanical Watch](https://ciechanow.ski/mechanical-watch/), [GPS](https://ciechanow.ski/gps/), [Gears](https://ciechanow.ski/gears/)). Hand-coded canvas/WebGL, no frameworks. **Steal:** scroll-linked sims that each isolate one idea. Full 22-article study: [ciechanowski-archive.md](ciechanowski-archive.md).
 - **Nicky Case** — https://ncase.me/ — playful guided explorables ([Trust](https://ncase.me/trust/), [Polygons](https://ncase.me/polygons/), [Loopy](https://ncase.me/loopy/)). **Steal:** gentle guided narrative around the toy.
 
 ## Physics & science simulations
