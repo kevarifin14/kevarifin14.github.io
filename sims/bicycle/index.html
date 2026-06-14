@@ -4,131 +4,186 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Why a Bicycle Stays Up — Kevin Arifin</title>
+    <meta name="description" content="A ground-up explorable: build from Newton's forces and torque to why a moving bicycle balances itself." />
     <link rel="stylesheet" href="../lib/sim.css" />
     <style>
-      .explain { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
-      .figure { position: sticky; top: 16px; }
-      .figure .stage { aspect-ratio: 1 / 1; }
-      .figure .cap { margin-top: 8px; font-size: 0.8rem; color: var(--muted); min-height: 2.4em; }
-      .steps .step { min-height: 80vh; display: flex; flex-direction: column; justify-content: center;
-        border-left: 2px solid var(--border); padding-left: 18px; transition: border-color 0.2s ease; }
-      .steps .step.active { border-color: var(--accent); }
-      .steps .step h2 { font-size: 1.1rem; margin: 0 0 8px; }
-      .steps .step p { color: var(--muted); margin: 0; }
-      @media (max-width: 760px) {
-        .explain { grid-template-columns: 1fr; gap: 0; }
-        .figure { position: sticky; top: 0; z-index: 2; background: var(--bg); padding: 10px 0; }
-        .figure .stage { aspect-ratio: 3 / 2; }
-        .steps .step { min-height: 72vh; }
-      }
+      .sim { max-width: 720px; }
+      .lede { color: var(--muted); font-size: 1.06rem; }
+      .sim h2 { font-size: 1.2rem; margin: 38px 0 10px; }
+      .sim p { line-height: 1.72; }
+      .fig { margin: 22px 0 6px; }
+      .fig .stage { aspect-ratio: 16 / 10; }
+      .fig .controls { margin-top: 10px; }
+      .fig .cap { font-size: 0.8rem; color: var(--muted); margin-top: 7px; text-align: center; }
+      .rung { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 40px 0 -4px; }
     </style>
   </head>
   <body>
     <main class="sim">
       <a class="back" href="/sims/">← Sims</a>
       <h1>Why a Bicycle Stays Up</h1>
-      <p class="sub">In the spirit of Bartosz Ciechanowski's bicycle. The surprise: a moving bike balances itself, and the reason is the steering <em>geometry</em> — the front wheel trails behind the steering axis, so a lean makes it steer back underneath you. <strong>Canvas 2D</strong> · physics.</p>
+      <p class="lede">A moving bike, given a nudge, steers itself upright. That's genuinely strange — so we'll build the answer from the ground up: start with Newton's forces, add torque, see why standing still fails, then discover the steering trick that does the work. In the spirit of Bartosz Ciechanowski. Drag everything.</p>
 
-      <div class="explain">
-        <div class="figure">
-          <div class="stage" aria-label="Rear view of a self-balancing bike with a side-view of the steering trail"><canvas id="c"></canvas></div>
-          <div class="cap" id="cap"></div>
-          <div class="controls">
-            <label class="row"><span>Speed <strong id="vValue"></strong></span>
-              <input id="v" type="range" min="0" max="12" step="0.2" value="6" /></label>
-            <label class="row"><span>Trail <strong id="trValue"></strong></span>
-              <input id="tr" type="range" min="0" max="1" step="0.02" value="0.6" /></label>
-            <button id="nudge">Nudge</button>
-            <button id="reset">Reset</button>
-          </div>
-        </div>
-        <div class="steps" id="steps">
-          <section class="step" data-step data-v="0" data-tr="0.6" data-kick="0.9"><h2>1 · Standing still, it falls</h2><p>A bike is an upside-down pendulum. Give a stationary one the smallest lean and gravity just keeps pulling it over. Speed = 0 here — watch it topple.</p></section>
-          <section class="step" data-step data-v="0" data-tr="0.6"><h2>2 · The secret is the geometry</h2><p>Look at the side view (inset). The steering axis, extended down, hits the ground <em>ahead</em> of where the tire touches. That gap is the <strong>trail</strong> — and it changes everything.</p></section>
-          <section class="step" data-step data-v="5" data-tr="0.6" data-kick="0.7"><h2>3 · A trailing wheel self-aligns</h2><p>Like a shopping-cart caster, a wheel dragged behind its pivot swings straight on its own. On a leaning bike, that same trail makes the front wheel flop <em>into</em> the lean.</p></section>
-          <section class="step" data-step data-v="7" data-tr="0.6" data-kick="0.9"><h2>4 · Steering into the lean rights it</h2><p>Rolling forward, steering into the lean drives the wheels back underneath the center of mass — and the bike stands itself up. Faster makes this stronger (it scales with speed²).</p></section>
-          <section class="step" data-step data-v="7" data-tr="0" data-kick="0.7"><h2>5 · No trail, no magic</h2><p>Set the trail to zero and the self-steering disappears. Even at speed, the same nudge now puts the bike on the ground. The geometry, not the gyroscope, is doing the work.</p></section>
-          <section class="step" data-step data-v="6" data-tr="0.6" data-interactive="1"><h2>6 · Your turn</h2><p>Use the sliders under the figure: drop the speed or the trail until it can't recover, then bring them back. Hit <em>Nudge</em> to perturb it.</p></section>
-        </div>
-      </div>
+      <div class="fig"><div class="stage" aria-label="A rolling bicycle that self-balances when nudged"><canvas id="hero"></canvas></div>
+        <div class="controls"><button id="heroNudge">Nudge it</button><button id="heroReset">Reset</button></div>
+        <div class="cap">Roll forward, give it a shove — it wobbles and recovers. By the end you'll know exactly why.</div></div>
+
+      <p class="rung">Rung 1 · Force</p>
+      <h2>A force changes motion</h2>
+      <p>Newton: a force makes a mass accelerate, <strong>a = F / m</strong>. No force, no change in speed. Push the block — harder pushes build speed faster. This is the bedrock everything else sits on.</p>
+      <div class="fig"><div class="stage" aria-label="A block accelerating under a force you control"><canvas id="force"></canvas></div>
+        <div class="controls"><label class="row"><span>Force <strong id="fValue"></strong></span><input id="f" type="range" min="-120" max="120" step="5" value="60" /></label><button id="fReset">Reset</button></div></div>
+
+      <p class="rung">Rung 2 · Torque</p>
+      <h2>Off-center forces turn things</h2>
+      <p>A force applied away from a pivot doesn't just push — it <em>turns</em>. The turning effect is <strong>torque = force × distance</strong>. Slide the weight on the right: far out, a small weight outweighs a big one sitting close in. That "force times lever-arm" is how a leaning bike will end up steering itself.</p>
+      <div class="fig"><div class="stage" aria-label="A balance beam; drag the right weight's distance to change its torque"><canvas id="torque"></canvas></div>
+        <div class="controls"><label class="row"><span>Right weight distance <strong id="dValue"></strong></span><input id="d" type="range" min="0.2" max="1" step="0.02" value="0.55" /></label></div></div>
+
+      <p class="rung">Rung 3 · Balance</p>
+      <h2>Standing still, it just falls</h2>
+      <p>A bike is an upside-down pendulum: its mass sits above the contact point, so the tiniest lean creates a gravity torque that tips it further. Stationary, there's nothing to fight it. Nudge it and watch — speed is zero here, so it always loses.</p>
+      <div class="fig"><div class="stage" aria-label="A stationary bike tipping over like an inverted pendulum"><canvas id="balance"></canvas></div>
+        <div class="controls"><button id="balNudge">Nudge it</button><button id="balReset">Reset</button></div></div>
+
+      <p class="rung">Rung 4 · Trail</p>
+      <h2>The steering geometry hides a trick</h2>
+      <p>Extend the steering axis (the line the fork pivots about) down to the ground. It meets the road <em>ahead</em> of where the tire actually touches. That gap is the <strong>trail</strong>. A wheel whose contact point sits behind its pivot is a caster — like a shopping-cart wheel — and a caster wants to swing in line. Change the head angle and fork offset and watch the trail grow or vanish.</p>
+      <div class="fig"><div class="stage" aria-label="Side view of fork geometry showing the steering trail"><canvas id="trail"></canvas></div>
+        <div class="controls"><label class="row"><span>Head angle <strong id="haValue"></strong></span><input id="ha" type="range" min="62" max="82" step="1" value="72" /></label><label class="row"><span>Fork offset <strong id="foValue"></strong></span><input id="fo" type="range" min="0" max="60" step="2" value="30" /></label></div></div>
+
+      <p class="rung">Rung 5 · It all comes together</p>
+      <h2>Rolling + trail = self-balance</h2>
+      <p>Now compose the pieces. When the moving bike leans (Rung 3's gravity torque), the trail (Rung 4) makes the front wheel steer <em>into</em> the lean. Rolling forward, steering into the lean drives the contact patch back underneath the center of mass — a restoring torque (Rung 2) that scales with <strong>speed²</strong>. Enough speed and trail, and the nudge just produces a wobble that dies out. Kill either one and it falls. This is the same bike from the top, with the knobs exposed.</p>
+      <div class="fig"><div class="stage" aria-label="Self-balancing bike with speed and trail you control"><canvas id="stab"></canvas></div>
+        <div class="controls"><label class="row"><span>Speed <strong id="vValue"></strong></span><input id="v" type="range" min="0" max="12" step="0.2" value="6" /></label><label class="row"><span>Trail <strong id="trValue"></strong></span><input id="tr" type="range" min="0" max="1" step="0.02" value="0.6" /></label><button id="stabNudge">Nudge</button></div>
+        <div class="cap" id="stabCap"></div></div>
+
+      <p>That's the whole story, ground up: <strong>force</strong> changes motion, an <strong>off-center force is torque</strong>, gravity's torque topples a still bike, the steering <strong>trail</strong> turns a lean into a self-correcting steer, and <strong>speed</strong> makes that correction strong enough to win. No gyroscopes required. For the move that <em>starts</em> a turn, see <a href="/sims/countersteering/">countersteering</a>.</p>
 
       <script src="../lib/simkit.js"></script>
       <script>
-        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), cap = document.getElementById("cap");
-        const params = { v: 6, tr: 0.6 };
-        let view = { w: 0, h: 0 }, phi = 0.06, phiv = 0, fallen = false, trace = [];
-
-        function resize() { view = Sim.fitCanvas(canvas, ctx); }
-        window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
-
-        function reset(kick) { phi = 0.04; phiv = kick || 0; fallen = false; trace = []; }
-        function update(dt) {
-          if (fallen) { phi += (Math.sign(phi) * 1.4 - phi) * Math.min(1, dt * 4); return; }
-          const g = 9.8, L = 1;
-          // gravity topples (+), steering-into-lean rights (−), scaled by v² and trail; plus steering damping
-          const stiffness = (params.v * params.v * params.tr * 0.7 - g) / L;
-          const acc = -stiffness * Math.sin(phi) - 1.6 * phiv;
-          phiv += acc * dt; phi += phiv * dt;
-          if (Math.abs(phi) > 1.25) { fallen = true; phiv = 0; }
-          trace.push(phi); if (trace.length > 240) trace.shift();
-        }
-        function bikePoint(P, lx, ly, S) { const c = Math.cos(phi), s = Math.sin(phi); return [P[0] + S * (lx * c + ly * s), P[1] + S * (lx * s - ly * c)]; }
-        function render() {
-          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
-          const groundY = view.h * 0.80, cx = view.w * 0.42, S = view.h * 0.42;
-          // ground + speed lines
-          ctx.strokeStyle = "#3a3a40"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(view.w, groundY); ctx.stroke();
-          if (params.v > 0.2 && !fallen) { ctx.strokeStyle = "rgba(79,163,255,0.25)"; for (let i = 0; i < 5; i++) { const yy = groundY - 8 - i * 26, off = (Date.now() / 1000 * params.v * 30) % 60; ctx.beginPath(); ctx.moveTo((i * 53 - off + view.w) % view.w - 40, yy); ctx.lineTo((i * 53 - off + view.w) % view.w, yy); ctx.stroke(); } }
-          const P = [cx, groundY];
-          // bike glyph (rear view) rotated by lean phi
-          const wheel = bikePoint(P, 0, 0.16, S), seat = bikePoint(P, -0.04, 0.6, S), bar = bikePoint(P, 0.05, 0.64, S), hip = bikePoint(P, 0, 0.62, S), sh = bikePoint(P, 0, 0.92, S), head = bikePoint(P, 0, 1.04, S);
-          // wheel (edge-on ellipse)
-          ctx.save(); ctx.translate(wheel[0], wheel[1]); ctx.rotate(phi); ctx.strokeStyle = "#cfcfd4"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, 0, S * 0.06, S * 0.16, 0, 0, 6.28); ctx.stroke(); ctx.restore();
-          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 3; ctx.beginPath();
-          ctx.moveTo(P[0], P[1]); ctx.lineTo(seat[0], seat[1]); ctx.lineTo(bar[0], bar[1]); ctx.moveTo(seat[0], seat[1]); ctx.lineTo(wheel[0], wheel[1]); ctx.stroke();
-          // rider
-          ctx.strokeStyle = "#9ad0ff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(hip[0], hip[1]); ctx.lineTo(sh[0], sh[1]); ctx.stroke();
-          ctx.fillStyle = "#9ad0ff"; ctx.beginPath(); ctx.arc(head[0], head[1], S * 0.06, 0, 6.28); ctx.fill();
-          // side-view trail inset (top-right)
-          drawTrailInset(view.w - 150, 18, 134, 96);
-          // balance trace
-          ctx.strokeStyle = "rgba(232,197,71,0.5)"; ctx.lineWidth = 1.5; ctx.beginPath();
-          for (let i = 0; i < trace.length; i++) { const xx = 16 + i, yy = groundY + 0.5 * (view.h - groundY) - trace[i] * 60; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
-          ctx.stroke();
-          const deg = Math.abs(phi * 180 / Math.PI);
-          cap.textContent = (fallen ? "Fell over" : deg < 2 ? "Balanced" : "Lean " + deg.toFixed(0) + "°, correcting") + " · speed " + params.v.toFixed(1) + " · trail " + params.tr.toFixed(2);
-        }
-        function drawTrailInset(x, y, w, h) {
-          ctx.fillStyle = "rgba(0,0,0,0.35)"; ctx.fillRect(x, y, w, h);
-          const gy = y + h - 16, wheelX = x + w * 0.42, wheelR = 22;
-          ctx.strokeStyle = "#3a3a40"; ctx.beginPath(); ctx.moveTo(x + 6, gy); ctx.lineTo(x + w - 6, gy); ctx.stroke();
-          // wheel
-          ctx.strokeStyle = "#cfcfd4"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(wheelX, gy - wheelR, wheelR, 0, 6.28); ctx.stroke();
-          // steering axis (head angle), hits ground ahead of contact by trail
-          const trailPx = params.tr * 40, headPt = [wheelX + 10, gy - wheelR * 2.0], groundHit = [wheelX + trailPx, gy];
-          ctx.strokeStyle = "#8a8a8f"; ctx.setLineDash([3, 2]); ctx.beginPath(); ctx.moveTo(headPt[0], headPt[1]); ctx.lineTo(groundHit[0], groundHit[1]); ctx.stroke(); ctx.setLineDash([]);
-          // contact point + trail segment
-          ctx.fillStyle = "#cfcfd4"; ctx.beginPath(); ctx.arc(wheelX, gy, 2.5, 0, 6.28); ctx.fill();
-          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(wheelX, gy); ctx.lineTo(groundHit[0], gy); ctx.stroke();
-          ctx.fillStyle = "#e8c547"; ctx.font = "10px ui-monospace, monospace"; ctx.fillText("trail", (wheelX + groundHit[0]) / 2 - 10, gy + 12);
+        // ---- per-figure scaffold: HiDPI canvas + loop that pauses offscreen ----
+        function fig(id, opts) {
+          const cv = document.getElementById(id), ctx = cv.getContext("2d"); let view = { w: 0, h: 0 };
+          function resize() { view = Sim.fitCanvas(cv, ctx); }
+          const g = { cv: cv, ctx: ctx, get w() { return view.w; }, get h() { return view.h; } };
+          window.addEventListener("resize", function () { resize(); g.sim && g.sim.renderOnce(); });
+          resize();
+          g.sim = Sim.loop({ update: opts.update ? function (dt) { opts.update(g, dt); } : null, render: function () { opts.render(g); }, stage: cv.parentElement, autoplay: opts.autoplay !== false });
+          return g;
         }
 
-        resize(); reset(0.6);
-        const sim = Sim.loop({ update, render, stage: canvas.parentElement });
-        Sim.bind("v", params, "v", (x) => (+x).toFixed(1));
-        Sim.bind("tr", params, "tr", (x) => (+x).toFixed(2));
-        document.getElementById("nudge").addEventListener("click", () => { if (fallen) reset(0); phiv += 0.8; });
-        document.getElementById("reset").addEventListener("click", () => { reset(0.4); });
+        // ---- reusable rear-view self-balancing bike (used by hero, balance, stab) ----
+        function bikeFig(id, cfg) {
+          const P = { v: cfg.v, tr: cfg.tr };
+          let st;
+          function reset(kick) { st = { phi: 0.04, phiv: kick || 0, fallen: false }; }
+          reset(cfg.kick);
+          function pt(P0, lx, ly, S) { const c = Math.cos(st.phi), s = Math.sin(st.phi); return [P0[0] + S * (lx * c + ly * s), P0[1] + S * (lx * s - ly * c)]; }
+          const g = fig(id, {
+            update: function (_g, dt) {
+              if (st.fallen) { st.phi += (Math.sign(st.phi) * 1.4 - st.phi) * Math.min(1, dt * 4); return; }
+              const stiff = (P.v * P.v * P.tr * 0.7 - 9.8);
+              st.phiv += (-stiff * Math.sin(st.phi) - 1.6 * st.phiv) * dt; st.phi += st.phiv * dt;
+              if (Math.abs(st.phi) > 1.25) { st.fallen = true; st.phiv = 0; }
+            },
+            render: function (gg) {
+              const ctx = gg.ctx, W = gg.w, H = gg.h, groundY = H * 0.82, cx = W * 0.5, S = H * 0.4;
+              ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, W, H);
+              ctx.strokeStyle = "#3a3a40"; ctx.strokeLine(0, groundY, W, groundY);
+              if (P.v > 0.2 && !st.fallen) { ctx.strokeStyle = "rgba(79,163,255,0.25)"; const off = (Date.now() / 1000 * P.v * 26) % 54; for (let i = 0; i < 5; i++) { const xx = (i * 60 - off + W) % W, yy = groundY - 10 - i * 22; ctx.strokeLine(xx - 32, yy, xx, yy); } }
+              const Pg = [cx, groundY];
+              const wheel = pt(Pg, 0, 0.16, S), seat = pt(Pg, -0.04, 0.58, S), bar = pt(Pg, 0.05, 0.62, S), hip = pt(Pg, 0, 0.6, S), sh = pt(Pg, 0, 0.9, S), head = pt(Pg, 0, 1.02, S);
+              ctx.save(); ctx.translate(wheel[0], wheel[1]); ctx.rotate(st.phi); ctx.strokeStyle = "#cfcfd4"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, 0, S * 0.06, S * 0.16, 0, 0, 6.28); ctx.stroke(); ctx.restore();
+              ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(Pg[0], Pg[1]); ctx.lineTo(seat[0], seat[1]); ctx.lineTo(bar[0], bar[1]); ctx.moveTo(seat[0], seat[1]); ctx.lineTo(wheel[0], wheel[1]); ctx.stroke();
+              ctx.strokeStyle = "#9ad0ff"; ctx.lineWidth = 4; ctx.strokeLine(hip[0], hip[1], sh[0], sh[1]);
+              ctx.fillStyle = "#9ad0ff"; ctx.disc(head[0], head[1], S * 0.06);
+              if (cfg.cap) cfg.cap(st, P);
+            },
+          });
+          g.params = P; g.reset = reset; g.state = function () { return st; };
+          return g;
+        }
 
-        const stepsEl = document.getElementById("steps");
-        Sim.steps(stepsEl, (i, el) => {
-          stepsEl.querySelectorAll(".step").forEach((s) => s.classList.remove("active"));
-          el.classList.add("active");
-          if (el.dataset.interactive === "1") return;
-          if (el.dataset.v !== undefined) { params.v = +el.dataset.v; document.getElementById("v").value = params.v; document.getElementById("vValue").textContent = params.v.toFixed(1); }
-          if (el.dataset.tr !== undefined) { params.tr = +el.dataset.tr; document.getElementById("tr").value = params.tr; document.getElementById("trValue").textContent = params.tr.toFixed(2); }
-          reset(+el.dataset.kick || 0.5);
-        });
+        const hero = bikeFig("hero", { v: 7, tr: 0.6, kick: 0.7 });
+        document.getElementById("heroNudge").onclick = function () { if (hero.state().fallen) hero.reset(0); hero.state().phiv += 0.8; };
+        document.getElementById("heroReset").onclick = function () { hero.reset(0.5); hero.sim.renderOnce(); };
+
+        const bal = bikeFig("balance", { v: 0, tr: 0.6, kick: 0.5 });
+        document.getElementById("balNudge").onclick = function () { bal.reset(0.6); };
+        document.getElementById("balReset").onclick = function () { bal.reset(0.4); bal.sim.renderOnce(); };
+
+        const stab = bikeFig("stab", { v: 6, tr: 0.6, kick: 0.7, cap: function (st, P) {
+          const el = document.getElementById("stabCap"); const deg = Math.abs(st.phi * 180 / Math.PI);
+          el.textContent = (st.fallen ? "Fell over — needs more speed or trail" : deg < 2 ? "Balanced" : "Lean " + deg.toFixed(0) + "°, correcting") + " · speed " + P.v.toFixed(1) + " · trail " + P.tr.toFixed(2);
+        } });
+        Sim.bind("v", stab.params, "v", function (x) { return (+x).toFixed(1); });
+        Sim.bind("tr", stab.params, "tr", function (x) { return (+x).toFixed(2); });
+        document.getElementById("stabNudge").onclick = function () { if (stab.state().fallen) stab.reset(0); stab.state().phiv += 0.8; };
+
+        // ---- Rung 1: Force (F = ma) ----
+        (function () {
+          const P = { F: 60 }; let x = 0.3, vel = 0;
+          const g = fig("force", { update: function (gg, dt) {
+              vel += P.F * 0.0028 * dt; x += vel * dt;
+              if (x < 0.06) { x = 0.06; vel = Math.abs(vel) * 0.5; } if (x > 0.94) { x = 0.94; vel = -Math.abs(vel) * 0.5; }
+            }, render: function (gg) {
+              const ctx = gg.ctx, W = gg.w, H = gg.h, y = H * 0.6; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, W, H);
+              ctx.strokeStyle = "#3a3a40"; ctx.strokeLine(0, y + 26, W, y + 26);
+              const bx = x * W; ctx.fillStyle = "#e8c547"; ctx.fillRect(bx - 22, y - 22, 44, 44);
+              if (Math.abs(P.F) > 1) { ctx.strokeStyle = ctx.fillStyle = "#ff8a5a"; ctx.lineWidth = 3; ctx.arrow(bx + 22 * Math.sign(P.F), y, bx + 22 * Math.sign(P.F) + P.F * 0.5, y, 9); ctx.label(bx + P.F * 0.25, y - 30, "force", { color: "#ff8a5a", align: "center" }); }
+              if (Math.abs(vel) > 0.02) { ctx.strokeStyle = ctx.fillStyle = "#9ad0ff"; ctx.lineWidth = 2; ctx.arrow(bx, y - 34, bx + vel * 220, y - 34, 7); }
+              ctx.label(14, 22, "a = F/m = " + P.F.toFixed(0) + " · speed = " + (vel * 100).toFixed(0), { size: 12 });
+            } });
+          Sim.bind("f", P, "F", function (v) { return (+v).toFixed(0); });
+          document.getElementById("fReset").onclick = function () { x = 0.3; vel = 0; g.sim.renderOnce(); };
+        })();
+
+        // ---- Rung 2: Torque (balance beam) ----
+        (function () {
+          const P = { d: 0.55 }; let ang = 0, w = 0; const mL = 1.4, dL = 0.55, mR = 1.0;
+          fig("torque", { update: function (gg, dt) {
+              const net = (mR * P.d - mL * dL); // right torque − left torque
+              ang += (net * 1.6 * Math.cos(ang) - 2.2 * w) * dt; w = (w + (net * 1.6 * Math.cos(ang)) * dt) * 0.9; ang = Sim.clamp(ang, -0.5, 0.5);
+            }, render: function (gg) {
+              const ctx = gg.ctx, W = gg.w, H = gg.h, cx = W * 0.5, cy = H * 0.5, L = Math.min(W * 0.4, 220);
+              ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, W, H);
+              ctx.fillStyle = "#8a8a8f"; ctx.beginPath(); ctx.moveTo(cx, cy + 6); ctx.lineTo(cx - 16, cy + 54); ctx.lineTo(cx + 16, cy + 54); ctx.closePath(); ctx.fill();
+              const c = Math.cos(ang), s = Math.sin(ang);
+              const lx = cx - L * c, ly = cy - L * s, rx = cx + L * c, ry = cy + L * s;
+              ctx.strokeStyle = "#cfcfd4"; ctx.lineWidth = 5; ctx.strokeLine(lx, ly, rx, ry);
+              const lwx = cx - dL * L * c, lwy = cy - dL * L * s, rwx = cx + P.d * L * c, rwy = cy + P.d * L * s;
+              ctx.fillStyle = "#4fa3ff"; ctx.disc(lwx, lwy - 4, 8 + mL * 4);
+              ctx.fillStyle = "#e8c547"; ctx.disc(rwx, rwy - 4, 8 + mR * 4);
+              ctx.label(cx, H - 12, "left torque " + (mL * dL).toFixed(2) + "   vs   right torque " + (mR * P.d).toFixed(2), { align: "center", size: 12, color: "#8a8a8f" });
+            } });
+          Sim.bind("d", P, "d", function (v) { return (+v).toFixed(2); });
+        })();
+
+        // ---- Rung 4: Trail (fork geometry, static) ----
+        (function () {
+          const P = { ha: 72, fo: 30 };
+          const g = fig("trail", { autoplay: false, render: function (gg) {
+              const ctx = gg.ctx, W = gg.w, H = gg.h, gy = H * 0.82, R = H * 0.26, wheelX = W * 0.5;
+              ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, W, H);
+              ctx.strokeStyle = "#3a3a40"; ctx.strokeLine(0, gy, W, gy);
+              ctx.strokeStyle = "#cfcfd4"; ctx.lineWidth = 3; ctx.ring(wheelX, gy - R, R);
+              const a = (90 - P.ha) * Math.PI / 180; // lean of steering axis from vertical
+              // axis passes through a hub point offset forward by fork offset, hits ground ahead of contact
+              const hub = [wheelX + P.fo * 0.0, gy - R];
+              const axisTopX = hub[0] + Math.sin(a) * R * 1.7 - P.fo, axisTopY = hub[1] - Math.cos(a) * R * 1.7;
+              const groundHitX = hub[0] + Math.tan(a) * R - (P.fo - 30) * 0.7 + 30;
+              ctx.strokeStyle = "#8a8a8f"; ctx.setLineDash([4, 3]); ctx.strokeLine(axisTopX, axisTopY, groundHitX, gy); ctx.setLineDash([]);
+              ctx.fillStyle = "#cfcfd4"; ctx.disc(wheelX, gy, 3);
+              ctx.strokeStyle = ctx.fillStyle = "#e8c547"; ctx.lineWidth = 4; ctx.strokeLine(wheelX, gy, groundHitX, gy);
+              const trail = Math.round(groundHitX - wheelX);
+              ctx.label((wheelX + groundHitX) / 2, gy + 18, "trail = " + trail + (trail > 4 ? "  (caster: stable)" : trail < -2 ? "  (negative: unstable)" : ""), { align: "center", color: "#e8c547" });
+            } });
+          Sim.bind("ha", P, "ha", function (v) { g.sim.renderOnce(); return v + "°"; });
+          Sim.bind("fo", P, "fo", function (v) { g.sim.renderOnce(); return v + " mm"; });
+          g.sim.renderOnce();
+        })();
       </script>
     </main>
   </body>

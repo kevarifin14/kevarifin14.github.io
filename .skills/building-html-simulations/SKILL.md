@@ -197,9 +197,21 @@ Match the format to the concept — and **do not cap a lesson at ~6 steps.** A s
 
 **Deciding:** count the distinct ideas a reader needs first. One or two → single page. Several that depend on each other → a module that builds them in order and ends on a figure combining them.
 
-**Two kinds of module:**
-1. **Long scrolly lesson** — one page, many figures in sequence (the `Sim.steps()` pattern, extended well past 6 steps). Best when the ideas form one continuous argument (Moon, Bicycle).
-2. **Course module** — a landing page that sequences several *standalone* sims as ordered lessons with connecting narrative (e.g. a Probability module: Monte Carlo → Random Walk → Galton → CLT → Bayes). Best when each lesson is independently useful. Lives at `/sims/modules/<name>/`.
+**Three kinds of module:**
+1. **Sticky scrolly lesson** — one page, a *single sticky figure* that morphs as prose steps scroll past it (the `Sim.steps()` pattern). Best when one continuous figure carries the whole argument (Moon, Road to Serfdom).
+2. **Inline multi-figure article** — many *independent* small figures down the page, each isolating one idea, interleaved with prose (the true Ciechanowski format). `/sims/bicycle/` is the worked example: a hero bike, then Force → Torque → Balance → Trail → Self-stability, each its own canvas. Use a tiny per-figure scaffold so every figure gets HiDPI sizing + its own `Sim.loop` that pauses offscreen:
+   ```js
+   function fig(id, opts) {
+     const cv = document.getElementById(id), ctx = cv.getContext("2d"); let view;
+     function resize() { view = Sim.fitCanvas(cv, ctx); } resize();
+     const g = { cv, ctx, get w() { return view.w; }, get h() { return view.h; } };
+     window.addEventListener("resize", () => { resize(); g.sim.renderOnce(); });
+     g.sim = Sim.loop({ update: opts.update && (dt => opts.update(g, dt)), render: () => opts.render(g), stage: cv.parentElement });
+     return g;
+   }
+   ```
+   This is the format for building a hard concept from the ground up — one rung of the prerequisite ladder per figure.
+3. **Course module** — a landing page that sequences several *standalone* sims as ordered lessons with connecting narrative (e.g. a Probability module: Monte Carlo → Random Walk → Galton → CLT → Bayes). Best when each lesson is independently useful. Lives at `/sims/modules/<name>/`.
 
 Plan the arc before building: write the section list (like Ciechanowski's headings), decide which need their own figure, then build figure by figure.
 
@@ -266,6 +278,7 @@ Build Progress:
 - Twenty sliders and no default state — the reader bounces before understanding anything.
 - A build step or npm dependency that breaks plain static hosting.
 - Allocating garbage every frame; never pausing offscreen.
+- Mixing units between sim state and display — e.g. velocity stored as a fraction but drawn/labelled as pixels. The code runs but the figure looks frozen and the readout reads 0. Keep state, drawing, and readouts in one consistent unit, and screenshot each figure (not just the first `.stage`) to catch it.
 - Shipping a new sim without the deterministic eval report and an independent pedagogy/affordance review.
 - Patching generated HTML repeatedly while leaving the skill, starter, evaluator, or references unchanged when the same failure will recur.
 
