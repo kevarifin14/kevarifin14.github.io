@@ -10,11 +10,19 @@ No build step: each folder is plain HTML/JS/CSS that runs as static files on Git
 - `index.html` — the gallery (linked from the site nav).
 - One folder per sim, each picking the right method:
   - `ripple` — Canvas 2D (wave field)
+  - `coulomb` — Canvas 2D (point charges and inverse-square forces)
   - `pendulum` — SVG (vector geometry + labels)
+  - `double-pendulum` — Canvas 2D (chaotic deterministic motion)
+  - `orbital-transfer` — Canvas 2D (Hohmann transfer geometry)
   - `orbit` — three.js (3D)
   - `flow-field` — p5.js (generative)
   - `bars` — D3 (data viz)
   - `stack` — Matter.js (rigid-body physics)
+  - `sorting-race` — Canvas 2D (sorting algorithm comparison)
+  - `percolation` — Canvas 2D (grid percolation threshold)
+  - `csp-map-coloring` — Canvas 2D (constraint satisfaction search)
+  - `neural-boundary` — Canvas 2D (tiny neural decision field)
+  - `kmeans` — Canvas 2D (clustering assignments and centroids)
   - `game-of-life` — Canvas 2D (cellular automata)
   - `gradient-descent` — Canvas 2D (optimization)
   - `bias-variance` — Canvas 2D (model selection and overfitting)
@@ -24,17 +32,31 @@ No build step: each folder is plain HTML/JS/CSS that runs as static files on Git
   - `markov-chain` — Canvas 2D (stationary distribution and mixing)
   - `random-walk` — Canvas 2D (diffusion from independent steps)
   - `monte-carlo-pi` — Canvas 2D (Monte Carlo area estimation)
+  - `coupon-collector` — Canvas 2D (long-tail collection time)
+  - `birthday-paradox` — Canvas 2D (collision probability)
+  - `bootstrap` — Canvas 2D (resampling uncertainty)
+  - `mm1-queue` — Canvas 2D (queue utilization threshold)
+  - `gambler-ruin` — Canvas 2D (absorbing random walks)
   - `bayes-test` — Canvas 2D (Bayes theorem and base rates)
   - `sir` — Canvas 2D (differential-equation model)
   - `pid-control` — Canvas 2D (feedback control)
   - `kalman` — Canvas 2D (state estimation under noise)
   - `reaction-diffusion` — Canvas 2D (Turing-style pattern formation)
   - `predator-prey` — Canvas 2D (Lotka-Volterra population cycles)
+  - `enzyme-kinetics` — Canvas 2D (Michaelis-Menten saturation)
+  - `gillespie` — Canvas 2D (stochastic birth-death simulation)
+  - `forest-fire` — Canvas 2D (cellular automaton burn waves)
+  - `heat-equation` — Canvas 2D (diffusion equation smoothing)
+  - `robot-arm-ik` — Canvas 2D (two-link inverse kinematics)
+  - `network-cascade` — Canvas 2D (threshold adoption on a graph)
+  - `congestion-pricing` — Canvas 2D (route choice and tolls)
+  - `power-delivery` — Canvas 2D (voltage/current/resistive loss scaling)
   - `schelling` — Canvas 2D (agent-based local preference model)
+  - `mandelbrot` — Canvas 2D (fractal zoom explorer)
 
 ## Research sources
 
-The gallery uses the shared skill research notes in `.skills/building-html-simulations/reference/`. Recent course-inspired sims draw from Stanford CS229 model selection and bias/variance notes, Stanford CS221 MDP/value-iteration notes, Stanford CS224W graph/PageRank material, MIT OCW stochastic-processes material, Stanford CS106B Dijkstra/A* material, MIT OCW Kalman-filter notes, MIT OCW reaction-diffusion/pattern-formation notes, Stanford Nifty/agent-based Schelling model material, Stanford CS109 Markov-chain material, MIT OCW random-walk/diffusion notes, MIT OCW Monte Carlo notes, and MIT OCW Systems Biology predator-prey material.
+The gallery uses the shared skill research notes in `.skills/building-html-simulations/reference/`. Recent course-inspired sims draw from Stanford CS229 model selection, bias/variance, k-means, and neural-network material; Stanford CS221 MDP, CSP, and search material; Stanford CS224W PageRank/cascade material; Stanford CS109 probability topics such as Markov chains, birthday collisions, coupon collection, and gambler's ruin; MIT OCW stochastic processes, random walks, queueing, feedback control, orbital mechanics, heat/diffusion, reaction-diffusion, enzyme kinetics, Gillespie simulation, predator-prey, and systems biology material; Princeton percolation/union-find material; Harvard CS50 algorithm material; and Stanford Nifty Schelling material.
 
 ## Add a new sim
 1. `cp -r _template my-sim` (or copy the example closest to your method).

@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Bootstrap Resampling - Kevin Arifin</title><link rel="stylesheet" href="../lib/sim.css" /></head>
+  <body data-sim="bootstrap"><main class="sim">
+    <a class="back" href="/sims/">&larr; Sims</a><h1>Bootstrap Resampling</h1>
+    <p class="sub">Resample the observed data with replacement to approximate the sampling distribution of the mean. <strong>Canvas 2D</strong> · statistics.</p>
+    <div class="stage" aria-label="Bootstrap resampling histogram of sample means"><canvas id="c"></canvas></div>
+    <div class="controls"><label class="row"><span id="paramALabel">Sample size</span> <strong id="paramAValue"></strong><input id="paramA" type="range" /></label><label class="row"><span id="paramBLabel">Bootstrap draws</span> <strong id="paramBValue"></strong><input id="paramB" type="range" /></label><label class="row"><span>Speed <strong id="speedValue"></strong></span><input id="speed" type="range" min="0.2" max="3" step="0.1" value="1.1" /></label><button id="step">Sample</button><button id="shuffle">New data</button><button id="toggle">Pause</button><button id="reset">Reset</button></div>
+    <div class="readout" id="ro" aria-live="polite"></div><script src="../lib/simkit.js"></script><script src="../lib/mini-labs.js"></script>
+  </main></body>
+</html>

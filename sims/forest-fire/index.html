@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forest Fire Automaton - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Forest Fire Automaton</h1>
+      <p class="sub">Empty ground regrows trees, lightning starts fires, and neighboring trees burn next. Clusters build slowly, then release as waves. <strong>Canvas 2D</strong> · cellular automata.</p>
+
+      <div class="stage" aria-label="Forest fire cellular automaton showing tree clusters and burn waves"><canvas id="c"></canvas></div>
+
+      <div class="controls">
+        <label class="row"><span>Growth <strong id="growthValue"></strong></span>
+          <input id="growth" type="range" min="0.001" max="0.030" step="0.001" value="0.010" /></label>
+        <label class="row"><span>Lightning <strong id="lightningValue"></strong></span>
+          <input id="lightning" type="range" min="0" max="0.0015" step="0.00005" value="0.00020" /></label>
+        <label class="row"><span>Speed <strong id="speedValue"></strong></span>
+          <input id="speed" type="range" min="0" max="3.0" step="0.1" value="1.0" /></label>
+        <button id="ignite">Ignite</button>
+        <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+        const ro = document.getElementById("ro");
+        const params = { growth: 0.010, lightning: 0.00020, speed: 1 };
+        const cols = 132;
+        const rows = 88;
+        const off = document.createElement("canvas");
+        const offCtx = off.getContext("2d", { willReadFrequently: false });
+        off.width = cols;
+        off.height = rows;
+        const image = offCtx.createImageData(cols, rows);
+        let view = { w: 0, h: 0 };
+        let grid = new Uint8Array(cols * rows);
+        let next = new Uint8Array(cols * rows);
+        let rng = Sim.rng(43);
+        let stepAcc = 0;
+        let generation = 0;
+        let sim;
+
+        function id(x, y) { return y * cols + x; }
+        function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+        function resize() {
+          view = Sim.fitCanvas(canvas, ctx);
+          if (sim) sim.renderOnce();
+        }
+        window.addEventListener("resize", resize);
+
+        function hasBurningNeighbor(x, y) {
+          return (x > 0 && grid[id(x - 1, y)] === 2) ||
+            (x < cols - 1 && grid[id(x + 1, y)] === 2) ||
+            (y > 0 && grid[id(x, y - 1)] === 2) ||
+            (y < rows - 1 && grid[id(x, y + 1)] === 2);
+        }
+
+        function igniteCell(cx, cy, radius) {
+          const r2 = radius * radius;
+          for (let y = Math.max(0, cy - radius); y <= Math.min(rows - 1, cy + radius); y++) {
+            for (let x = Math.max(0, cx - radius); x <= Math.min(cols - 1, cx + radius); x++) {
+              const dx = x - cx;
+              const dy = y - cy;
+              if (dx * dx + dy * dy <= r2) grid[id(x, y)] = 2;
+            }
+          }
+          if (sim) sim.renderOnce();
+        }
+
+        function randomIgnite() {
+          igniteCell(Math.floor(rng() * cols), Math.floor(rng() * rows), 3);
+        }
+
+        function reset() {
+          rng = Sim.rng(43);
+          generation = 0;
+          stepAcc = 0;
+          for (let i = 0; i < grid.length; i++) {
+            grid[i] = rng() < 0.62 ? 1 : 0;
+            next[i] = 0;
+          }
+          igniteCell(Math.floor(cols * 0.18), Math.floor(rows * 0.54), 3);
+          igniteCell(Math.floor(cols * 0.72), Math.floor(rows * 0.34), 2);
+          if (sim) sim.renderOnce();
+        }
+
+        function stepFire() {
+          for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+              const k = id(x, y);
+              const v = grid[k];
+              if (v === 2) {
+                next[k] = 0;
+              } else if (v === 1) {
+                next[k] = hasBurningNeighbor(x, y) || rng() < params.lightning ? 2 : 1;
+              } else {
+                next[k] = rng() < params.growth ? 1 : 0;
+              }
+            }
+          }
+          const swap = grid;
+          grid = next;
+          next = swap;
+          generation++;
+        }
+
+        function update(dt) {
+          stepAcc += dt * params.speed * 14;
+          let guard = 0;
+          while (stepAcc >= 1 && guard++ < 40) {
+            stepFire();
+            stepAcc -= 1;
+          }
+        }
+
+        function render() {
+          const data = image.data;
+          let trees = 0;
+          let fires = 0;
+          for (let i = 0; i < grid.length; i++) {
+            const j = i * 4;
+            if (grid[i] === 1) {
+              data[j] = 32;
+              data[j + 1] = 132;
+              data[j + 2] = 74;
+              trees++;
+            } else if (grid[i] === 2) {
+              data[j] = 245;
+              data[j + 1] = 105;
+              data[j + 2] = 34;
+              fires++;
+            } else {
+              data[j] = 16;
+              data[j + 1] = 18;
+              data[j + 2] = 19;
+            }
+            data[j + 3] = 255;
+          }
+          offCtx.putImageData(image, 0, 0);
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(off, 0, 0, view.w, view.h);
+
+          ctx.fillStyle = "rgba(11,11,12,0.70)";
+          ctx.fillRect(12, 12, 210, 34);
+          ctx.fillStyle = "#8a8a8f";
+          ctx.font = "12px ui-monospace, monospace";
+          ctx.fillText("growth + lightning + spread", 22, 34);
+
+          const total = cols * rows;
+          ro.innerHTML = "generation <strong>" + generation + "</strong> | trees <strong>" + (trees / total * 100).toFixed(0) + "%</strong> | burning cells <strong>" + fires + "</strong> | empty <strong>" + (total - trees - fires) + "</strong>";
+        }
+
+        function igniteFromPointer(p) {
+          const x = clamp(Math.floor(p.x / Math.max(1, view.w) * cols), 0, cols - 1);
+          const y = clamp(Math.floor(p.y / Math.max(1, view.h) * rows), 0, rows - 1);
+          igniteCell(x, y, 3);
+        }
+
+        resize();
+        Sim.bind("growth", params, "growth", (v) => (+v).toFixed(3));
+        Sim.bind("lightning", params, "lightning", (v) => (+v).toFixed(5));
+        Sim.bind("speed", params, "speed", (v) => (+v).toFixed(1));
+        ["growth", "lightning", "speed"].forEach((id) => {
+          document.getElementById(id).addEventListener("input", () => { if (sim) sim.renderOnce(); });
+        });
+        reset();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement, fixedDt: 1 / 90 });
+        Sim.pointer(canvas, {
+          down: igniteFromPointer,
+          move(p) { if (p.down) igniteFromPointer(p); },
+        });
+        document.getElementById("ignite").addEventListener("click", randomIgnite);
+        document.getElementById("toggle").addEventListener("click", function () {
+          sim.toggle();
+          this.textContent = sim.running ? "Pause" : "Play";
+        });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>

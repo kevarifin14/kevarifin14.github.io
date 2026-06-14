@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>M/M/1 Queue - Kevin Arifin</title><link rel="stylesheet" href="../lib/sim.css" /></head>
+  <body data-sim="mm1-queue"><main class="sim">
+    <a class="back" href="/sims/">&larr; Sims</a><h1>M/M/1 Queue</h1>
+    <p class="sub">When arrivals approach service capacity, the line stops feeling linear and begins to explode. <strong>Canvas 2D</strong> · queueing theory.</p>
+    <div class="stage" aria-label="M/M/1 queue length history and utilization"><canvas id="c"></canvas></div>
+    <div class="controls"><label class="row"><span id="paramALabel">Arrival rate</span> <strong id="paramAValue"></strong><input id="paramA" type="range" /></label><label class="row"><span id="paramBLabel">Service rate</span> <strong id="paramBValue"></strong><input id="paramB" type="range" /></label><label class="row"><span>Speed <strong id="speedValue"></strong></span><input id="speed" type="range" min="0.2" max="3" step="0.1" value="1.5" /></label><button id="step">Step</button><button id="shuffle">Restart</button><button id="toggle">Pause</button><button id="reset">Reset</button></div>
+    <div class="readout" id="ro" aria-live="polite"></div><script src="../lib/simkit.js"></script><script src="../lib/mini-labs.js"></script>
+  </main></body>
+</html>

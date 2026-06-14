@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Congestion Pricing - Kevin Arifin</title><link rel="stylesheet" href="../lib/sim.css" /></head>
+  <body data-sim="congestion-pricing"><main class="sim">
+    <a class="back" href="/sims/">&larr; Sims</a><h1>Congestion Pricing</h1>
+    <p class="sub">Drivers split between two routes by private cost. A toll can move the equilibrium toward lower social cost. <strong>Canvas 2D</strong> · transportation economics.</p>
+    <div class="stage" aria-label="Congestion pricing route choice and social cost"><canvas id="c"></canvas></div>
+    <div class="controls"><label class="row"><span id="paramALabel">Demand</span> <strong id="paramAValue"></strong><input id="paramA" type="range" /></label><label class="row"><span id="paramBLabel">Toll</span> <strong id="paramBValue"></strong><input id="paramB" type="range" /></label><label class="row"><span>Speed <strong id="speedValue"></strong></span><input id="speed" type="range" min="0.2" max="3" step="0.1" value="1.0" /></label><button id="step">Equilibrate</button><button id="shuffle">Restart</button><button id="toggle">Pause</button><button id="reset">Reset</button></div>
+    <div class="readout" id="ro" aria-live="polite"></div><script src="../lib/simkit.js"></script><script src="../lib/mini-labs.js"></script>
+  </main></body>
+</html>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enzyme Kinetics - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Enzyme Kinetics</h1>
+      <p class="sub">Michaelis-Menten saturation: substrate keeps rising, but enzyme throughput approaches a ceiling. Drag the curve marker to set substrate. <strong>Canvas 2D</strong> · biochemistry.</p>
+
+      <div class="stage" aria-label="Michaelis-Menten enzyme flow and saturation curve"><canvas id="c"></canvas></div>
+
+      <div class="controls">
+        <label class="row"><span>Substrate <strong id="substrateValue"></strong></span>
+          <input id="substrate" type="range" min="0.1" max="12" step="0.1" value="4.5" /></label>
+        <label class="row"><span>Vmax <strong id="vmaxValue"></strong></span>
+          <input id="vmax" type="range" min="0.4" max="2.4" step="0.01" value="1.25" /></label>
+        <label class="row"><span>Km <strong id="kmValue"></strong></span>
+          <input id="km" type="range" min="0.4" max="8" step="0.1" value="2.4" /></label>
+        <label class="row"><span>Speed <strong id="speedValue"></strong></span>
+          <input id="speed" type="range" min="0.2" max="2.5" step="0.1" value="1.0" /></label>
+        <button id="pulse">Pulse substrate</button>
+        <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+        const ro = document.getElementById("ro");
+        const params = { substrate: 4.5, vmax: 1.25, km: 2.4, speed: 1 };
+        const substrateEl = document.getElementById("substrate");
+        const substrateValue = document.getElementById("substrateValue");
+        let view = { w: 0, h: 0 };
+        let molecules = [];
+        let rng = Sim.rng(17);
+        let substrateSpawn = 0;
+        let productSpawn = 0;
+        let tick = 0;
+        let sim;
+
+        function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+        function rate() { return params.vmax * params.substrate / (params.km + params.substrate); }
+        function saturation() { return params.substrate / (params.km + params.substrate); }
+
+        function resize() {
+          view = Sim.fitCanvas(canvas, ctx);
+          if (sim) sim.renderOnce();
+        }
+        window.addEventListener("resize", resize);
+
+        function setSubstrate(value) {
+          params.substrate = clamp(value, 0.1, 12);
+          substrateEl.value = params.substrate.toFixed(1);
+          substrateValue.textContent = params.substrate.toFixed(1);
+          if (sim) sim.renderOnce();
+        }
+
+        function reset() {
+          molecules = [];
+          rng = Sim.rng(17);
+          substrateSpawn = 0;
+          productSpawn = 0;
+          tick = 0;
+          if (sim) sim.renderOnce();
+        }
+
+        function addMolecule(kind) {
+          const flowTop = view.h * 0.12;
+          const flowBottom = view.h * 0.48;
+          const y = flowTop + rng() * (flowBottom - flowTop);
+          if (kind === "substrate") {
+            molecules.push({ kind: kind, x: -12, y: y, vx: 55 + rng() * 38, r: 3 + rng() * 2 });
+          } else {
+            molecules.push({ kind: kind, x: view.w * 0.53, y: y, vx: 70 + rng() * 46, r: 2.8 + rng() * 2 });
+          }
+        }
+
+        function update(dt) {
+          const speed = params.speed;
+          tick += dt * speed;
+          substrateSpawn += dt * speed * (4 + params.substrate * 3.3);
+          productSpawn += dt * speed * (2 + rate() * 18);
+          while (substrateSpawn >= 1 && molecules.length < 190) { addMolecule("substrate"); substrateSpawn -= 1; }
+          while (productSpawn >= 1 && molecules.length < 190) { addMolecule("product"); productSpawn -= 1; }
+          const enzymeX = view.w * 0.49;
+          for (const m of molecules) {
+            const slow = m.kind === "substrate" && Math.abs(m.x - enzymeX) < 36 ? 0.45 + saturation() * 0.55 : 1;
+            m.x += m.vx * speed * slow * dt;
+            m.y += Math.sin(tick * 2.2 + m.r * 7) * dt * 10;
+          }
+          molecules = molecules.filter((m) => m.x < view.w + 24);
+        }
+
+        function plotRect() {
+          return { x: 48, y: view.h * 0.60, w: view.w - 96, h: view.h * 0.30 };
+        }
+
+        function renderFlow() {
+          const enzymeX = view.w * 0.49;
+          const enzymeY = view.h * 0.30;
+          const sat = saturation();
+
+          ctx.strokeStyle = "rgba(255,255,255,0.08)";
+          ctx.lineWidth = 1;
+          for (let i = 0; i < 5; i++) {
+            const y = view.h * (0.14 + i * 0.08);
+            ctx.beginPath();
+            ctx.moveTo(26, y);
+            ctx.lineTo(view.w - 28, y);
+            ctx.stroke();
+          }
+
+          ctx.fillStyle = "#4fa3ff";
+          for (const m of molecules) {
+            if (m.kind !== "substrate") continue;
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          ctx.fillStyle = "#151518";
+          ctx.strokeStyle = "#e8c547";
+          ctx.lineWidth = 2;
+          const ew = Math.min(150, view.w * 0.26);
+          const eh = Math.min(76, view.h * 0.22);
+          const ex = enzymeX - ew / 2;
+          const ey = enzymeY - eh / 2;
+          ctx.beginPath();
+          ctx.roundRect(ex, ey, ew, eh, 22);
+          ctx.fill();
+          ctx.stroke();
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(ex, ey, ew * sat, eh, 22);
+          ctx.clip();
+          ctx.fillStyle = "rgba(232,197,71,0.28)";
+          ctx.fillRect(ex, ey, ew, eh);
+          ctx.restore();
+          ctx.fillStyle = "#ededed";
+          ctx.font = "13px ui-monospace, monospace";
+          ctx.textAlign = "center";
+          ctx.fillText("enzyme active sites", enzymeX, enzymeY + 4);
+          ctx.textAlign = "left";
+
+          ctx.fillStyle = "#e8c547";
+          for (const m of molecules) {
+            if (m.kind !== "product") continue;
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        function renderCurve() {
+          const p = plotRect();
+          const vmaxCeil = 2.5;
+          ctx.strokeStyle = "#232326";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(p.x, p.y, p.w, p.h);
+          ctx.strokeStyle = "rgba(255,255,255,0.07)";
+          for (let i = 1; i < 4; i++) {
+            ctx.beginPath();
+            ctx.moveTo(p.x + i * p.w / 4, p.y);
+            ctx.lineTo(p.x + i * p.w / 4, p.y + p.h);
+            ctx.stroke();
+          }
+
+          const yVmax = p.y + p.h - params.vmax / vmaxCeil * p.h;
+          ctx.strokeStyle = "rgba(232,197,71,0.34)";
+          ctx.setLineDash([6, 5]);
+          ctx.beginPath();
+          ctx.moveTo(p.x, yVmax);
+          ctx.lineTo(p.x + p.w, yVmax);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.strokeStyle = "#4fa3ff";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          for (let i = 0; i <= 100; i++) {
+            const s = i / 100 * 12;
+            const v = params.vmax * s / (params.km + s);
+            const x = p.x + s / 12 * p.w;
+            const y = p.y + p.h - v / vmaxCeil * p.h;
+            if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+          }
+          ctx.stroke();
+
+          const currentRate = rate();
+          const mx = p.x + params.substrate / 12 * p.w;
+          const my = p.y + p.h - currentRate / vmaxCeil * p.h;
+          ctx.fillStyle = "#e8c547";
+          ctx.beginPath();
+          ctx.arc(mx, my, 6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "rgba(232,197,71,0.55)";
+          ctx.beginPath();
+          ctx.moveTo(mx, my);
+          ctx.lineTo(mx, p.y + p.h);
+          ctx.stroke();
+
+          ctx.fillStyle = "#8a8a8f";
+          ctx.font = "12px ui-monospace, monospace";
+          ctx.fillText("rate = Vmax * S / (Km + S)", p.x, p.y - 12);
+          ctx.fillText("substrate", p.x + p.w - 72, p.y + p.h + 18);
+        }
+
+        function render() {
+          ctx.fillStyle = "#0e0e10";
+          ctx.fillRect(0, 0, view.w, view.h);
+          renderFlow();
+          renderCurve();
+          ro.innerHTML = "S <strong>" + params.substrate.toFixed(1) + "</strong> | rate <strong>" + rate().toFixed(2) + "</strong> | saturation <strong>" + (saturation() * 100).toFixed(0) + "%</strong> | Km is the S where rate is half of Vmax.";
+        }
+
+        function setSubstrateFromPointer(p) {
+          const r = plotRect();
+          if (p.x < r.x || p.x > r.x + r.w || p.y < r.y - 18 || p.y > r.y + r.h + 24) return;
+          setSubstrate((p.x - r.x) / r.w * 12);
+        }
+
+        resize();
+        setSubstrate(+substrateEl.value);
+        Sim.bind("vmax", params, "vmax", (v) => (+v).toFixed(2));
+        Sim.bind("km", params, "km", (v) => (+v).toFixed(1));
+        Sim.bind("speed", params, "speed", (v) => (+v).toFixed(1));
+        substrateEl.addEventListener("input", () => setSubstrate(+substrateEl.value));
+        ["vmax", "km", "speed"].forEach((id) => {
+          document.getElementById(id).addEventListener("input", () => { if (sim) sim.renderOnce(); });
+        });
+        reset();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement, fixedDt: 1 / 90 });
+        Sim.pointer(canvas, {
+          down: setSubstrateFromPointer,
+          move(p) { if (p.down) setSubstrateFromPointer(p); },
+        });
+        document.getElementById("pulse").addEventListener("click", () => setSubstrate(params.substrate + 2.5));
+        document.getElementById("toggle").addEventListener("click", function () {
+          sim.toggle();
+          this.textContent = sim.running ? "Pause" : "Play";
+        });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Why Data Centers Went to 800 VDC — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Why Data Centers Went to 800 VDC</h1>
+      <p class="sub">A fixed power load at a higher voltage draws less current — and resistive heat falls with the <em>square</em> of current. Pick a bus voltage and watch the busbar. <strong>Canvas 2D</strong> · AI infrastructure.</p>
+
+      <div class="stage" aria-label="Power busbar feeding a GPU rack; thickness is copper, glow is heat loss"><canvas id="c"></canvas></div>
+      <div class="controls"><div class="presets" id="volts"></div></div>
+      <div class="controls">
+        <label class="row"><span>Rack power <strong id="pwValue"></strong></span>
+          <input id="pw" type="range" min="10" max="1000" step="10" value="120" /></label>
+        <label class="row"><span>Busbar length <strong id="lenValue"></strong></span>
+          <input id="len" type="range" min="0.5" max="5" step="0.1" value="1.5" /></label>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro"></div>
+      <div class="readout" id="formula" style="margin-top:8px"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const VOLTS = [12, 48, 400, 800];
+        const params = { pw: 120, len: 1.5, v: 48 };
+        const R_PER_M = 0.001; // 1 mΩ per metre reference busbar
+        let view = { w: 0, h: 0 };
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); draw(); }
+        window.addEventListener("resize", resize);
+
+        function calc() {
+          const P = params.pw * 1000, V = params.v, I = P / V;
+          const R = R_PER_M * params.len, loss = I * I * R, lossPct = loss / P * 100;
+          const copperRel = Math.pow(800 / V, 2); // copper for a fixed loss budget ∝ I² ∝ 1/V²
+          return { P, V, I, loss, lossPct, copperRel };
+        }
+        function draw() {
+          const { I, loss, lossPct, copperRel } = calc();
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const midY = view.h * 0.34, x0 = 96, x1 = view.w - 110;
+          // busbar thickness ∝ sqrt(copper), heat glow ∝ loss%
+          const thick = Math.max(3, Math.min(64, 4 * Math.sqrt(copperRel)));
+          const heat = Math.min(1, lossPct / 15);
+          const g = ctx.createLinearGradient(x0, 0, x1, 0);
+          g.addColorStop(0, "#e8c547");
+          g.addColorStop(1, `rgb(${Math.round(232 + heat * 23)},${Math.round(197 - heat * 150)},${Math.round(71 - heat * 60)})`);
+          if (heat > 0.05) { ctx.shadowColor = `rgba(255,${Math.round(120 - heat * 120)},40,${heat})`; ctx.shadowBlur = 8 + heat * 34; }
+          ctx.fillStyle = g; ctx.fillRect(x0, midY - thick / 2, x1 - x0, thick);
+          ctx.shadowBlur = 0;
+          // endpoints
+          ctx.fillStyle = "#17171a"; ctx.strokeStyle = "#3a3a40"; ctx.lineWidth = 1.5;
+          ctx.fillRect(x0 - 64, midY - 34, 60, 68); ctx.strokeRect(x0 - 64, midY - 34, 60, 68);
+          ctx.fillRect(x1 + 4, midY - 40, 76, 80); ctx.strokeRect(x1 + 4, midY - 40, 76, 80);
+          ctx.fillStyle = "#ededed"; ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+          ctx.fillText(params.v + " V", x0 - 34, midY + 4); ctx.fillText("bus", x0 - 34, midY + 18);
+          ctx.fillStyle = "#e8c547"; ctx.fillText(params.pw + " kW", x1 + 42, midY - 2); ctx.fillStyle = "#8a8a8f"; ctx.fillText("GPU rack", x1 + 42, midY + 14);
+          ctx.fillStyle = "#ededed"; ctx.fillText(Math.round(I).toLocaleString() + " A", (x0 + x1) / 2, midY - thick / 2 - 10);
+          // loss vs voltage curve
+          const cy0 = view.h * 0.62, cy1 = view.h - 18, cx0 = 44, cx1 = view.w - 16;
+          const X = (v) => cx0 + (Math.log(v) - Math.log(12)) / (Math.log(1000) - Math.log(12)) * (cx1 - cx0);
+          const lossPctAt = (v) => (params.pw * 1000) * (R_PER_M * params.len) / (v * v) * 100;
+          const maxL = lossPctAt(12);
+          const Y = (lp) => cy1 - Math.min(1, lp / maxL) * (cy1 - cy0);
+          ctx.strokeStyle = "#3a3a40"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx0, cy1); ctx.lineTo(cx1, cy1); ctx.stroke();
+          ctx.textAlign = "left"; ctx.fillStyle = "#8a8a8f"; ctx.fillText("loss % vs bus voltage (log)", cx0, cy0 - 6);
+          ctx.strokeStyle = "#4fa3ff"; ctx.lineWidth = 2; ctx.beginPath();
+          for (let v = 12; v <= 1000; v += 4) { const xx = X(v), yy = Y(lossPctAt(v)); v === 12 ? ctx.moveTo(xx, yy) : ctx.lineTo(xx, yy); }
+          ctx.stroke();
+          VOLTS.forEach((v) => { ctx.fillStyle = "#8a8a8f"; ctx.textAlign = "center"; ctx.fillText(v + "V", X(v), cy1 + 13); });
+          ctx.fillStyle = "#e8c547"; ctx.beginPath(); ctx.arc(X(params.v), Y(lossPct), 4, 0, 6.28); ctx.fill();
+          ctx.textAlign = "left";
+
+          ro.innerHTML = "At <strong>" + params.v + " V</strong>, a <strong>" + params.pw + " kW</strong> rack pulls <strong>" + Math.round(I).toLocaleString() +
+            " A</strong> · busbar wastes <strong>" + Math.round(loss).toLocaleString() + " W (" + lossPct.toFixed(2) + "%)</strong> as heat · needs <strong>" +
+            (copperRel >= 1 ? copperRel.toFixed(0) + "×" : copperRel.toFixed(2) + "×") + "</strong> the copper of an 800 V bus.";
+        }
+        function formula() {
+          const el = document.getElementById("formula");
+          if (typeof katex === "undefined") return setTimeout(formula, 120);
+          katex.render("I=\\frac{P}{V}\\qquad P_{\\text{loss}}=I^2R\\;\\Rightarrow\\;\\text{loss}\\propto\\frac{1}{V^2}", el, { throwOnError: false });
+        }
+
+        const voltsEl = document.getElementById("volts");
+        VOLTS.forEach((v) => { const b = document.createElement("button"); b.className = "preset"; b.textContent = v + " V"; b.onclick = () => { params.v = v; draw(); }; voltsEl.append(b); });
+        resize();
+        Sim.bind("pw", params, "pw", (v) => v + " kW");
+        Sim.bind("len", params, "len", (v) => (+v).toFixed(1) + " m");
+        document.getElementById("reset").addEventListener("click", () => { params.pw = 120; params.len = 1.5; params.v = 48; document.getElementById("pw").value = 120; document.getElementById("len").value = 1.5; draw(); });
+        formula();
+      </script>
+    </main>
+  </body>
+</html>

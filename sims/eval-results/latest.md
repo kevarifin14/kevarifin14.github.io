@@ -1,8 +1,8 @@
 # Simulation Eval Report
 
-Run: 2026-06-14T04:53:17.399Z
-Base URL: http://127.0.0.1:64834
-Overall: **100/100** (strong) across 33 sims.
+Run: 2026-06-14T05:04:51.268Z
+Base URL: http://127.0.0.1:65465
+Overall: **100/100** (strong) across 53 sims.
 
 ## Rubric
 
@@ -18,22 +18,39 @@ Overall: **100/100** (strong) across 33 sims.
 | Sim | Tech | Score | Status | Biggest misses |
 |---|---:|---:|---|---|
 | [Ripple Tank](/sims/ripple/) | Canvas 2D | 100 | strong | None |
+| [Coulomb's Law](/sims/coulomb/) | Canvas 2D | 100 | strong | None |
 | [Pendulum](/sims/pendulum/) | SVG | 100 | strong | None |
 | [Double Pendulum](/sims/double-pendulum/) | Canvas 2D | 100 | strong | None |
+| [Orbital Transfer](/sims/orbital-transfer/) | Canvas 2D | 100 | strong | None |
 | [Physics Stack](/sims/stack/) | Matter.js | 100 | strong | None |
 | [Fourier Epicycles](/sims/fourier/) | Canvas 2D | 100 | strong | None |
 | [Mandelbrot Explorer](/sims/mandelbrot/) | Canvas 2D | 100 | strong | None |
+| [Heat Equation](/sims/heat-equation/) | Canvas 2D | 100 | strong | None |
+| [Sorting Race](/sims/sorting-race/) | Canvas 2D | 100 | strong | None |
 | [Game of Life](/sims/game-of-life/) | Canvas 2D | 100 | strong | None |
 | [Gradient Descent](/sims/gradient-descent/) | Canvas 2D | 100 | strong | None |
 | [Bias-Variance](/sims/bias-variance/) | Canvas 2D | 100 | strong | None |
+| [K-Means Clustering](/sims/kmeans/) | Canvas 2D | 100 | strong | None |
+| [Neural Boundary](/sims/neural-boundary/) | Canvas 2D | 100 | strong | None |
 | [MDP Gridworld](/sims/gridworld/) | Canvas 2D | 100 | strong | None |
 | [PageRank Surfer](/sims/pagerank/) | Canvas 2D | 100 | strong | None |
 | [A* Pathfinding](/sims/astar/) | Canvas 2D | 100 | strong | None |
+| [CSP Map Coloring](/sims/csp-map-coloring/) | Canvas 2D | 100 | strong | None |
 | [SIR Epidemic](/sims/sir/) | Canvas 2D | 100 | strong | None |
 | [PID Control](/sims/pid-control/) | Canvas 2D | 100 | strong | None |
 | [Kalman Filter](/sims/kalman/) | Canvas 2D | 100 | strong | None |
 | [Reaction-Diffusion](/sims/reaction-diffusion/) | Canvas 2D | 100 | strong | None |
 | [Predator-Prey Cycles](/sims/predator-prey/) | Canvas 2D | 100 | strong | None |
+| [Enzyme Kinetics](/sims/enzyme-kinetics/) | Canvas 2D | 100 | strong | None |
+| [Gillespie Birth-Death](/sims/gillespie/) | Canvas 2D | 100 | strong | None |
+| [Forest Fire Automaton](/sims/forest-fire/) | Canvas 2D | 100 | strong | None |
+| [Robot Arm IK](/sims/robot-arm-ik/) | Canvas 2D | 100 | strong | None |
+| [M/M/1 Queue](/sims/mm1-queue/) | Canvas 2D | 100 | strong | None |
+| [Coupon Collector](/sims/coupon-collector/) | Canvas 2D | 100 | strong | None |
+| [Birthday Paradox](/sims/birthday-paradox/) | Canvas 2D | 100 | strong | None |
+| [Bootstrap Resampling](/sims/bootstrap/) | Canvas 2D | 100 | strong | None |
+| [Gambler's Ruin](/sims/gambler-ruin/) | Canvas 2D | 100 | strong | None |
+| [Percolation Threshold](/sims/percolation/) | Canvas 2D | 100 | strong | None |
 | [Markov Chain Mixing](/sims/markov-chain/) | Canvas 2D | 100 | strong | None |
 | [Random Walk Diffusion](/sims/random-walk/) | Canvas 2D | 100 | strong | None |
 | [Monte Carlo Pi](/sims/monte-carlo-pi/) | Canvas 2D | 100 | strong | None |
@@ -43,7 +60,10 @@ Overall: **100/100** (strong) across 33 sims.
 | [Interactive Bars](/sims/bars/) | D3 | 100 | strong | None |
 | [Supply & Demand](/sims/supply-demand/) | Canvas 2D | 100 | strong | None |
 | [Options Payoffs](/sims/options/) | Canvas 2D | 100 | strong | None |
+| [800 VDC Power Delivery](/sims/power-delivery/) | Canvas 2D | 100 | strong | None |
 | [Schelling Model](/sims/schelling/) | Canvas 2D | 100 | strong | None |
+| [Network Cascade](/sims/network-cascade/) | Canvas 2D | 100 | strong | None |
+| [Congestion Pricing](/sims/congestion-pricing/) | Canvas 2D | 100 | strong | None |
 | [Phonics Blender](/sims/phonics/) | Web Speech | 100 | strong | None |
 | [The Road to Serfdom](/sims/road-to-serfdom/) | Explorable | 100 | strong | None |
 | [3D Orbit](/sims/orbit/) | three.js | 100 | strong | None |
@@ -58,10 +78,10 @@ Overall: **100/100** (strong) across 33 sims.
 ## Weakest Sims
 
 - **Ripple Tank** (/sims/ripple/) scored 100. Top misses: None
+- **Coulomb's Law** (/sims/coulomb/) scored 100. Top misses: None
 - **Pendulum** (/sims/pendulum/) scored 100. Top misses: None
 - **Double Pendulum** (/sims/double-pendulum/) scored 100. Top misses: None
-- **Physics Stack** (/sims/stack/) scored 100. Top misses: None
-- **Fourier Epicycles** (/sims/fourier/) scored 100. Top misses: None
+- **Orbital Transfer** (/sims/orbital-transfer/) scored 100. Top misses: None
 
 ## Method
 

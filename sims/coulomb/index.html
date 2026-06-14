@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coulomb's Law — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Coulomb's Law</h1>
+      <p class="sub">Drag the two charges. The force grows not linearly but with 1/r² — move them twice as close and it gets four times stronger. Flip a sign to switch attract/repel. <strong>Canvas 2D</strong> · physics.</p>
+
+      <div class="stage" aria-label="Two draggable point charges in their electric field with force arrows"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Charge A <strong id="q1Value"></strong></span>
+          <input id="q1" type="range" min="1" max="6" step="0.5" value="3" /></label>
+        <label class="row"><span>Charge B <strong id="q2Value"></strong></span>
+          <input id="q2" type="range" min="1" max="6" step="0.5" value="3" /></label>
+        <button id="flipA">Flip A sign</button>
+        <button id="flipB">Flip B sign</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro"></div>
+      <div class="readout" id="formula" style="margin-top:8px"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const GW = 200;
+        let view = { w: 0, h: 0 }, GH = 133, buf, bctx, img, palette = [];
+        const charges = [{ x: GW * 0.38, y: 66, q: 3 }, { x: GW * 0.62, y: 66, q: -3 }];
+
+        function buildPalette() { palette = []; const stops = [[10, 12, 22], [40, 70, 160], [232, 197, 71], [255, 255, 255]];
+          for (let i = 0; i < 256; i++) { const t = i / 255 * (stops.length - 1), k = Math.floor(t), f = t - k, a = stops[k], b = stops[Math.min(k + 1, 3)]; palette.push([a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]); } }
+        function buildBuffer() { GH = Math.max(1, Math.round(GW * view.h / view.w)); buf = document.createElement("canvas"); buf.width = GW; buf.height = GH; bctx = buf.getContext("2d"); img = bctx.createImageData(GW, GH); charges.forEach((c) => { if (c.y > GH) c.y = GH * 0.5; }); }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); buildBuffer(); render(); }
+        window.addEventListener("resize", () => { resize(); });
+
+        function render() {
+          const d = img.data;
+          for (let y = 0, idx = 0; y < GH; y++) for (let x = 0; x < GW; x++, idx += 4) {
+            let ex = 0, ey = 0;
+            for (const c of charges) { const dx = x - c.x, dy = y - c.y, r2 = dx * dx + dy * dy + 4, r = Math.sqrt(r2), e = c.q / r2; ex += e * dx / r; ey += e * dy / r; }
+            const mag = Math.sqrt(ex * ex + ey * ey);
+            const t = Math.min(1, Math.log(1 + mag * 60) / 4.2);
+            const col = palette[Math.min(255, Math.floor(t * 255))];
+            d[idx] = col[0]; d[idx + 1] = col[1]; d[idx + 2] = col[2]; d[idx + 3] = 255;
+          }
+          bctx.putImageData(img, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(buf, 0, 0, view.w, view.h);
+
+          const sx = view.w / GW, sy = view.h / GH;
+          // force on A from B along the line
+          const a = charges[0], b = charges[1];
+          const dx = (a.x - b.x), dy = (a.y - b.y), r = Math.hypot(dx, dy) + 0.001;
+          const F = a.q * b.q / (r * r);             // >0 repel, <0 attract
+          const dir = F >= 0 ? 1 : -1;               // along (A−B) if repel
+          const aLen = Math.min(70, 12 + Math.log(1 + Math.abs(F) * 4000) * 9);
+          drawArrow(a.x * sx, a.y * sy, (dx / r) * dir, (dy / r) * dir, aLen, F >= 0);
+          drawArrow(b.x * sx, b.y * sy, (-dx / r) * dir, (-dy / r) * dir, aLen, F >= 0);
+          // charges
+          for (const c of charges) {
+            const rad = 9 + Math.abs(c.q) * 2.2;
+            ctx.fillStyle = c.q >= 0 ? "#e05a5a" : "#4fa3ff";
+            ctx.beginPath(); ctx.arc(c.x * sx, c.y * sy, rad, 0, 6.28); ctx.fill();
+            ctx.fillStyle = "#fff"; ctx.font = "bold 15px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(c.q >= 0 ? "+" : "−", c.x * sx, c.y * sy);
+          }
+          ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+          ro.innerHTML = "Separation <strong>r = " + r.toFixed(0) + "</strong> · force <strong>" + (Math.abs(F) * 1000).toFixed(1) + "</strong> (relative), <strong>" + (F >= 0 ? "repelling" : "attracting") + "</strong>. Halve r → 4× the force.";
+        }
+        function drawArrow(x, y, ux, uy, len, repel) {
+          const ex = x + ux * len, ey = y + uy * len;
+          ctx.strokeStyle = repel ? "#ff8a5a" : "#9ad0ff"; ctx.fillStyle = ctx.strokeStyle; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(ex, ey); ctx.stroke();
+          const ang = Math.atan2(uy, ux);
+          ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex - 8 * Math.cos(ang - 0.4), ey - 8 * Math.sin(ang - 0.4)); ctx.lineTo(ex - 8 * Math.cos(ang + 0.4), ey - 8 * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill();
+        }
+
+        let drag = -1;
+        Sim.pointer(canvas, {
+          down(p) { const sx = view.w / GW, sy = view.h / GH; let best = 30; charges.forEach((c, i) => { const dd = Math.hypot(p.x - c.x * sx, p.y - c.y * sy); if (dd < best) { best = dd; drag = i; } }); },
+          move(p) { if (drag < 0) return; charges[drag].x = Math.max(6, Math.min(GW - 6, p.x / view.w * GW)); charges[drag].y = Math.max(6, Math.min(GH - 6, p.y / view.h * GH)); render(); },
+          up() { drag = -1; },
+        });
+
+        buildPalette(); resize();
+        function bindQ(id, idx) { const el = document.getElementById(id), out = document.getElementById(id + "Value");
+          const apply = () => { charges[idx].q = Math.sign(charges[idx].q || 1) * +el.value; out.textContent = (charges[idx].q >= 0 ? "+" : "−") + el.value; render(); };
+          el.addEventListener("input", apply); apply(); }
+        bindQ("q1", 0); bindQ("q2", 1);
+        document.getElementById("flipA").onclick = () => { charges[0].q *= -1; document.getElementById("q1Value").textContent = (charges[0].q >= 0 ? "+" : "−") + Math.abs(charges[0].q); render(); };
+        document.getElementById("flipB").onclick = () => { charges[1].q *= -1; document.getElementById("q2Value").textContent = (charges[1].q >= 0 ? "+" : "−") + Math.abs(charges[1].q); render(); };
+        document.getElementById("reset").onclick = () => { charges[0] = { x: GW * 0.38, y: GH * 0.5, q: 3 }; charges[1] = { x: GW * 0.62, y: GH * 0.5, q: -3 }; document.getElementById("q1").value = 3; document.getElementById("q2").value = 3; document.getElementById("q1Value").textContent = "+3"; document.getElementById("q2Value").textContent = "−3"; render(); };
+        function formula() { const el = document.getElementById("formula"); if (typeof katex === "undefined") return setTimeout(formula, 120); katex.render("F=k\\,\\frac{q_1 q_2}{r^2}", el, { throwOnError: false }); }
+        formula();
+      </script>
+    </main>
+  </body>
+</html>

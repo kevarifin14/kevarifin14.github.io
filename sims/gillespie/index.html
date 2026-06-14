@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gillespie Birth-Death - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Gillespie Birth-Death</h1>
+      <p class="sub">A continuous-time Markov process jumps one event at a time. The stochastic path jitters around the smooth deterministic expectation. Click the plot to choose the starting count. <strong>Canvas 2D</strong> · stochastic simulation.</p>
+
+      <div class="stage" aria-label="Stochastic Gillespie birth-death path compared with deterministic expectation"><canvas id="c"></canvas></div>
+
+      <div class="controls">
+        <label class="row"><span>Initial count <strong id="initialValue"></strong></span>
+          <input id="initial" type="range" min="5" max="180" step="1" value="60" /></label>
+        <label class="row"><span>Birth rate <strong id="birthValue"></strong></span>
+          <input id="birth" type="range" min="0.3" max="1.7" step="0.01" value="1.05" /></label>
+        <label class="row"><span>Death rate <strong id="deathValue"></strong></span>
+          <input id="death" type="range" min="0.3" max="1.7" step="0.01" value="0.95" /></label>
+        <label class="row"><span>Speed <strong id="speedValue"></strong></span>
+          <input id="speed" type="range" min="0.2" max="4.0" step="0.1" value="1.2" /></label>
+        <button id="step">Step event</button>
+        <button id="newrun">New run</button>
+        <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+        const ro = document.getElementById("ro");
+        const initialEl = document.getElementById("initial");
+        const initialValue = document.getElementById("initialValue");
+        const params = { initial: 60, birth: 1.05, death: 0.95, speed: 1.2 };
+        const windowT = 32;
+        let view = { w: 0, h: 0 };
+        let state;
+        let path = [];
+        let rng = Sim.rng(29);
+        let baseSeed = 29;
+        let sim;
+
+        function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+        function plotRect() {
+          return { x: 48, y: 32, w: view.w - 88, h: view.h - 86 };
+        }
+
+        function resize() {
+          view = Sim.fitCanvas(canvas, ctx);
+          if (sim) sim.renderOnce();
+        }
+        window.addEventListener("resize", resize);
+
+        function setInitial(value, shouldReset) {
+          params.initial = Math.round(clamp(value, 5, 180));
+          initialEl.value = String(params.initial);
+          initialValue.textContent = String(params.initial);
+          if (shouldReset) reset(false);
+        }
+
+        function pushPoint() {
+          if (!path.length || state.t !== path[path.length - 1].t || state.n !== path[path.length - 1].n) {
+            path.push({ t: state.t, n: state.n });
+            if (path.length > 900) path.shift();
+          }
+        }
+
+        function scheduleNext() {
+          const total = (params.birth + params.death) * state.n;
+          if (total <= 0) {
+            state.next = Infinity;
+            return;
+          }
+          state.next = state.t + (-Math.log(Math.max(1e-9, rng())) / total);
+        }
+
+        function reset(newRun) {
+          if (newRun) baseSeed += 97;
+          rng = Sim.rng(baseSeed);
+          state = { t: 0, n: params.initial, n0: params.initial, next: 0, events: 0 };
+          path = [];
+          pushPoint();
+          scheduleNext();
+          if (sim) sim.renderOnce();
+        }
+
+        function advanceTo(target) {
+          let guard = 0;
+          while (state.next <= target && guard++ < 500) {
+            state.t = state.next;
+            const pBirth = params.birth / (params.birth + params.death);
+            if (rng() < pBirth) state.n = Math.min(260, state.n + 1);
+            else state.n = Math.max(0, state.n - 1);
+            state.events++;
+            pushPoint();
+            scheduleNext();
+          }
+          state.t = target;
+          if (!path.length || state.t - path[path.length - 1].t > 0.12) pushPoint();
+        }
+
+        function update(dt) {
+          advanceTo(state.t + dt * params.speed);
+        }
+
+        function expectedAt(t) {
+          return Math.min(320, state.n0 * Math.exp((params.birth - params.death) * t));
+        }
+
+        function render() {
+          if (!state) return;
+          ctx.fillStyle = "#0e0e10";
+          ctx.fillRect(0, 0, view.w, view.h);
+          const r = plotRect();
+          const startT = Math.max(0, state.t - windowT);
+          const endT = startT + windowT;
+          let maxN = 20;
+          for (const p of path) {
+            if (p.t >= startT && p.t <= endT) maxN = Math.max(maxN, p.n);
+          }
+          for (let i = 0; i <= 80; i++) {
+            const t = startT + i / 80 * windowT;
+            maxN = Math.max(maxN, expectedAt(t));
+          }
+          maxN = Math.min(320, Math.max(20, maxN * 1.18));
+          function xOf(t) { return r.x + (t - startT) / windowT * r.w; }
+          function yOf(n) { return r.y + r.h - clamp(n, 0, maxN) / maxN * r.h; }
+
+          ctx.strokeStyle = "#232326";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(r.x, r.y, r.w, r.h);
+          ctx.strokeStyle = "rgba(255,255,255,0.07)";
+          for (let i = 1; i < 5; i++) {
+            ctx.beginPath();
+            ctx.moveTo(r.x + i * r.w / 5, r.y);
+            ctx.lineTo(r.x + i * r.w / 5, r.y + r.h);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(r.x, r.y + i * r.h / 5);
+            ctx.lineTo(r.x + r.w, r.y + i * r.h / 5);
+            ctx.stroke();
+          }
+
+          ctx.strokeStyle = "#4fa3ff";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let i = 0; i <= 120; i++) {
+            const t = startT + i / 120 * windowT;
+            const x = xOf(t);
+            const y = yOf(expectedAt(t));
+            if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+          }
+          ctx.stroke();
+
+          ctx.strokeStyle = "#e8c547";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          let drew = false;
+          for (const p of path) {
+            if (p.t < startT || p.t > endT) continue;
+            const x = xOf(p.t);
+            const y = yOf(p.n);
+            if (drew) ctx.lineTo(x, y); else { ctx.moveTo(x, y); drew = true; }
+          }
+          const cx = xOf(state.t);
+          const cy = yOf(state.n);
+          if (drew) ctx.lineTo(cx, cy); else ctx.moveTo(cx, cy);
+          ctx.stroke();
+          ctx.fillStyle = "#e8c547";
+          ctx.beginPath();
+          ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "#8a8a8f";
+          ctx.font = "12px ui-monospace, monospace";
+          ctx.fillText("stochastic path", r.x + 12, r.y + 18);
+          ctx.fillStyle = "#4fa3ff";
+          ctx.fillText("deterministic expectation", r.x + 12, r.y + 36);
+          ctx.fillStyle = "#8a8a8f";
+          ctx.fillText("time", r.x + r.w - 32, r.y + r.h + 20);
+          ctx.fillText("N", r.x - 18, r.y + 12);
+
+          ro.innerHTML = "time <strong>" + state.t.toFixed(2) + "</strong> | population <strong>" + state.n + "</strong> | E[N] <strong>" + expectedAt(state.t).toFixed(1) + "</strong> | events <strong>" + state.events + "</strong>";
+        }
+
+        function setInitialFromPointer(p) {
+          const r = plotRect();
+          if (p.x < r.x || p.x > r.x + r.w || p.y < r.y || p.y > r.y + r.h) return;
+          const startT = Math.max(0, state.t - windowT);
+          let maxN = 20;
+          for (const q of path) if (q.t >= startT && q.t <= startT + windowT) maxN = Math.max(maxN, q.n);
+          maxN = Math.max(180, maxN * 1.2);
+          const nextInitial = Math.round((r.y + r.h - p.y) / r.h * maxN);
+          setInitial(nextInitial, true);
+        }
+
+        resize();
+        setInitial(+initialEl.value, false);
+        Sim.bind("birth", params, "birth", (v) => (+v).toFixed(2));
+        Sim.bind("death", params, "death", (v) => (+v).toFixed(2));
+        Sim.bind("speed", params, "speed", (v) => (+v).toFixed(1));
+        initialEl.addEventListener("input", () => setInitial(+initialEl.value, true));
+        ["birth", "death", "speed"].forEach((id) => {
+          document.getElementById(id).addEventListener("input", () => { if (sim) sim.renderOnce(); });
+        });
+        reset(false);
+        sim = Sim.loop({ update, render, stage: canvas.parentElement, fixedDt: 1 / 90 });
+        Sim.pointer(canvas, { down: setInitialFromPointer });
+        document.getElementById("step").addEventListener("click", () => {
+          advanceTo(Number.isFinite(state.next) ? state.next : state.t + 1);
+          sim.renderOnce();
+        });
+        document.getElementById("newrun").addEventListener("click", () => reset(true));
+        document.getElementById("toggle").addEventListener("click", function () {
+          sim.toggle();
+          this.textContent = sim.running ? "Pause" : "Play";
+        });
+        document.getElementById("reset").addEventListener("click", () => reset(false));
+      </script>
+    </main>
+  </body>
+</html>

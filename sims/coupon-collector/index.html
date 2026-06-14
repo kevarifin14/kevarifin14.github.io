@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Coupon Collector - Kevin Arifin</title><link rel="stylesheet" href="../lib/sim.css" /></head>
+  <body data-sim="coupon-collector"><main class="sim">
+    <a class="back" href="/sims/">&larr; Sims</a><h1>Coupon Collector</h1>
+    <p class="sub">Common coupons arrive quickly, but the last missing one can take a long time. Repeated runs show the long tail. <strong>Canvas 2D</strong> · probability.</p>
+    <div class="stage" aria-label="Coupon collector bar chart and completion trials"><canvas id="c"></canvas></div>
+    <div class="controls"><label class="row"><span id="paramALabel">Coupon types</span> <strong id="paramAValue"></strong><input id="paramA" type="range" /></label><label class="row"><span id="paramBLabel">Draw batch</span> <strong id="paramBValue"></strong><input id="paramB" type="range" /></label><label class="row"><span>Speed <strong id="speedValue"></strong></span><input id="speed" type="range" min="0.2" max="3" step="0.1" value="1.4" /></label><button id="step">Draw</button><button id="shuffle">New trial</button><button id="toggle">Pause</button><button id="reset">Reset</button></div>
+    <div class="readout" id="ro" aria-live="polite"></div><script src="../lib/simkit.js"></script><script src="../lib/mini-labs.js"></script>
+  </main></body>
+</html>
