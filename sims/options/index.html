@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Options Payoffs — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Options Payoffs</h1>
+      <p class="sub">Profit and loss at expiration for common option strategies. Pick one, then drag the strike and premium. <strong>Canvas 2D</strong> · finance.</p>
+
+      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="controls"><div class="presets" id="strats"></div></div>
+      <div class="controls">
+        <div class="row"><span>Strike <strong id="kValue"></strong></span>
+          <input id="k" type="range" min="70" max="130" step="1" value="100" /></div>
+        <div class="row"><span>Premium <strong id="pValue"></strong></span>
+          <input id="p" type="range" min="1" max="20" step="0.5" value="6" /></div>
+        <div class="row"><span>Spread width <strong id="wValue"></strong></span>
+          <input id="w" type="range" min="5" max="40" step="1" value="20" /></div>
+      </div>
+      <div class="readout" id="ro"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const S0 = 100, SMIN = 50, SMAX = 150, M = { l: 44, r: 14, t: 14, b: 26 };
+        const params = { k: 100, p: 6, w: 20, strat: "call" };
+        const strategies = {
+          call: { name: "Long Call", f: (S) => Math.max(S - params.k, 0) - params.p },
+          put: { name: "Long Put", f: (S) => Math.max(params.k - S, 0) - params.p },
+          straddle: { name: "Straddle", f: (S) => Math.max(S - params.k, 0) + Math.max(params.k - S, 0) - 2 * params.p },
+          covered: { name: "Covered Call", f: (S) => (S - S0) - Math.max(S - params.k, 0) + params.p },
+          bull: { name: "Bull Call Spread", f: (S) => Math.max(S - params.k, 0) - Math.max(S - (params.k + params.w), 0) - params.p },
+        };
+        let view = { w: 0, h: 0 };
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); draw(); }
+        window.addEventListener("resize", resize);
+        const X = (s) => M.l + (s - SMIN) / (SMAX - SMIN) * (view.w - M.l - M.r);
+
+        function draw() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const f = strategies[params.strat].f;
+          const pts = [];
+          let lo = 1e9, hi = -1e9;
+          for (let s = SMIN; s <= SMAX; s++) { const v = f(s); pts.push([s, v]); lo = Math.min(lo, v); hi = Math.max(hi, v); }
+          lo = Math.min(lo, -1); hi = Math.max(hi, 1); const pad = (hi - lo) * 0.12; lo -= pad; hi += pad;
+          const Y = (v) => M.t + (hi - v) / (hi - lo) * (view.h - M.t - M.b);
+
+          // zero + spot
+          ctx.strokeStyle = "#3a3a40"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(M.l, Y(0)); ctx.lineTo(view.w - M.r, Y(0)); ctx.stroke();
+          ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.moveTo(X(S0), M.t); ctx.lineTo(X(S0), view.h - M.b); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = "#8a8a8f"; ctx.font = "11px ui-monospace, monospace";
+          ctx.fillText("spot " + S0, X(S0) + 4, view.h - M.b - 4); ctx.fillText("P/L", 6, Y(0) - 4);
+
+          // profit/loss shaded segments
+          for (let i = 0; i < pts.length - 1; i++) {
+            const x1 = X(pts[i][0]), x2 = X(pts[i + 1][0]), y1 = Y(pts[i][1]), y2 = Y(pts[i + 1][1]);
+            ctx.fillStyle = (pts[i][1] + pts[i + 1][1]) / 2 >= 0 ? "rgba(80,200,120,0.18)" : "rgba(220,80,80,0.16)";
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x2, Y(0)); ctx.lineTo(x1, Y(0)); ctx.closePath(); ctx.fill();
+          }
+          // curve
+          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 2; ctx.beginPath();
+          pts.forEach((pt, i) => { const x = X(pt[0]), y = Y(pt[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+
+          // breakevens + extremes
+          const be = [];
+          for (let i = 0; i < pts.length - 1; i++) if ((pts[i][1] < 0) !== (pts[i + 1][1] < 0)) {
+            const t = (0 - pts[i][1]) / (pts[i + 1][1] - pts[i][1]); be.push((pts[i][0] + t).toFixed(1));
+          }
+          const vs = pts.map((p) => p[1]), maxP = Math.max(...vs), maxL = Math.min(...vs);
+          ro.innerHTML = "<strong>" + strategies[params.strat].name + "</strong> · breakeven " + (be.join(", ") || "—") +
+            " · best " + maxP.toFixed(1) + " · worst " + maxL.toFixed(1) + " <span style='opacity:.6'>(over shown price range)</span>";
+        }
+
+        const stratsEl = document.getElementById("strats");
+        Object.entries(strategies).forEach(([key, s]) => { const b = document.createElement("button"); b.className = "preset"; b.textContent = s.name; b.onclick = () => { params.strat = key; draw(); }; stratsEl.append(b); });
+        resize();
+        Sim.bind("k", params, "k", (v) => { draw(); return v; });
+        Sim.bind("p", params, "p", (v) => { draw(); return (+v).toFixed(1); });
+        Sim.bind("w", params, "w", (v) => { draw(); return v; });
+      </script>
+    </main>
+  </body>
+</html>

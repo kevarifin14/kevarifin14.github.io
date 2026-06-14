@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Central Limit Theorem — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Central Limit Theorem</h1>
+      <p class="sub">Average enough samples from <em>any</em> shape and the averages form a bell curve. Pick a weird population, set the sample size, and run the experiment. <strong>Canvas 2D</strong> · statistics.</p>
+
+      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="controls"><div class="presets" id="pops"></div></div>
+      <div class="controls">
+        <div class="row"><span>Sample size n <strong id="nValue"></strong></span>
+          <input id="n" type="range" min="1" max="50" step="1" value="5" /></div>
+        <button id="draw100">Draw 100</button>
+        <button id="draw1000">Draw 1000</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const populations = {
+          uniform: { name: "Uniform", s: () => Math.random() },
+          skewed: { name: "Skewed", s: () => Math.random() ** 2 },
+          bimodal: { name: "Bimodal", s: () => (Math.random() < 0.5 ? 0.05 + Math.random() * 0.2 : 0.75 + Math.random() * 0.2) },
+        };
+        const params = { n: 5, pop: "uniform" };
+        const BINS = 48;
+        let view = { w: 0, h: 0 }, means = [], hist = new Array(BINS).fill(0), popMean = 0, popVar = 0;
+
+        function calibrate() {
+          const s = populations[params.pop].s; let m = 0, m2 = 0; const N = 40000;
+          for (let i = 0; i < N; i++) { const x = s(); m += x; m2 += x * x; }
+          m /= N; popMean = m; popVar = Math.max(1e-6, m2 / N - m * m);
+        }
+        function resetData() { means = []; hist = new Array(BINS).fill(0); }
+        function drawSamples(count) {
+          const s = populations[params.pop].s, n = params.n;
+          for (let i = 0; i < count; i++) { let sum = 0; for (let j = 0; j < n; j++) sum += s(); const mean = sum / n; means.push(mean); hist[Math.max(0, Math.min(BINS - 1, Math.floor(mean * BINS)))]++; }
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); render(); }
+        window.addEventListener("resize", resize);
+
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const M = { l: 10, r: 10, t: 28, b: 22 }, W = view.w - M.l - M.r, plotH = view.h - M.t - M.b, bw = W / BINS;
+          ctx.fillStyle = "#8a8a8f"; ctx.font = "11px ui-monospace, monospace";
+          ctx.fillText("population: " + populations[params.pop].name + " · sample n=" + params.n + ", average → plot the means", M.l, 17);
+
+          const maxC = Math.max(1, ...hist);
+          ctx.fillStyle = "rgba(79,163,255,0.6)";
+          for (let i = 0; i < BINS; i++) { const h = hist[i] / maxC * plotH; ctx.fillRect(M.l + i * bw, view.h - M.b - h, bw - 1, h); }
+
+          if (means.length > 20) {
+            const sd = Math.sqrt(popVar / params.n), ys = []; let peak = 0;
+            for (let i = 0; i < BINS; i++) { const x = (i + 0.5) / BINS, d = Math.exp(-0.5 * ((x - popMean) / sd) ** 2); ys.push(d); peak = Math.max(peak, d); }
+            ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 2; ctx.beginPath();
+            for (let i = 0; i < BINS; i++) { const xx = M.l + (i + 0.5) * bw, yy = view.h - M.b - ys[i] / peak * plotH; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+            ctx.stroke();
+          }
+
+          let mm = 0; for (const v of means) mm += v; mm = means.length ? mm / means.length : 0;
+          let vv = 0; for (const v of means) vv += (v - mm) ** 2; vv = means.length ? vv / means.length : 0;
+          ro.innerHTML = "Samples: <strong>" + means.length + "</strong> · mean of means <strong>" + mm.toFixed(3) + "</strong> (pop " + popMean.toFixed(3) +
+            ") · sd of means <strong>" + Math.sqrt(vv).toFixed(3) + "</strong> (predicted σ/√n = " + Math.sqrt(popVar / params.n).toFixed(3) + ")";
+        }
+
+        const popsEl = document.getElementById("pops");
+        Object.entries(populations).forEach(([k, p]) => { const b = document.createElement("button"); b.className = "preset"; b.textContent = p.name; b.onclick = () => { params.pop = k; calibrate(); resetData(); render(); }; popsEl.append(b); });
+        resize(); calibrate(); render();
+        Sim.bind("n", params, "n", (v) => { resetData(); render(); return v; });
+        document.getElementById("draw100").onclick = () => { drawSamples(100); render(); };
+        document.getElementById("draw1000").onclick = () => { drawSamples(1000); render(); };
+        document.getElementById("reset").onclick = () => { resetData(); render(); };
+      </script>
+    </main>
+  </body>
+</html>
