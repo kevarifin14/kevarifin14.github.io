@@ -68,4 +68,16 @@ Run the deterministic browser grader before and after a batch of sim edits:
     npx playwright install chromium
     npm run eval:sims
 
+## Gallery thumbnails
+
+The gallery shows a thumbnail per sim, auto-injected from `thumbs/<slug>.png`
+(a small client script keyed off each card's href; a missing image is dropped silently).
+Regenerate them after adding or changing a sim:
+
+    npm run thumbs
+
+`scripts/thumbnails.mjs` serves the site, opens each sim in Chromium, gives it one
+"positive" poke (Drop/Draw/Random — never Pause/Reset) so data-driven sims show real
+content, screenshots the `.stage`, and writes `thumbs/<slug>.png`. Commit the new PNGs.
+
 It discovers the gallery, opens every sim in Chromium, checks runtime errors, screenshots the stage, pokes controls, checks mobile layout, and writes `sims/eval-results/latest.json` plus `sims/eval-results/latest.md`. Use the report with an independent agent review to decide the next fixes.

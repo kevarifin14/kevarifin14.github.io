@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-14T03:24:05.742Z",
-  "baseUrl": "http://127.0.0.1:63060",
+  "generatedAt": "2026-06-14T04:53:17.399Z",
+  "baseUrl": "http://127.0.0.1:64834",
   "root": "/Users/kevin/projects/kevarifin14.github.io",
-  "screenshots": null,
+  "screenshots": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945",
   "rubric": [
     {
       "id": "runtime",
@@ -36,7 +36,7 @@
     }
   ],
   "summary": {
-    "count": 31,
+    "count": 33,
     "average": 100,
     "status": "strong",
     "categoryAverages": {
@@ -63,6 +63,13 @@
         "topFailures": []
       },
       {
+        "href": "/sims/double-pendulum/",
+        "title": "Double Pendulum",
+        "score": 100,
+        "status": "strong",
+        "topFailures": []
+      },
+      {
         "href": "/sims/stack/",
         "title": "Physics Stack",
         "score": 100,
@@ -72,13 +79,6 @@
       {
         "href": "/sims/fourier/",
         "title": "Fourier Epicycles",
-        "score": 100,
-        "status": "strong",
-        "topFailures": []
-      },
-      {
-        "href": "/sims/game-of-life/",
-        "title": "Game of Life",
         "score": 100,
         "status": "strong",
         "topFailures": []
@@ -93,7 +93,7 @@
       "group": "Physics & motion",
       "tech": "Canvas 2D",
       "description": "Two-source wave interference; drag a source.",
-      "url": "http://127.0.0.1:63060/sims/ripple/",
+      "url": "http://127.0.0.1:64834/sims/ripple/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -185,7 +185,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=1484.02, colors=33"
+          "notes": "variance=1484.17, colors=33"
         },
         {
           "category": "visual",
@@ -225,7 +225,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.1728, readoutChanged=false"
+          "notes": "visual distance=0.1725, readoutChanged=false"
         },
         {
           "category": "interaction",
@@ -427,14 +427,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 76.99,
-          "variance": 1484.02,
+          "mean": 76.97,
+          "variance": 1484.17,
           "colorBuckets": 33,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.1728,
+          "visualDistance": 0.1725,
           "readoutChanged": false
         },
         "source": {
@@ -456,7 +456,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__ripple.png"
       }
     },
     {
@@ -465,7 +465,7 @@
       "group": "Physics & motion",
       "tech": "SVG",
       "description": "Damped pendulum; drag the bob to set the angle.",
-      "url": "http://127.0.0.1:63060/sims/pendulum/",
+      "url": "http://127.0.0.1:64834/sims/pendulum/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -557,7 +557,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=357.8, colors=15"
+          "notes": "variance=351.3, colors=15"
         },
         {
           "category": "visual",
@@ -597,7 +597,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0112, readoutChanged=true"
+          "notes": "visual distance=0.0117, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -768,7 +768,7 @@
           "title": "Pendulum — Kevin Arifin",
           "h1": "Pendulum",
           "lead": "A damped pendulum. Drag the bob to set its angle, then let go. SVG — crisp vector geometry and a live label.",
-          "readout": "Angle -31° · angular velocity -4.54",
+          "readout": "Angle -29° · angular velocity -4.60",
           "stageExists": true,
           "stageAria": "Damped pendulum with draggable bob",
           "stageRole": "",
@@ -799,14 +799,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 16.47,
-          "variance": 357.8,
+          "mean": 16.44,
+          "variance": 351.3,
           "colorBuckets": 15,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0112,
+          "visualDistance": 0.0117,
           "readoutChanged": true
         },
         "source": {
@@ -828,7 +828,379 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__pendulum.png"
+      }
+    },
+    {
+      "href": "/sims/double-pendulum/",
+      "title": "Double Pendulum",
+      "group": "Physics & motion",
+      "tech": "Canvas 2D",
+      "description": "Deterministic physics, chaotic motion.",
+      "url": "http://127.0.0.1:64834/sims/double-pendulum/",
+      "status": "strong",
+      "score": {
+        "earned": 100,
+        "total": 100,
+        "percent": 100,
+        "byCategory": {
+          "runtime": {
+            "label": "Runtime health",
+            "earned": 20,
+            "points": 20,
+            "percent": 100
+          },
+          "visual": {
+            "label": "Visual frame",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "interaction": {
+            "label": "Interaction",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "learning": {
+            "label": "Learning layer",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "accessibility": {
+            "label": "Accessibility/mobile",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "implementation": {
+            "label": "Implementation",
+            "earned": 12,
+            "points": 12,
+            "percent": 100
+          }
+        }
+      },
+      "checks": [
+        {
+          "category": "runtime",
+          "id": "page-loads",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "Page returns OK"
+        },
+        {
+          "category": "runtime",
+          "id": "no-page-errors",
+          "points": 6,
+          "earned": 6,
+          "pass": true,
+          "notes": "No uncaught page errors"
+        },
+        {
+          "category": "runtime",
+          "id": "critical-resources",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "No critical resource failures"
+        },
+        {
+          "category": "runtime",
+          "id": "document-title",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Double Pendulum — Kevin Arifin"
+        },
+        {
+          "category": "visual",
+          "id": "stage-sized",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "912x608"
+        },
+        {
+          "category": "visual",
+          "id": "stage-nonblank",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "variance=38.17, colors=19"
+        },
+        {
+          "category": "visual",
+          "id": "screenshot-captures",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Stage screenshot captured"
+        },
+        {
+          "category": "visual",
+          "id": "mobile-no-horizontal-overflow",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No horizontal overflow"
+        },
+        {
+          "category": "interaction",
+          "id": "affordances",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "4 controls / no steps"
+        },
+        {
+          "category": "interaction",
+          "id": "controls-labeled",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs are labeled"
+        },
+        {
+          "category": "interaction",
+          "id": "poke-changes-state",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "visual distance=0.0018, readoutChanged=true"
+        },
+        {
+          "category": "interaction",
+          "id": "reset",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reset exists"
+        },
+        {
+          "category": "interaction",
+          "id": "pause-step-speed",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pause/step/speed affordance present or static"
+        },
+        {
+          "category": "learning",
+          "id": "headline-and-lead",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Headline and setup copy present"
+        },
+        {
+          "category": "learning",
+          "id": "readout-or-caption",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Readout/caption/steps present"
+        },
+        {
+          "category": "learning",
+          "id": "values-visible",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Parameter values are visible"
+        },
+        {
+          "category": "learning",
+          "id": "gallery-card",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Physics & motion: Canvas 2D"
+        },
+        {
+          "category": "accessibility",
+          "id": "stage-aria",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Chaotic double pendulum tracing its tip"
+        },
+        {
+          "category": "accessibility",
+          "id": "form-labels",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs have labels"
+        },
+        {
+          "category": "accessibility",
+          "id": "keyboard-controls",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Native controls are keyboard reachable"
+        },
+        {
+          "category": "accessibility",
+          "id": "reduced-motion",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reduced motion or Sim.loop support"
+        },
+        {
+          "category": "accessibility",
+          "id": "mobile-stage",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "342x228"
+        },
+        {
+          "category": "implementation",
+          "id": "no-setinterval",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No setInterval loop"
+        },
+        {
+          "category": "implementation",
+          "id": "loop-pattern",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Animation loop/library detected"
+        },
+        {
+          "category": "implementation",
+          "id": "shared-css",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Uses shared sim.css"
+        },
+        {
+          "category": "implementation",
+          "id": "known-pattern",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pattern: simkit"
+        },
+        {
+          "category": "implementation",
+          "id": "static-page",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Static page source found"
+        }
+      ],
+      "topFailures": [],
+      "diagnostics": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailures": [],
+        "layout": {
+          "title": "Double Pendulum — Kevin Arifin",
+          "h1": "Double Pendulum",
+          "lead": "Two arms, fully deterministic physics — yet a hair's difference in the start explodes into a totally different path. The classic picture of chaos. Canvas 2D · physics.",
+          "readout": "θ₁ -1.46 · θ₂ -1.54 · gravity 20",
+          "stageExists": true,
+          "stageAria": "Chaotic double pendulum tracing its tip",
+          "stageRole": "",
+          "stageRect": {
+            "width": 912,
+            "height": 608,
+            "top": 180,
+            "bottom": 788
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 4,
+          "rangeCount": 1,
+          "checkboxCount": 1,
+          "buttonLabels": [
+            "Pause",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 1280,
+          "viewportWidth": 1280,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "mobileLayout": {
+          "title": "Double Pendulum — Kevin Arifin",
+          "h1": "Double Pendulum",
+          "lead": "Two arms, fully deterministic physics — yet a hair's difference in the start explodes into a totally different path. The classic picture of chaos. Canvas 2D · physics.",
+          "readout": "θ₁ 0.29 · θ₂ -0.09 · gravity 20",
+          "stageExists": true,
+          "stageAria": "Chaotic double pendulum tracing its tip",
+          "stageRole": "",
+          "stageRect": {
+            "width": 342,
+            "height": 228,
+            "top": 228,
+            "bottom": 456
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 4,
+          "rangeCount": 1,
+          "checkboxCount": 1,
+          "buttonLabels": [
+            "Pause",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "visualStats": {
+          "width": 912,
+          "height": 609,
+          "samples": 7031,
+          "mean": 14.59,
+          "variance": 38.17,
+          "colorBuckets": 19,
+          "visibleRatio": 1,
+          "nonBlank": true
+        },
+        "exercise": {
+          "visualDistance": 0.0018,
+          "readoutChanged": true
+        },
+        "source": {
+          "path": "/sims/double-pendulum/",
+          "hasSetInterval": false,
+          "hasRequestAnimationFrame": false,
+          "hasSimLoop": true,
+          "hasSimKit": true,
+          "hasSimCss": true,
+          "hasReducedMotion": true,
+          "hasVisibilityPause": true,
+          "hasReset": true,
+          "hasPause": true,
+          "hasSpeed": false,
+          "hasInlineHandlers": false,
+          "recognizedLibraries": [
+            "simkit"
+          ],
+          "hasAnimation": true,
+          "isTemplate": false
+        },
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__double-pendulum.png"
       }
     },
     {
@@ -837,7 +1209,7 @@
       "group": "Physics & motion",
       "tech": "Matter.js",
       "description": "Drop and drag rigid bodies.",
-      "url": "http://127.0.0.1:63060/sims/stack/",
+      "url": "http://127.0.0.1:64834/sims/stack/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -929,7 +1301,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=383.19, colors=15"
+          "notes": "variance=257.69, colors=10"
         },
         {
           "category": "visual",
@@ -969,7 +1341,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0003, readoutChanged=true"
+          "notes": "visual distance=0.0021, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -1171,14 +1543,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 16.53,
-          "variance": 383.19,
-          "colorBuckets": 15,
+          "mean": 15.81,
+          "variance": 257.69,
+          "colorBuckets": 10,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0003,
+          "visualDistance": 0.0021,
           "readoutChanged": true
         },
         "source": {
@@ -1200,7 +1572,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__stack.png"
       }
     },
     {
@@ -1209,7 +1581,7 @@
       "group": "Math",
       "tech": "Canvas 2D",
       "description": "Rotating circles sum into a square wave.",
-      "url": "http://127.0.0.1:63060/sims/fourier/",
+      "url": "http://127.0.0.1:64834/sims/fourier/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -1301,7 +1673,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=23.1, colors=14"
+          "notes": "variance=17.89, colors=15"
         },
         {
           "category": "visual",
@@ -1543,9 +1915,9 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 14.51,
-          "variance": 23.1,
-          "colorBuckets": 14,
+          "mean": 14.47,
+          "variance": 17.89,
+          "colorBuckets": 15,
           "visibleRatio": 1,
           "nonBlank": true
         },
@@ -1573,7 +1945,379 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__fourier.png"
+      }
+    },
+    {
+      "href": "/sims/mandelbrot/",
+      "title": "Mandelbrot Explorer",
+      "group": "Math",
+      "tech": "Canvas 2D",
+      "description": "Zoom into infinite fractal detail.",
+      "url": "http://127.0.0.1:64834/sims/mandelbrot/",
+      "status": "strong",
+      "score": {
+        "earned": 100,
+        "total": 100,
+        "percent": 100,
+        "byCategory": {
+          "runtime": {
+            "label": "Runtime health",
+            "earned": 20,
+            "points": 20,
+            "percent": 100
+          },
+          "visual": {
+            "label": "Visual frame",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "interaction": {
+            "label": "Interaction",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "learning": {
+            "label": "Learning layer",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "accessibility": {
+            "label": "Accessibility/mobile",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "implementation": {
+            "label": "Implementation",
+            "earned": 12,
+            "points": 12,
+            "percent": 100
+          }
+        }
+      },
+      "checks": [
+        {
+          "category": "runtime",
+          "id": "page-loads",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "Page returns OK"
+        },
+        {
+          "category": "runtime",
+          "id": "no-page-errors",
+          "points": 6,
+          "earned": 6,
+          "pass": true,
+          "notes": "No uncaught page errors"
+        },
+        {
+          "category": "runtime",
+          "id": "critical-resources",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "No critical resource failures"
+        },
+        {
+          "category": "runtime",
+          "id": "document-title",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Mandelbrot Explorer — Kevin Arifin"
+        },
+        {
+          "category": "visual",
+          "id": "stage-sized",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "912x608"
+        },
+        {
+          "category": "visual",
+          "id": "stage-nonblank",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "variance=407.32, colors=112"
+        },
+        {
+          "category": "visual",
+          "id": "screenshot-captures",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Stage screenshot captured"
+        },
+        {
+          "category": "visual",
+          "id": "mobile-no-horizontal-overflow",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No horizontal overflow"
+        },
+        {
+          "category": "interaction",
+          "id": "affordances",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "3 controls / no steps"
+        },
+        {
+          "category": "interaction",
+          "id": "controls-labeled",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs are labeled"
+        },
+        {
+          "category": "interaction",
+          "id": "poke-changes-state",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "visual distance=0.1073, readoutChanged=true"
+        },
+        {
+          "category": "interaction",
+          "id": "reset",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reset exists"
+        },
+        {
+          "category": "interaction",
+          "id": "pause-step-speed",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pause/step/speed affordance present or static"
+        },
+        {
+          "category": "learning",
+          "id": "headline-and-lead",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Headline and setup copy present"
+        },
+        {
+          "category": "learning",
+          "id": "readout-or-caption",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Readout/caption/steps present"
+        },
+        {
+          "category": "learning",
+          "id": "values-visible",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Parameter values are visible"
+        },
+        {
+          "category": "learning",
+          "id": "gallery-card",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Math: Canvas 2D"
+        },
+        {
+          "category": "accessibility",
+          "id": "stage-aria",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Mandelbrot set fractal; click to zoom in"
+        },
+        {
+          "category": "accessibility",
+          "id": "form-labels",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs have labels"
+        },
+        {
+          "category": "accessibility",
+          "id": "keyboard-controls",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Native controls are keyboard reachable"
+        },
+        {
+          "category": "accessibility",
+          "id": "reduced-motion",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Animated sim lacks reduced-motion handling"
+        },
+        {
+          "category": "accessibility",
+          "id": "mobile-stage",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "342x228"
+        },
+        {
+          "category": "implementation",
+          "id": "no-setinterval",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No setInterval loop"
+        },
+        {
+          "category": "implementation",
+          "id": "loop-pattern",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Animation loop/library detected"
+        },
+        {
+          "category": "implementation",
+          "id": "shared-css",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Uses shared sim.css"
+        },
+        {
+          "category": "implementation",
+          "id": "known-pattern",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pattern: simkit"
+        },
+        {
+          "category": "implementation",
+          "id": "static-page",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Static page source found"
+        }
+      ],
+      "topFailures": [],
+      "diagnostics": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailures": [],
+        "layout": {
+          "title": "Mandelbrot Explorer — Kevin Arifin",
+          "h1": "Mandelbrot Explorer",
+          "lead": "Infinite detail from one rule, z → z² + c. Click the boundary to zoom in. Canvas 2D · math.",
+          "readout": "Center -0.6000, 0.0000 · scale 3.20e+0 · 200 iters",
+          "stageExists": true,
+          "stageAria": "Mandelbrot set fractal; click to zoom in",
+          "stageRole": "",
+          "stageRect": {
+            "width": 912,
+            "height": 608,
+            "top": 155,
+            "bottom": 763
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 3,
+          "rangeCount": 1,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Zoom out",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 1280,
+          "viewportWidth": 1280,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "mobileLayout": {
+          "title": "Mandelbrot Explorer — Kevin Arifin",
+          "h1": "Mandelbrot Explorer",
+          "lead": "Infinite detail from one rule, z → z² + c. Click the boundary to zoom in. Canvas 2D · math.",
+          "readout": "Center -0.6000, 0.0000 · scale 3.20e+0 · 200 iters",
+          "stageExists": true,
+          "stageAria": "Mandelbrot set fractal; click to zoom in",
+          "stageRole": "",
+          "stageRect": {
+            "width": 342,
+            "height": 228,
+            "top": 180,
+            "bottom": 408
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 3,
+          "rangeCount": 1,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Zoom out",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "visualStats": {
+          "width": 912,
+          "height": 609,
+          "samples": 7031,
+          "mean": 31.76,
+          "variance": 407.32,
+          "colorBuckets": 112,
+          "visibleRatio": 1,
+          "nonBlank": true
+        },
+        "exercise": {
+          "visualDistance": 0.1073,
+          "readoutChanged": true
+        },
+        "source": {
+          "path": "/sims/mandelbrot/",
+          "hasSetInterval": false,
+          "hasRequestAnimationFrame": false,
+          "hasSimLoop": false,
+          "hasSimKit": true,
+          "hasSimCss": true,
+          "hasReducedMotion": false,
+          "hasVisibilityPause": false,
+          "hasReset": true,
+          "hasPause": false,
+          "hasSpeed": false,
+          "hasInlineHandlers": false,
+          "recognizedLibraries": [
+            "simkit"
+          ],
+          "hasAnimation": false,
+          "isTemplate": false
+        },
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__mandelbrot.png"
       }
     },
     {
@@ -1582,7 +2326,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Local rules create gliders, still lifes, and chaos.",
-      "url": "http://127.0.0.1:63060/sims/game-of-life/",
+      "url": "http://127.0.0.1:64834/sims/game-of-life/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -1959,7 +2703,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__game-of-life.png"
       }
     },
     {
@@ -1968,7 +2712,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Tune learning rate and momentum on a loss surface.",
-      "url": "http://127.0.0.1:63060/sims/gradient-descent/",
+      "url": "http://127.0.0.1:64834/sims/gradient-descent/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -2100,7 +2844,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0002, readoutChanged=true"
+          "notes": "visual distance=0.0003, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -2240,7 +2984,7 @@
           "title": "Gradient Descent — Kevin Arifin",
           "h1": "Gradient Descent",
           "lead": "Drag the starting point, tune the learning rate and momentum, and watch optimization either settle into a basin or overshoot. Inspired by Stanford CS229. Canvas 2D · machine learning.",
-          "readout": "step 214 · loss 0.721 · |gradient| 0.000",
+          "readout": "step 212 · loss 0.721 · |gradient| 0.000",
           "stageExists": true,
           "stageAria": "Gradient descent contour map",
           "stageRole": "",
@@ -2272,7 +3016,7 @@
           "title": "Gradient Descent — Kevin Arifin",
           "h1": "Gradient Descent",
           "lead": "Drag the starting point, tune the learning rate and momentum, and watch optimization either settle into a basin or overshoot. Inspired by Stanford CS229. Canvas 2D · machine learning.",
-          "readout": "step 152 · loss 0.721 · |gradient| 0.000",
+          "readout": "step 154 · loss 0.721 · |gradient| 0.000",
           "stageExists": true,
           "stageAria": "Gradient descent contour map",
           "stageRole": "",
@@ -2311,7 +3055,7 @@
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0002,
+          "visualDistance": 0.0003,
           "readoutChanged": true
         },
         "source": {
@@ -2333,7 +3077,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__gradient-descent.png"
       }
     },
     {
@@ -2342,7 +3086,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Polynomial degree trades underfit for overfit.",
-      "url": "http://127.0.0.1:63060/sims/bias-variance/",
+      "url": "http://127.0.0.1:64834/sims/bias-variance/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -2705,7 +3449,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__bias-variance.png"
       }
     },
     {
@@ -2714,7 +3458,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Value iteration diffuses rewards into a policy.",
-      "url": "http://127.0.0.1:63060/sims/gridworld/",
+      "url": "http://127.0.0.1:64834/sims/gridworld/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -3079,7 +3823,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__gridworld.png"
       }
     },
     {
@@ -3088,7 +3832,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Random-surfer rank mass settles on a graph.",
-      "url": "http://127.0.0.1:63060/sims/pagerank/",
+      "url": "http://127.0.0.1:64834/sims/pagerank/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -3453,7 +4197,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__pagerank.png"
       }
     },
     {
@@ -3462,7 +4206,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Heuristics steer a shortest-path search frontier.",
-      "url": "http://127.0.0.1:63060/sims/astar/",
+      "url": "http://127.0.0.1:64834/sims/astar/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -3827,7 +4571,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__astar.png"
       }
     },
     {
@@ -3836,7 +4580,7 @@
       "group": "Systems & control",
       "tech": "Canvas 2D",
       "description": "Transmission and recovery shape an epidemic curve.",
-      "url": "http://127.0.0.1:63060/sims/sir/",
+      "url": "http://127.0.0.1:64834/sims/sir/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -3928,7 +4672,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=18.09, colors=11"
+          "notes": "variance=18.27, colors=11"
         },
         {
           "category": "visual",
@@ -3968,7 +4712,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0005, readoutChanged=true"
+          "notes": "visual distance=0.0004, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -4108,7 +4852,7 @@
           "title": "SIR Epidemic — Kevin Arifin",
           "h1": "SIR Epidemic",
           "lead": "A compartment model from differential equations: susceptible people become infected, then recover. Tune transmission, recovery, and vaccination to flatten the curve. Canvas 2D · systems biology.",
-          "readout": "day 7.2 · infected 8.2% · peak 8.2% on day 7 · R0 3.71, Re 2.83",
+          "readout": "day 7.1 · infected 7.9% · peak 7.9% on day 7 · R0 3.71, Re 2.85",
           "stageExists": true,
           "stageAria": "SIR epidemic curves",
           "stageRole": "",
@@ -4140,7 +4884,7 @@
           "title": "SIR Epidemic — Kevin Arifin",
           "h1": "SIR Epidemic",
           "lead": "A compartment model from differential equations: susceptible people become infected, then recover. Tune transmission, recovery, and vaccination to flatten the curve. Canvas 2D · systems biology.",
-          "readout": "day 5.2 · infected 4.8% · peak 4.8% on day 5 · R0 3.71, Re 3.03",
+          "readout": "day 5.1 · infected 4.7% · peak 4.7% on day 5 · R0 3.71, Re 3.03",
           "stageExists": true,
           "stageAria": "SIR epidemic curves",
           "stageRole": "",
@@ -4173,13 +4917,13 @@
           "height": 609,
           "samples": 7031,
           "mean": 14.44,
-          "variance": 18.09,
+          "variance": 18.27,
           "colorBuckets": 11,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0005,
+          "visualDistance": 0.0004,
           "readoutChanged": true
         },
         "source": {
@@ -4201,7 +4945,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__sir.png"
       }
     },
     {
@@ -4210,7 +4954,7 @@
       "group": "Systems & control",
       "tech": "Canvas 2D",
       "description": "Tune feedback gains to reach a moving target.",
-      "url": "http://127.0.0.1:63060/sims/pid-control/",
+      "url": "http://127.0.0.1:64834/sims/pid-control/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -4302,7 +5046,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=87.29, colors=17"
+          "notes": "variance=84.95, colors=16"
         },
         {
           "category": "visual",
@@ -4342,7 +5086,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.001, readoutChanged=true"
+          "notes": "visual distance=0.0011, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -4482,7 +5226,7 @@
           "title": "PID Control — Kevin Arifin",
           "h1": "PID Control",
           "lead": "Tune proportional, integral, and derivative feedback on a cart trying to reach a target. Too little gain is sluggish; too much can ring or blow up. Canvas 2D · control systems.",
-          "readout": "error 0.320 · velocity 0.70 · integral 0.71",
+          "readout": "error 0.332 · velocity 0.72 · integral 0.71",
           "stageExists": true,
           "stageAria": "PID control cart and error plot",
           "stageRole": "",
@@ -4514,7 +5258,7 @@
           "title": "PID Control — Kevin Arifin",
           "h1": "PID Control",
           "lead": "Tune proportional, integral, and derivative feedback on a cart trying to reach a target. Too little gain is sluggish; too much can ring or blow up. Canvas 2D · control systems.",
-          "readout": "error 0.549 · velocity 1.04 · integral 0.60",
+          "readout": "error 0.540 · velocity 1.03 · integral 0.60",
           "stageExists": true,
           "stageAria": "PID control cart and error plot",
           "stageRole": "",
@@ -4546,14 +5290,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 15.06,
-          "variance": 87.29,
-          "colorBuckets": 17,
+          "mean": 15.04,
+          "variance": 84.95,
+          "colorBuckets": 16,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.001,
+          "visualDistance": 0.0011,
           "readoutChanged": true
         },
         "source": {
@@ -4575,7 +5319,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__pid-control.png"
       }
     },
     {
@@ -4584,7 +5328,7 @@
       "group": "Systems & control",
       "tech": "Canvas 2D",
       "description": "Estimate a hidden signal from noisy measurements.",
-      "url": "http://127.0.0.1:63060/sims/kalman/",
+      "url": "http://127.0.0.1:64834/sims/kalman/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -4676,7 +5420,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=251.1, colors=36"
+          "notes": "variance=246.32, colors=36"
         },
         {
           "category": "visual",
@@ -4716,7 +5460,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0002, readoutChanged=true"
+          "notes": "visual distance=0.0003, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -4856,7 +5600,7 @@
           "title": "Kalman Filter - Kevin Arifin",
           "h1": "Kalman Filter",
           "lead": "A hidden signal moves smoothly, the sensor lies noisily, and the filter balances model trust against measurement trust. Canvas 2D · estimation.",
-          "readout": "gain 0.46 · uncertainty 0.026 · absolute error 0.011",
+          "readout": "gain 0.46 · uncertainty 0.026 · absolute error 0.130",
           "stageExists": true,
           "stageAria": "Kalman filter tracking a hidden one-dimensional signal with noisy measurements",
           "stageRole": "",
@@ -4888,7 +5632,7 @@
           "title": "Kalman Filter - Kevin Arifin",
           "h1": "Kalman Filter",
           "lead": "A hidden signal moves smoothly, the sensor lies noisily, and the filter balances model trust against measurement trust. Canvas 2D · estimation.",
-          "readout": "gain 0.46 · uncertainty 0.026 · absolute error 0.234",
+          "readout": "gain 0.46 · uncertainty 0.026 · absolute error 0.123",
           "stageExists": true,
           "stageAria": "Kalman filter tracking a hidden one-dimensional signal with noisy measurements",
           "stageRole": "",
@@ -4920,14 +5664,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 16.45,
-          "variance": 251.1,
+          "mean": 16.42,
+          "variance": 246.32,
           "colorBuckets": 36,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0002,
+          "visualDistance": 0.0003,
           "readoutChanged": true
         },
         "source": {
@@ -4949,7 +5693,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__kalman.png"
       }
     },
     {
@@ -4958,7 +5702,7 @@
       "group": "Systems & control",
       "tech": "Canvas 2D",
       "description": "Local reactions and diffusion grow spots and stripes.",
-      "url": "http://127.0.0.1:63060/sims/reaction-diffusion/",
+      "url": "http://127.0.0.1:64834/sims/reaction-diffusion/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -5050,7 +5794,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=123.48, colors=37"
+          "notes": "variance=123.2, colors=38"
         },
         {
           "category": "visual",
@@ -5090,7 +5834,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0193, readoutChanged=true"
+          "notes": "visual distance=0.0257, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -5230,7 +5974,7 @@
           "title": "Reaction-Diffusion - Kevin Arifin",
           "h1": "Reaction-Diffusion",
           "lead": "Two chemicals diffuse and react; the inhibitor spreads faster, so local growth turns into spots, stripes, and fronts. Paint the catalyst to seed a pattern. Canvas 2D · nonlinear systems.",
-          "readout": "step 883 · catalyst mass 0.032 · feed/kill tunes spots versus stripes.",
+          "readout": "step 890 · catalyst mass 0.032 · feed/kill tunes spots versus stripes.",
           "stageExists": true,
           "stageAria": "Reaction diffusion field with emerging spots and stripes",
           "stageRole": "",
@@ -5262,7 +6006,7 @@
           "title": "Reaction-Diffusion - Kevin Arifin",
           "h1": "Reaction-Diffusion",
           "lead": "Two chemicals diffuse and react; the inhibitor spreads faster, so local growth turns into spots, stripes, and fronts. Paint the catalyst to seed a pattern. Canvas 2D · nonlinear systems.",
-          "readout": "step 673 · catalyst mass 0.027 · feed/kill tunes spots versus stripes.",
+          "readout": "step 680 · catalyst mass 0.027 · feed/kill tunes spots versus stripes.",
           "stageExists": true,
           "stageAria": "Reaction diffusion field with emerging spots and stripes",
           "stageRole": "",
@@ -5294,14 +6038,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 94.89,
-          "variance": 123.48,
-          "colorBuckets": 37,
+          "mean": 94.92,
+          "variance": 123.2,
+          "colorBuckets": 38,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0193,
+          "visualDistance": 0.0257,
           "readoutChanged": true
         },
         "source": {
@@ -5323,7 +6067,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__reaction-diffusion.png"
       }
     },
     {
@@ -5332,7 +6076,7 @@
       "group": "Systems & control",
       "tech": "Canvas 2D",
       "description": "Coupled populations loop through phase space.",
-      "url": "http://127.0.0.1:63060/sims/predator-prey/",
+      "url": "http://127.0.0.1:64834/sims/predator-prey/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -5464,7 +6208,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0005, readoutChanged=true"
+          "notes": "visual distance=0.0003, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -5604,7 +6348,7 @@
           "title": "Predator-Prey Cycles - Kevin Arifin",
           "h1": "Predator-Prey Cycles",
           "lead": "Prey growth feeds predators; predators suppress prey. The coupled feedback traces loops in phase space and oscillations over time. Canvas 2D · differential equations.",
-          "readout": "prey 0.69 · predators 1.53 · coexistence point (1.65, 1.46)",
+          "readout": "prey 0.69 · predators 1.50 · coexistence point (1.65, 1.46)",
           "stageExists": true,
           "stageAria": "Lotka Volterra predator prey phase plot and population time series",
           "stageRole": "",
@@ -5636,7 +6380,7 @@
           "title": "Predator-Prey Cycles - Kevin Arifin",
           "h1": "Predator-Prey Cycles",
           "lead": "Prey growth feeds predators; predators suppress prey. The coupled feedback traces loops in phase space and oscillations over time. Canvas 2D · differential equations.",
-          "readout": "prey 0.98 · predators 2.47 · coexistence point (1.65, 1.46)",
+          "readout": "prey 1.00 · predators 2.50 · coexistence point (1.65, 1.46)",
           "stageExists": true,
           "stageAria": "Lotka Volterra predator prey phase plot and population time series",
           "stageRole": "",
@@ -5675,7 +6419,7 @@
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0005,
+          "visualDistance": 0.0003,
           "readoutChanged": true
         },
         "source": {
@@ -5697,7 +6441,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__predator-prey.png"
       }
     },
     {
@@ -5706,7 +6450,7 @@
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Transition steps converge toward stationarity.",
-      "url": "http://127.0.0.1:63060/sims/markov-chain/",
+      "url": "http://127.0.0.1:64834/sims/markov-chain/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -6071,7 +6815,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__markov-chain.png"
       }
     },
     {
@@ -6080,7 +6824,7 @@
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Independent steps spread into a widening cloud.",
-      "url": "http://127.0.0.1:63060/sims/random-walk/",
+      "url": "http://127.0.0.1:64834/sims/random-walk/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -6172,7 +6916,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=68.76, colors=33"
+          "notes": "variance=77.87, colors=30"
         },
         {
           "category": "visual",
@@ -6212,7 +6956,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.003, readoutChanged=true"
+          "notes": "visual distance=0.0041, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -6352,7 +7096,7 @@
           "title": "Random Walk Diffusion - Kevin Arifin",
           "h1": "Random Walk Diffusion",
           "lead": "Many tiny independent steps spread into a cloud whose width grows like the square root of time. Bias and persistence bend that diffusion. Canvas 2D · stochastic processes.",
-          "readout": "steps 344 · mean x 21.49 · variance 723.9",
+          "readout": "steps 338 · mean x 20.97 · variance 715.4",
           "stageExists": true,
           "stageAria": "Random walk particle cloud and variance history",
           "stageRole": "",
@@ -6384,7 +7128,7 @@
           "title": "Random Walk Diffusion - Kevin Arifin",
           "h1": "Random Walk Diffusion",
           "lead": "Many tiny independent steps spread into a cloud whose width grows like the square root of time. Bias and persistence bend that diffusion. Canvas 2D · stochastic processes.",
-          "readout": "steps 245 · mean x 16.02 · variance 516.8",
+          "readout": "steps 257 · mean x 16.67 · variance 533.7",
           "stageExists": true,
           "stageAria": "Random walk particle cloud and variance history",
           "stageRole": "",
@@ -6416,14 +7160,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 15.21,
-          "variance": 68.76,
-          "colorBuckets": 33,
+          "mean": 15.19,
+          "variance": 77.87,
+          "colorBuckets": 30,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.003,
+          "visualDistance": 0.0041,
           "readoutChanged": true
         },
         "source": {
@@ -6445,7 +7189,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__random-walk.png"
       }
     },
     {
@@ -6454,7 +7198,7 @@
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Random samples estimate area and uncertainty.",
-      "url": "http://127.0.0.1:63060/sims/monte-carlo-pi/",
+      "url": "http://127.0.0.1:64834/sims/monte-carlo-pi/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -6546,7 +7290,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=117.89, colors=43"
+          "notes": "variance=115.47, colors=43"
         },
         {
           "category": "visual",
@@ -6586,7 +7330,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0002, readoutChanged=true"
+          "notes": "visual distance=0.0007, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -6758,7 +7502,7 @@
           "title": "Monte Carlo Pi - Kevin Arifin",
           "h1": "Monte Carlo Pi",
           "lead": "Throw random points into a square. The fraction landing inside the quarter-circle estimates area, and four times that area estimates pi. Canvas 2D · numerical methods.",
-          "readout": "samples 640 · estimate 2.98125 · 95% half-width 0.1350",
+          "readout": "samples 600 · estimate 2.98000 · 95% half-width 0.1395",
           "stageExists": true,
           "stageAria": "Monte Carlo pi estimate with random points inside and outside a quarter circle",
           "stageRole": "",
@@ -6790,14 +7534,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 17.95,
-          "variance": 117.89,
+          "mean": 17.91,
+          "variance": 115.47,
           "colorBuckets": 43,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0002,
+          "visualDistance": 0.0007,
           "readoutChanged": true
         },
         "source": {
@@ -6819,7 +7563,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__monte-carlo-pi.png"
       }
     },
     {
@@ -6828,7 +7572,7 @@
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Base rates explain why false positives dominate.",
-      "url": "http://127.0.0.1:63060/sims/bayes-test/",
+      "url": "http://127.0.0.1:64834/sims/bayes-test/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -7194,7 +7938,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__bayes-test.png"
       }
     },
     {
@@ -7203,7 +7947,7 @@
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Coin flips pile up into a bell curve.",
-      "url": "http://127.0.0.1:63060/sims/galton/",
+      "url": "http://127.0.0.1:64834/sims/galton/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -7571,7 +8315,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__galton.png"
       }
     },
     {
@@ -7580,7 +8324,7 @@
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Averages of any shape become a bell curve.",
-      "url": "http://127.0.0.1:63060/sims/clt/",
+      "url": "http://127.0.0.1:64834/sims/clt/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -7852,7 +8596,7 @@
           "title": "Central Limit Theorem — Kevin Arifin",
           "h1": "Central Limit Theorem",
           "lead": "Average enough samples from any shape and the averages form a bell curve. Pick a weird population, set the sample size, and run the experiment. Canvas 2D · statistics.",
-          "readout": "Samples: 0 · mean of means 0.000 (pop 0.501) · sd of means 0.000 (predicted σ/√n = 0.129)",
+          "readout": "Samples: 0 · mean of means 0.000 (pop 0.498) · sd of means 0.000 (predicted σ/√n = 0.129)",
           "stageExists": true,
           "stageAria": "Central Limit Theorem sampling histogram",
           "stageRole": "",
@@ -7887,7 +8631,7 @@
           "title": "Central Limit Theorem — Kevin Arifin",
           "h1": "Central Limit Theorem",
           "lead": "Average enough samples from any shape and the averages form a bell curve. Pick a weird population, set the sample size, and run the experiment. Canvas 2D · statistics.",
-          "readout": "Samples: 0 · mean of means 0.000 (pop 0.500) · sd of means 0.000 (predicted σ/√n = 0.129)",
+          "readout": "Samples: 0 · mean of means 0.000 (pop 0.498) · sd of means 0.000 (predicted σ/√n = 0.129)",
           "stageExists": true,
           "stageAria": "Central Limit Theorem sampling histogram",
           "stageRole": "",
@@ -7951,7 +8695,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__clt.png"
       }
     },
     {
@@ -7960,7 +8704,7 @@
       "group": "Statistics",
       "tech": "D3",
       "description": "Data-driven chart with hover + regen.",
-      "url": "http://127.0.0.1:63060/sims/bars/",
+      "url": "http://127.0.0.1:64834/sims/bars/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -8052,7 +8796,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=7371.34, colors=17"
+          "notes": "variance=8009.8, colors=18"
         },
         {
           "category": "visual",
@@ -8092,7 +8836,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.2045, readoutChanged=true"
+          "notes": "visual distance=0.1926, readoutChanged=false"
         },
         {
           "category": "interaction",
@@ -8294,15 +9038,15 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 77.56,
-          "variance": 7371.34,
-          "colorBuckets": 17,
+          "mean": 95.84,
+          "variance": 8009.8,
+          "colorBuckets": 18,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.2045,
-          "readoutChanged": true
+          "visualDistance": 0.1926,
+          "readoutChanged": false
         },
         "source": {
           "path": "/sims/bars/",
@@ -8323,7 +9067,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__bars.png"
       }
     },
     {
@@ -8332,7 +9076,7 @@
       "group": "Economics & finance",
       "tech": "Canvas 2D",
       "description": "Shift curves; find the new equilibrium.",
-      "url": "http://127.0.0.1:63060/sims/supply-demand/",
+      "url": "http://127.0.0.1:64834/sims/supply-demand/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -8693,7 +9437,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__supply-demand.png"
       }
     },
     {
@@ -8702,7 +9446,7 @@
       "group": "Economics & finance",
       "tech": "Canvas 2D",
       "description": "P/L diagrams for calls, puts, spreads.",
-      "url": "http://127.0.0.1:63060/sims/options/",
+      "url": "http://127.0.0.1:64834/sims/options/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -9073,7 +9817,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__options.png"
       }
     },
     {
@@ -9082,7 +9826,7 @@
       "group": "Economics & finance",
       "tech": "Canvas 2D",
       "description": "Local preferences produce global clustering.",
-      "url": "http://127.0.0.1:63060/sims/schelling/",
+      "url": "http://127.0.0.1:64834/sims/schelling/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -9214,7 +9958,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0419, readoutChanged=true"
+          "notes": "visual distance=0.0259, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -9425,7 +10169,7 @@
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0419,
+          "visualDistance": 0.0259,
           "readoutChanged": true
         },
         "source": {
@@ -9447,7 +10191,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__schelling.png"
       }
     },
     {
@@ -9456,7 +10200,7 @@
       "group": "Early literacy",
       "tech": "Web Speech",
       "description": "Tap letters, hear sounds, blend a word.",
-      "url": "http://127.0.0.1:63060/sims/phonics/",
+      "url": "http://127.0.0.1:64834/sims/phonics/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -9832,7 +10576,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__phonics.png"
       }
     },
     {
@@ -9841,7 +10585,7 @@
       "group": "Ideas & literature",
       "tech": "Explorable",
       "description": "Hayek's argument as an interactive book.",
-      "url": "http://127.0.0.1:63060/sims/road-to-serfdom/",
+      "url": "http://127.0.0.1:64834/sims/road-to-serfdom/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -9933,7 +10677,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=525.53, colors=142"
+          "notes": "variance=543.89, colors=155"
         },
         {
           "category": "visual",
@@ -9973,7 +10717,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0299, readoutChanged=false"
+          "notes": "visual distance=0.0311, readoutChanged=false"
         },
         {
           "category": "interaction",
@@ -10175,14 +10919,14 @@
           "width": 438,
           "height": 439,
           "samples": 7122,
-          "mean": 18.73,
-          "variance": 525.53,
-          "colorBuckets": 142,
+          "mean": 18.89,
+          "variance": 543.89,
+          "colorBuckets": 155,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0299,
+          "visualDistance": 0.0311,
           "readoutChanged": false
         },
         "source": {
@@ -10204,7 +10948,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__road-to-serfdom.png"
       }
     },
     {
@@ -10213,7 +10957,7 @@
       "group": "Graphics & generative",
       "tech": "three.js",
       "description": "Orbit and zoom a 3D mesh.",
-      "url": "http://127.0.0.1:63060/sims/orbit/",
+      "url": "http://127.0.0.1:64834/sims/orbit/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -10305,7 +11049,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=1820.92, colors=46"
+          "notes": "variance=1822.04, colors=45"
         },
         {
           "category": "visual",
@@ -10345,7 +11089,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0243, readoutChanged=false"
+          "notes": "visual distance=0.0252, readoutChanged=false"
         },
         {
           "category": "interaction",
@@ -10479,10 +11223,10 @@
       "topFailures": [],
       "diagnostics": {
         "consoleErrors": [
-          "warning: [.WebGL-0x12400564e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-          "warning: [.WebGL-0x12400564e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-          "warning: [.WebGL-0x12400564e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-          "warning: [.WebGL-0x12400564e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+          "warning: [.WebGL-0x12c00564e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "warning: [.WebGL-0x12c00564e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "warning: [.WebGL-0x12c00564e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "warning: [.WebGL-0x12c00564e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
         ],
         "pageErrors": [],
         "requestFailures": [],
@@ -10550,14 +11294,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 36.29,
-          "variance": 1820.92,
-          "colorBuckets": 46,
+          "mean": 36.26,
+          "variance": 1822.04,
+          "colorBuckets": 45,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0243,
+          "visualDistance": 0.0252,
           "readoutChanged": false
         },
         "source": {
@@ -10579,7 +11323,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__orbit.png"
       }
     },
     {
@@ -10588,7 +11332,7 @@
       "group": "Graphics & generative",
       "tech": "p5.js",
       "description": "Particles drifting along Perlin noise.",
-      "url": "http://127.0.0.1:63060/sims/flow-field/",
+      "url": "http://127.0.0.1:64834/sims/flow-field/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -10680,7 +11424,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=175.29, colors=24"
+          "notes": "variance=164.25, colors=24"
         },
         {
           "category": "visual",
@@ -10720,7 +11464,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0066, readoutChanged=true"
+          "notes": "visual distance=0.0067, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -10922,14 +11666,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 18.32,
-          "variance": 175.29,
+          "mean": 18.07,
+          "variance": 164.25,
           "colorBuckets": 24,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0066,
+          "visualDistance": 0.0067,
           "readoutChanged": true
         },
         "source": {
@@ -10951,7 +11695,7 @@
           "hasAnimation": false,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims__flow-field.png"
       }
     },
     {
@@ -10960,7 +11704,7 @@
       "group": "Format",
       "tech": "Explorable",
       "description": "Scrollytelling — narrative paired with a sim.",
-      "url": "http://127.0.0.1:63060/sims/_explainer/",
+      "url": "http://127.0.0.1:64834/sims/_explainer/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -11052,7 +11796,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=2662.67, colors=36"
+          "notes": "variance=2664.02, colors=36"
         },
         {
           "category": "visual",
@@ -11092,7 +11836,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.2264, readoutChanged=false"
+          "notes": "visual distance=0.2262, readoutChanged=false"
         },
         {
           "category": "interaction",
@@ -11294,14 +12038,14 @@
           "width": 438,
           "height": 439,
           "samples": 7122,
-          "mean": 77.21,
-          "variance": 2662.67,
+          "mean": 77.26,
+          "variance": 2664.02,
           "colorBuckets": 36,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.2264,
+          "visualDistance": 0.2262,
           "readoutChanged": false
         },
         "source": {
@@ -11323,7 +12067,7 @@
           "hasAnimation": true,
           "isTemplate": false
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims___explainer.png"
       }
     },
     {
@@ -11332,7 +12076,7 @@
       "group": "Format",
       "tech": "Canvas 2D",
       "description": "Starter page with controls, pointer input, and loop wiring.",
-      "url": "http://127.0.0.1:63060/sims/_template/",
+      "url": "http://127.0.0.1:64834/sims/_template/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -11464,7 +12208,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0152, readoutChanged=true"
+          "notes": "visual distance=0.0153, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -11673,7 +12417,7 @@
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0152,
+          "visualDistance": 0.0153,
           "readoutChanged": true
         },
         "source": {
@@ -11695,7 +12439,7 @@
           "hasAnimation": true,
           "isTemplate": true
         },
-        "screenshot": null
+        "screenshot": "/var/folders/y9/_nygnppj3ss4tbxqp21mwbp80000gn/T/sim-eval-1781412705945/sims___template.png"
       }
     }
   ]

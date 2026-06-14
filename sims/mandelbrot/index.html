@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mandelbrot Explorer — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Mandelbrot Explorer</h1>
+      <p class="sub">Infinite detail from one rule, z → z² + c. Click the boundary to zoom in. <strong>Canvas 2D</strong> · math.</p>
+
+      <div class="stage" aria-label="Mandelbrot set fractal; click to zoom in"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Detail <strong id="iterValue"></strong> iters</span>
+          <input id="iter" type="range" min="60" max="600" step="20" value="200" /></label>
+        <button id="zoomout">Zoom out</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro">Click the fractal to zoom toward that point.</div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { iter: 200 };
+        const HOME = { cx: -0.6, cy: 0, span: 3.2 };
+        let vs = { ...HOME }, view = { w: 0, h: 0 }, GW = 380, GH = 260, buf, bctx, img, palette = [];
+
+        function buildPalette() {
+          palette = []; const stops = [[10, 12, 22], [40, 70, 160], [232, 197, 71], [255, 255, 255]];
+          for (let i = 0; i < 256; i++) {
+            const t = i / 255 * (stops.length - 1), k = Math.floor(t), f = t - k;
+            const a = stops[k], b = stops[Math.min(k + 1, stops.length - 1)];
+            palette.push([a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]);
+          }
+        }
+        function buildBuffer() { GH = Math.max(1, Math.round(GW * view.h / view.w)); buf = document.createElement("canvas"); buf.width = GW; buf.height = GH; bctx = buf.getContext("2d"); img = bctx.createImageData(GW, GH); }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); buildBuffer(); render(); }
+        window.addEventListener("resize", resize);
+
+        function render() {
+          const aspect = GH / GW, spanX = vs.span, spanY = vs.span * aspect;
+          const x0 = vs.cx - spanX / 2, y0 = vs.cy - spanY / 2, d = img.data, maxIter = params.iter;
+          for (let py = 0, idx = 0; py < GH; py++) {
+            const cy = y0 + spanY * py / GH;
+            for (let px = 0; px < GW; px++, idx += 4) {
+              const cx = x0 + spanX * px / GW;
+              let zx = 0, zy = 0, n = 0;
+              while (zx * zx + zy * zy <= 4 && n < maxIter) { const xt = zx * zx - zy * zy + cx; zy = 2 * zx * zy + cy; zx = xt; n++; }
+              const col = n >= maxIter ? [6, 6, 10] : palette[Math.min(255, Math.floor(Math.pow(n / maxIter, 0.5) * 255))];
+              d[idx] = col[0]; d[idx + 1] = col[1]; d[idx + 2] = col[2]; d[idx + 3] = 255;
+            }
+          }
+          bctx.putImageData(img, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(buf, 0, 0, view.w, view.h);
+          ro.innerHTML = "Center <strong>" + vs.cx.toFixed(4) + ", " + vs.cy.toFixed(4) + "</strong> · scale <strong>" + vs.span.toExponential(2) + "</strong> · " + maxIter + " iters";
+        }
+
+        Sim.pointer(canvas, {
+          down(p) {
+            const aspect = GH / GW, spanX = vs.span, spanY = vs.span * aspect;
+            vs.cx = vs.cx - spanX / 2 + spanX * (p.x / view.w);
+            vs.cy = vs.cy - spanY / 2 + spanY * (p.y / view.h);
+            vs.span /= 2.4; render();
+          },
+        });
+        buildPalette(); resize();
+        Sim.bind("iter", params, "iter", (v) => { render(); return v; });
+        document.getElementById("zoomout").addEventListener("click", () => { vs.span = Math.min(HOME.span, vs.span * 2.4); render(); });
+        document.getElementById("reset").addEventListener("click", () => { vs = { ...HOME }; render(); });
+      </script>
+    </main>
+  </body>
+</html>

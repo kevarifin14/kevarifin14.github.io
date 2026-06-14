@@ -1,8 +1,8 @@
 # Simulation Eval Report
 
-Run: 2026-06-14T03:24:05.742Z
-Base URL: http://127.0.0.1:63060
-Overall: **100/100** (strong) across 31 sims.
+Run: 2026-06-14T04:53:17.399Z
+Base URL: http://127.0.0.1:64834
+Overall: **100/100** (strong) across 33 sims.
 
 ## Rubric
 
@@ -19,8 +19,10 @@ Overall: **100/100** (strong) across 31 sims.
 |---|---:|---:|---|---|
 | [Ripple Tank](/sims/ripple/) | Canvas 2D | 100 | strong | None |
 | [Pendulum](/sims/pendulum/) | SVG | 100 | strong | None |
+| [Double Pendulum](/sims/double-pendulum/) | Canvas 2D | 100 | strong | None |
 | [Physics Stack](/sims/stack/) | Matter.js | 100 | strong | None |
 | [Fourier Epicycles](/sims/fourier/) | Canvas 2D | 100 | strong | None |
+| [Mandelbrot Explorer](/sims/mandelbrot/) | Canvas 2D | 100 | strong | None |
 | [Game of Life](/sims/game-of-life/) | Canvas 2D | 100 | strong | None |
 | [Gradient Descent](/sims/gradient-descent/) | Canvas 2D | 100 | strong | None |
 | [Bias-Variance](/sims/bias-variance/) | Canvas 2D | 100 | strong | None |
@@ -57,9 +59,9 @@ Overall: **100/100** (strong) across 31 sims.
 
 - **Ripple Tank** (/sims/ripple/) scored 100. Top misses: None
 - **Pendulum** (/sims/pendulum/) scored 100. Top misses: None
+- **Double Pendulum** (/sims/double-pendulum/) scored 100. Top misses: None
 - **Physics Stack** (/sims/stack/) scored 100. Top misses: None
 - **Fourier Epicycles** (/sims/fourier/) scored 100. Top misses: None
-- **Game of Life** (/sims/game-of-life/) scored 100. Top misses: None
 
 ## Method
 

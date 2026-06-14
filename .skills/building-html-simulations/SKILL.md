@@ -123,7 +123,9 @@ This repo ships a working component library and one example per method at `/sims
 - **Examples (copy the closest)** — `ripple` (Canvas 2D field), `pendulum` (SVG), `orbit` (three.js), `flow-field` (p5), `bars` (D3), `stack` (Matter.js).
 - **Gallery** — `/sims/index.html`, linked from the site nav.
 
-To add a sim: copy the closest example, swap in your `reset`/`update`/`render`, add a card to `/sims/index.html`, commit. Details in `/sims/README.md`.
+To add a sim: copy the closest example, swap in your `reset`/`update`/`render`, add a card to `/sims/index.html`, then run `npm run thumbs` to capture its gallery thumbnail, and commit. Details in `/sims/README.md`.
+
+**Gallery thumbnails.** The gallery auto-injects `/sims/thumbs/<slug>.png` into every card (a small client script keyed off each card's href; a missing thumb just removes its `<img>`). Generate/refresh them with `npm run thumbs` (`scripts/thumbnails.mjs`), which serves the site, opens each sim in Chromium, gives it one "positive" poke (Drop/Draw/Random/etc., never Pause/Reset) so data-driven sims show real content, and screenshots the `.stage`. Re-run it whenever you add a sim or change one's look, and commit the new PNGs (`/sims/thumbs/`). Keep thumbnails part of shipping a sim — a card without a picture is a worse gallery.
 
 ## Data-heavy and WebGL sims
 
@@ -173,10 +175,11 @@ Build Progress:
 - [ ] 7. Tune defaults/presets so frame 1 is already interesting
 - [ ] 8. Perf pass (HiDPI, offscreen pause, no per-frame allocs)
 - [ ] 9. Add/update `/sims/index.html` and any short `/sims/README.md` note
-- [ ] 10. Mobile + reduced-motion + aria pass
-- [ ] 11. Browser verify using `reference/verification.md`
-- [ ] 12. Run `npm run eval:sims`; fix objective failures before polishing
-- [ ] 13. Log durable eval lessons with `$meta-skill-evaluator`; update this skill only for recurring or reusable lessons
+- [ ] 10. Generate the gallery thumbnail: `npm run thumbs` (commit the new `/sims/thumbs/<slug>.png`)
+- [ ] 11. Mobile + reduced-motion + aria pass
+- [ ] 12. Browser verify using `reference/verification.md`
+- [ ] 13. Run `npm run eval:sims`; fix objective failures before polishing
+- [ ] 14. Log durable eval lessons with `$meta-skill-evaluator`; update this skill only for recurring or reusable lessons
 ```
 
 ## Anti-patterns

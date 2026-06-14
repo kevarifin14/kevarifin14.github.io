@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Double Pendulum — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Double Pendulum</h1>
+      <p class="sub">Two arms, fully deterministic physics — yet a hair's difference in the start explodes into a totally different path. The classic picture of chaos. <strong>Canvas 2D</strong> · physics.</p>
+
+      <div class="stage" aria-label="Chaotic double pendulum tracing its tip"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Gravity <strong id="gValue"></strong></span>
+          <input id="g" type="range" min="5" max="40" step="1" value="20" /></label>
+        <label class="row check"><input id="trail" type="checkbox" checked /> <span>Trail</span></label>
+        <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro">Press Reset to drop again from a fresh angle — watch how differently it swings each time.</div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { g: 20, trail: true };
+        let view = { w: 0, h: 0 }, state, trail = [];
+
+        function reset() { const r = Sim.rng((Date.now() & 0xffff) + 1); state = { a1: 2.2 + (r() - 0.5) * 0.5, a2: 2.4 + (r() - 0.5) * 0.5, a1v: 0, a2v: 0 }; trail = []; }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); }
+        window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
+
+        function update(dt) {
+          const m1 = 1, m2 = 1, l1 = 1, l2 = 1, g = params.g, { a1, a2, a1v, a2v } = state;
+          const den = 2 * m1 + m2 - m2 * Math.cos(2 * a1 - 2 * a2);
+          const a1a = (-g * (2 * m1 + m2) * Math.sin(a1) - m2 * g * Math.sin(a1 - 2 * a2) - 2 * Math.sin(a1 - a2) * m2 * (a2v * a2v * l2 + a1v * a1v * l1 * Math.cos(a1 - a2))) / (l1 * den);
+          const a2a = (2 * Math.sin(a1 - a2) * (a1v * a1v * l1 * (m1 + m2) + g * (m1 + m2) * Math.cos(a1) + a2v * a2v * l2 * m2 * Math.cos(a1 - a2))) / (l2 * den);
+          state.a1v = (state.a1v + a1a * dt) * 0.9999; state.a2v = (state.a2v + a2a * dt) * 0.9999;
+          state.a1 += state.a1v * dt; state.a2 += state.a2v * dt;
+        }
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const cx = view.w / 2, cy = view.h * 0.36, L = Math.min(view.w, view.h) * 0.22;
+          const x1 = cx + L * Math.sin(state.a1), y1 = cy + L * Math.cos(state.a1);
+          const x2 = x1 + L * Math.sin(state.a2), y2 = y1 + L * Math.cos(state.a2);
+          if (params.trail) {
+            trail.push([x2, y2]); if (trail.length > 600) trail.shift();
+            ctx.strokeStyle = "rgba(79,163,255,0.5)"; ctx.lineWidth = 1.4; ctx.beginPath();
+            trail.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke();
+          } else trail = [];
+          ctx.strokeStyle = "#8a8a8f"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+          ctx.fillStyle = "#e8c547";
+          [[cx, cy, 3], [x1, y1, 7], [x2, y2, 7]].forEach(([x, y, r]) => { ctx.beginPath(); ctx.arc(x, y, r, 0, 6.28); ctx.fill(); });
+          ro.innerHTML = "θ₁ <strong>" + state.a1.toFixed(2) + "</strong> · θ₂ <strong>" + state.a2.toFixed(2) + "</strong> · gravity " + params.g;
+        }
+
+        resize(); reset();
+        const sim = Sim.loop({ update, render, stage: canvas.parentElement, fixedDt: 1 / 240 });
+        Sim.bind("g", params, "g", (v) => v);
+        Sim.bind("trail", params, "trail", (v) => (v ? "on" : "off"));
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("reset").addEventListener("click", () => { reset(); sim.renderOnce(); });
+      </script>
+    </main>
+  </body>
+</html>
