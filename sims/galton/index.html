@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Galton Board — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Galton Board</h1>
+      <p class="sub">Each ball turns left or right at every peg — pure coin flips — yet the pile becomes a bell curve. Run the experiment. <strong>Canvas 2D</strong> · statistics.</p>
+
+      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <div class="row"><span>Rows <strong id="rowsValue"></strong></span>
+          <input id="rows" type="range" min="6" max="18" step="1" value="12" /></div>
+        <button id="drop1">Drop 1</button>
+        <button id="drop50">Drop 50</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro">Trials: <strong>0</strong></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { rows: 12 };
+        let view = { w: 0, h: 0 }, balls = [], counts = [], total = 0;
+        let topY, rowGap, colGap, cx, histTop;
+
+        function geom() {
+          cx = view.w / 2;
+          topY = view.h * 0.10;
+          const pegArea = view.h * 0.56;
+          rowGap = pegArea / params.rows;
+          colGap = Math.min(view.w / (params.rows + 2), rowGap * 1.1);
+          histTop = topY + pegArea + 10;
+        }
+        function resetCounts() { counts = new Array(params.rows + 1).fill(0); total = 0; balls = []; }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); geom(); }
+        window.addEventListener("resize", () => { resize(); });
+
+        function drop(n) {
+          for (let i = 0; i < n; i++) balls.push({ x: cx, y: topY - 12 - i * 10, row: 0, rights: 0, done: false });
+        }
+        function update(dt) {
+          const vy = rowGap * 3.2;
+          for (const b of balls) {
+            if (b.done) continue;
+            b.y += vy * dt;
+            const targetY = topY + (b.row + 1) * rowGap;
+            if (b.y >= targetY) {
+              const right = Math.random() < 0.5;
+              if (right) b.rights++;
+              b.x += (right ? 1 : -1) * colGap / 2;
+              b.row++;
+              if (b.row >= params.rows) { b.done = true; counts[b.rights]++; total++; }
+            }
+          }
+          if (balls.length > 400) balls = balls.filter((b) => !b.done);
+        }
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          // pegs
+          ctx.fillStyle = "rgba(255,255,255,0.22)";
+          for (let r = 0; r < params.rows; r++) for (let j = 0; j <= r; j++) {
+            ctx.beginPath(); ctx.arc(cx + (j - r / 2) * colGap, topY + r * rowGap, 1.6, 0, Math.PI * 2); ctx.fill();
+          }
+          // histogram
+          const bins = counts.length, maxC = Math.max(1, ...counts), histH = view.h - histTop - 6;
+          ctx.fillStyle = "rgba(79,163,255,0.55)";
+          for (let i = 0; i < bins; i++) {
+            const h = counts[i] / maxC * histH, bx = cx + (i - params.rows / 2) * colGap;
+            ctx.fillRect(bx - colGap * 0.4, view.h - 6 - h, colGap * 0.8, h);
+          }
+          // normal overlay
+          if (total > 8) {
+            const mean = params.rows / 2, sd = Math.sqrt(params.rows) / 2;
+            ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 2; ctx.beginPath();
+            for (let i = 0; i < bins; i++) {
+              const p = Math.exp(-0.5 * ((i - mean) / sd) ** 2);
+              const bx = cx + (i - params.rows / 2) * colGap, h = p * histH;
+              i ? ctx.lineTo(bx, view.h - 6 - h) : ctx.moveTo(bx, view.h - 6 - h);
+            }
+            ctx.stroke();
+          }
+          // balls
+          ctx.fillStyle = "#e8c547";
+          for (const b of balls) if (!b.done) { ctx.beginPath(); ctx.arc(b.x, b.y, 3.2, 0, Math.PI * 2); ctx.fill(); }
+
+          let mean = 0; for (let i = 0; i < bins; i++) mean += i * counts[i]; mean = total ? mean / total : 0;
+          ro.innerHTML = "Trials: <strong>" + total + "</strong>" + (total ? " · mean bin <strong>" + mean.toFixed(2) + "</strong> (expected " + (params.rows / 2).toFixed(1) + ")" : "");
+        }
+
+        resize();
+        resetCounts();
+        Sim.bind("rows", params, "rows", (v) => { geom(); resetCounts(); return v; });
+        Sim.loop({ update, render, stage: canvas.parentElement });
+        document.getElementById("drop1").addEventListener("click", () => drop(1));
+        document.getElementById("drop50").addEventListener("click", () => drop(50));
+        document.getElementById("reset").addEventListener("click", resetCounts);
+      </script>
+    </main>
+  </body>
+</html>

@@ -135,6 +135,17 @@ A bare sim rarely teaches on its own — the best explorables wrap the interacti
 
 Design rules: one idea per step; the sim's state should always match what the text is describing; hand the reader the controls at the end (sandbox); keep prose as labels and prompts, not walls of text.
 
+## Make it a place to experiment & learn
+
+To reach the bar of the best explorables, go past a single toy:
+
+- **Run the experimental method.** Let the reader form a hypothesis, vary one input, and *accumulate trials* — show the data building (a histogram, a running mean, a table). The Galton board (`/sims/galton/`) is the model: each drop is a trial; the bell curve emerges. Always include Reset.
+- **Typeset the math.** For math/stats/physics, render formulas with KaTeX (CDN) so the equation sits beside the thing it describes and updates with it (see `/sims/fourier/`).
+- **Use sound where it teaches.** `speechSynthesis` (phonics/language — see `/sims/phonics/`) and WebAudio (frequency, rhythm) can land a concept faster than visuals.
+- **Permalink the state.** Encode key params in the URL hash so a configured experiment is reproducible and shareable.
+- **Stay reachable.** Keyboard focus on controls, `aria-label` on the stage, captions, and `prefers-reduced-motion`.
+- **Build a path, not a pile.** Group sims by subject and sequence them simple → hard so the gallery reads like an interactive course, not a demo dump.
+
 ## Workflow
 
 ```

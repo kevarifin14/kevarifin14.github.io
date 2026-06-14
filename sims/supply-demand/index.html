@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Supply &amp; Demand — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Supply &amp; Demand</h1>
+      <p class="sub">Shift the curves and the market finds a new equilibrium price and quantity. Shaded areas are consumer and producer surplus. <strong>Canvas 2D</strong> · economics.</p>
+
+      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <div class="row"><span>Demand <strong id="aValue"></strong></span>
+          <input id="a" type="range" min="6" max="16" step="0.1" value="12" /></div>
+        <div class="row"><span>Supply cost <strong id="cValue"></strong></span>
+          <input id="c2" type="range" min="0" max="8" step="0.1" value="2" /></div>
+      </div>
+      <div class="readout" id="ro"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const P = { a: 12, c: 2, b: 1, d: 1 };          // demand P=a-bQ, supply P=c+dQ
+        const QMAX = 14, PMAX = 16, M = { l: 38, r: 16, t: 14, b: 28 };
+        let view = { w: 0, h: 0 };
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); draw(); }
+        window.addEventListener("resize", resize);
+        const X = (q) => M.l + q / QMAX * (view.w - M.l - M.r);
+        const Y = (p) => view.h - M.b - p / PMAX * (view.h - M.t - M.b);
+
+        function draw() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          // axes
+          ctx.strokeStyle = "#3a3a40"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(QMAX), Y(0)); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(0), Y(PMAX)); ctx.stroke();
+          ctx.fillStyle = "#8a8a8f"; ctx.font = "11px ui-monospace, monospace";
+          ctx.fillText("Quantity", view.w - 70, Y(0) + 20); ctx.save(); ctx.translate(12, 60); ctx.rotate(-Math.PI / 2); ctx.fillText("Price", 0, 0); ctx.restore();
+
+          const qStar = Math.max(0, Math.min(QMAX, (P.a - P.c) / (P.b + P.d)));
+          const pStar = P.a - P.b * qStar;
+
+          // surplus fills
+          ctx.fillStyle = "rgba(79,163,255,0.18)";   // consumer surplus
+          ctx.beginPath(); ctx.moveTo(X(0), Y(pStar)); ctx.lineTo(X(0), Y(P.a)); ctx.lineTo(X(qStar), Y(pStar)); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = "rgba(232,197,71,0.16)";   // producer surplus
+          ctx.beginPath(); ctx.moveTo(X(0), Y(pStar)); ctx.lineTo(X(0), Y(P.c)); ctx.lineTo(X(qStar), Y(pStar)); ctx.closePath(); ctx.fill();
+
+          // demand line (a-bQ), from P=a at Q=0 down to P=0
+          ctx.strokeStyle = "#4fa3ff"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(X(0), Y(P.a)); ctx.lineTo(X(Math.min(QMAX, P.a / P.b)), Y(Math.max(0, P.a - P.b * QMAX))); ctx.stroke();
+          // supply line (c+dQ)
+          ctx.strokeStyle = "#e8c547";
+          ctx.beginPath(); ctx.moveTo(X(0), Y(P.c)); ctx.lineTo(X(QMAX), Y(P.c + P.d * QMAX)); ctx.stroke();
+
+          // equilibrium marker
+          ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.moveTo(X(qStar), Y(0)); ctx.lineTo(X(qStar), Y(pStar)); ctx.lineTo(X(0), Y(pStar)); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(X(qStar), Y(pStar), 4, 0, Math.PI * 2); ctx.fill();
+
+          const cs = 0.5 * qStar * (P.a - pStar), ps = 0.5 * qStar * (pStar - P.c);
+          ro.innerHTML = "Equilibrium: price <strong>" + pStar.toFixed(2) + "</strong>, quantity <strong>" + qStar.toFixed(2) +
+            "</strong> · consumer surplus <strong>" + cs.toFixed(1) + "</strong>, producer surplus <strong>" + ps.toFixed(1) + "</strong>";
+        }
+
+        resize();
+        Sim.bind("a", P, "a", (v) => { draw(); return (+v).toFixed(1); });
+        Sim.bind("c2", P, "c", (v) => { draw(); return (+v).toFixed(1); });
+      </script>
+    </main>
+  </body>
+</html>

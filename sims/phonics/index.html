@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phonics Blender — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <style>
+      .word { display: flex; justify-content: center; gap: 14px; padding: 18px 0; }
+      .tile { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      .tile .letter {
+        width: 84px; height: 96px; display: flex; align-items: center; justify-content: center;
+        font-size: 3.2rem; font-weight: 700; border-radius: 14px; cursor: pointer; user-select: none;
+        background: #17171a; border: 2px solid var(--border); color: var(--accent);
+      }
+      .tile .letter:active { transform: scale(0.96); }
+      .tile .arrows { display: flex; gap: 6px; }
+      .tile .arrows button { padding: 4px 12px; }
+      .big { text-align: center; }
+      .big .emoji { font-size: 3.4rem; min-height: 3.6rem; }
+      .big .blend { font-size: 1.6rem; font-weight: 700; letter-spacing: 0.04em; }
+      .presets { justify-content: center; }
+      @media (max-width: 520px) { .tile .letter { width: 64px; height: 78px; font-size: 2.4rem; } }
+    </style>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Phonics Blender</h1>
+      <p class="sub">Tap a letter to hear it, then blend the sounds into a word. <strong>HTML + Web Speech</strong> · early literacy.</p>
+
+      <div class="stage" style="aspect-ratio:auto; padding:10px 0;">
+        <div class="big">
+          <div class="word" id="word"></div>
+          <div class="emoji" id="emoji"></div>
+          <div class="blend" id="blend"></div>
+        </div>
+      </div>
+
+      <div class="controls" style="justify-content:center;">
+        <button id="say" style="font-size:1rem;padding:10px 20px;">🔊 Sound it out</button>
+      </div>
+      <div class="controls presets">
+        <div class="presets" id="presets"></div>
+      </div>
+
+      <script>
+        const onsets = ["b", "c", "d", "f", "h", "m", "p", "r", "s", "t"];
+        const vowels = ["a", "e", "i", "o", "u"];
+        const codas = ["b", "d", "g", "m", "n", "p", "t", "x"];
+        const cols = [{ set: onsets, i: 1 }, { set: vowels, i: 0 }, { set: codas, i: 6 }]; // c,a,t
+        const dict = { cat: "🐱", dog: "🐶", sun: "☀️", pig: "🐷", hat: "🎩", bug: "🐛", cup: "☕", bed: "🛏️", map: "🗺️", fox: "🦊", bus: "🚌", pen: "🖊️", net: "🥅", hen: "🐔", mud: "💧" };
+        const presetWords = ["cat", "dog", "sun", "pig", "hat", "fox"];
+
+        const wordEl = document.getElementById("word"), emojiEl = document.getElementById("emoji"), blendEl = document.getElementById("blend");
+
+        function word() { return cols.map((c) => c.set[c.i]).join(""); }
+        function speak(text, rate) {
+          if (!window.speechSynthesis) return;
+          const u = new SpeechSynthesisUtterance(text); u.rate = rate || 1; u.pitch = 1.1;
+          speechSynthesis.cancel(); speechSynthesis.speak(u);
+        }
+        function render() {
+          wordEl.innerHTML = "";
+          cols.forEach((col, idx) => {
+            const tile = document.createElement("div"); tile.className = "tile";
+            const L = document.createElement("div"); L.className = "letter"; L.textContent = col.set[col.i].toUpperCase();
+            L.onclick = () => speak(col.set[col.i], 0.8);
+            const arrows = document.createElement("div"); arrows.className = "arrows";
+            const up = document.createElement("button"); up.textContent = "▲";
+            const dn = document.createElement("button"); dn.textContent = "▼";
+            up.onclick = () => { col.i = (col.i + 1) % col.set.length; render(); };
+            dn.onclick = () => { col.i = (col.i - 1 + col.set.length) % col.set.length; render(); };
+            arrows.append(up, dn); tile.append(L, arrows); wordEl.append(tile);
+          });
+          const w = word();
+          blendEl.textContent = w.toUpperCase();
+          emojiEl.textContent = dict[w] || "";
+        }
+        function soundOut() {
+          const w = word();
+          cols.forEach((c, i) => setTimeout(() => speak(c.set[c.i], 0.7), i * 650));
+          setTimeout(() => speak(w, 0.85), cols.length * 650 + 200);
+        }
+        function setWord(w) {
+          cols[0].i = onsets.indexOf(w[0]); cols[1].i = vowels.indexOf(w[1]); cols[2].i = codas.indexOf(w[2]);
+          render(); soundOut();
+        }
+
+        const presets = document.getElementById("presets");
+        presetWords.forEach((w) => { const b = document.createElement("button"); b.className = "preset"; b.textContent = w; b.onclick = () => setWord(w); presets.append(b); });
+        document.getElementById("say").onclick = soundOut;
+        render();
+      </script>
+    </main>
+  </body>
+</html>

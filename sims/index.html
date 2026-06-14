@@ -13,6 +13,8 @@
       .card .tech { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.72rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; }
       .card h3 { margin: 6px 0 4px; font-size: 1.05rem; }
       .card p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+      .group { margin-top: 30px; }
+      .group h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
     </style>
   </head>
   <body>
@@ -32,15 +34,37 @@
         <h1>Simulations</h1>
         <p class="lead">Small interactive explorables — each one picks the tool that fits the phenomenon.</p>
 
-        <div class="grid">
+        <section class="group"><h2>Physics &amp; motion</h2><div class="grid">
           <a class="card" href="/sims/ripple/"><span class="tech">Canvas 2D</span><h3>Ripple Tank</h3><p>Two-source wave interference; drag a source.</p></a>
           <a class="card" href="/sims/pendulum/"><span class="tech">SVG</span><h3>Pendulum</h3><p>Damped pendulum; drag the bob to set the angle.</p></a>
+          <a class="card" href="/sims/stack/"><span class="tech">Matter.js</span><h3>Physics Stack</h3><p>Drop and drag rigid bodies.</p></a>
+        </div></section>
+
+        <section class="group"><h2>Math</h2><div class="grid">
+          <a class="card" href="/sims/fourier/"><span class="tech">Canvas 2D</span><h3>Fourier Epicycles</h3><p>Rotating circles sum into a square wave.</p></a>
+        </div></section>
+
+        <section class="group"><h2>Statistics</h2><div class="grid">
+          <a class="card" href="/sims/galton/"><span class="tech">Canvas 2D</span><h3>Galton Board</h3><p>Coin flips pile up into a bell curve.</p></a>
+          <a class="card" href="/sims/bars/"><span class="tech">D3</span><h3>Interactive Bars</h3><p>Data-driven chart with hover + regen.</p></a>
+        </div></section>
+
+        <section class="group"><h2>Economics</h2><div class="grid">
+          <a class="card" href="/sims/supply-demand/"><span class="tech">Canvas 2D</span><h3>Supply &amp; Demand</h3><p>Shift curves; find the new equilibrium.</p></a>
+        </div></section>
+
+        <section class="group"><h2>Early literacy</h2><div class="grid">
+          <a class="card" href="/sims/phonics/"><span class="tech">Web Speech</span><h3>Phonics Blender</h3><p>Tap letters, hear sounds, blend a word.</p></a>
+        </div></section>
+
+        <section class="group"><h2>Graphics &amp; generative</h2><div class="grid">
           <a class="card" href="/sims/orbit/"><span class="tech">three.js</span><h3>3D Orbit</h3><p>Orbit and zoom a 3D mesh.</p></a>
           <a class="card" href="/sims/flow-field/"><span class="tech">p5.js</span><h3>Flow Field</h3><p>Particles drifting along Perlin noise.</p></a>
-          <a class="card" href="/sims/bars/"><span class="tech">D3</span><h3>Interactive Bars</h3><p>Data-driven chart with hover + regen.</p></a>
-          <a class="card" href="/sims/stack/"><span class="tech">Matter.js</span><h3>Physics Stack</h3><p>Drop and drag rigid bodies.</p></a>
+        </div></section>
+
+        <section class="group"><h2>Format</h2><div class="grid">
           <a class="card" href="/sims/_explainer/"><span class="tech">Explorable</span><h3>Explained: Waves</h3><p>Scrollytelling — narrative paired with a sim.</p></a>
-        </div>
+        </div></section>
       </main>
 
       <footer class="site-footer">
