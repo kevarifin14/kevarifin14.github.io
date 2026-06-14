@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Why Eclipses Are Rare — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <style>
+      .explain{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}.figure{position:sticky;top:16px}.figure .stage{aspect-ratio:1/1}.steps .step{min-height:80vh;display:flex;flex-direction:column;justify-content:center;border-left:2px solid var(--border);padding-left:18px;transition:border-color .2s}.steps .step.active{border-color:var(--accent)}.steps .step h2{font-size:1.1rem;margin:0 0 8px}.steps .step p{color:var(--muted);margin:0}.try{display:block;margin-top:8px;font-size:.78rem;color:var(--muted)}@media(max-width:760px){.explain{grid-template-columns:1fr;gap:0}.figure{position:sticky;top:0;z-index:2;background:var(--bg);padding:10px 0}.figure .stage{aspect-ratio:3/2}.steps .step{min-height:72vh}}
+    </style>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Why Eclipses Are Rare</h1>
+      <p class="sub">A companion to Moon phases. New moon and full moon happen every month, but eclipses do not, because the Moon's orbit is tilted. Eclipses only happen when the Moon is both in the right phase and near a node where its tilted path crosses the Sun-Earth plane. <strong>Canvas 2D</strong> · astronomy.</p>
+      <div class="explain">
+        <div class="figure">
+          <div class="stage" aria-label="Top-down Sun Earth Moon geometry synced with a side view of the Moon orbit tilt and eclipse nodes"><canvas id="c"></canvas></div>
+          <div class="readout" id="ro"></div>
+          <div class="controls">
+            <label class="row"><span>Tilt <strong id="tiltValue"></strong></span><input id="tilt" type="range" min="0" max="8" step="0.1" value="5.1" /></label>
+            <label class="row"><span>Node <strong id="nodeValue"></strong></span><input id="node" type="range" min="0" max="360" step="1" value="0" /></label>
+            <label class="row"><span>Speed <strong id="speedValue"></strong></span><input id="speed" type="range" min="0" max="2" step="0.05" value="0.6" /></label>
+            <button id="newMoon">New moon</button><button id="fullMoon">Full moon</button><button id="pause">Pause</button><button id="reset">Reset</button>
+          </div>
+          <span class="try">Drag the Moon around the orbit. The top view shows phase; the side view shows whether the Moon misses the shadow above or below.</span>
+        </div>
+        <div class="steps" id="steps">
+          <section class="step" data-step data-theta="0" data-tilt="0"><h2>1 · If the orbit were flat, eclipses would be monthly</h2><p>With zero tilt, every new moon lines up with the Sun and Earth. That would make solar eclipses ordinary.</p></section>
+          <section class="step" data-step data-theta="0" data-tilt="5.1"><h2>2 · The Moon usually misses</h2><p>The real lunar orbit is tilted about five degrees. From above it still looks aligned, but from the side the Moon often passes above or below the shadow.</p></section>
+          <section class="step" data-step data-theta="70" data-tilt="5.1"><h2>3 · Nodes are the crossing points</h2><p>The tilted orbit crosses Earth's orbital plane at two nodes. Only near those crossings can the Sun, Earth, and Moon share one line.</p></section>
+          <section class="step" data-step data-theta="0" data-node="0" data-tilt="5.1"><h2>4 · Eclipse season</h2><p>When new moon happens near a node, the Moon's shadow can touch Earth: solar eclipse season.</p></section>
+          <section class="step" data-step data-theta="180" data-node="0" data-tilt="5.1"><h2>5 · The full-moon version</h2><p>Half an orbit later, Earth can cast its shadow onto the full Moon. Same node condition, opposite phase.</p></section>
+          <section class="step" data-step data-theta="35" data-node="0" data-tilt="5.1" data-interactive="1"><h2>6 · Your turn</h2><p>Drag around the orbit and move the node slider. The label flips from miss to eclipse only when phase and node line up together.</p></section>
+        </div>
+      </div>
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas=document.getElementById("c"),ctx=canvas.getContext("2d"),ro=document.getElementById("ro");
+        const params={tilt:5.1,node:0,speed:.6};let view={w:1,h:1},theta=0,target=0,interactive=false,sim;
+        function resize(){view=Sim.fitCanvas(canvas,ctx)}
+        window.addEventListener("resize",()=>{resize();sim&&sim.renderOnce()});
+        function update(dt){if(params.speed>0&&!interactive)target+=dt*params.speed*.55;const diff=Math.atan2(Math.sin(target-theta),Math.cos(target-theta));theta+=diff*Math.min(1,dt*3)}
+        function geom(){const S=Math.min(view.w,view.h),earth={x:view.w*.58,y:view.h*.43},R=S*.26;return{S,earth,R}}
+        function moonPos(t){const g=geom();return{x:g.earth.x-g.R*Math.cos(t),y:g.earth.y-g.R*Math.sin(t)}}
+        function nodeRad(){return params.node*Math.PI/180}
+        function heightAt(t){return Math.sin(t-nodeRad())*params.tilt/5.1}
+        function phaseName(t){const d=((t*180/Math.PI)%360+360)%360;if(d<12||d>348)return"new moon";if(Math.abs(d-180)<12)return"full moon";if(d<180)return d<90?"waxing crescent":"waxing gibbous";return d<270?"waning gibbous":"waning crescent"}
+        function status(){const d=((theta-nodeRad())%(2*Math.PI)+2*Math.PI)%(2*Math.PI),nearNode=Math.min(d,Math.abs(d-Math.PI),Math.abs(d-2*Math.PI))<.18;const phase=((theta%(2*Math.PI))+2*Math.PI)%(2*Math.PI);const solar=Math.min(phase,Math.abs(phase-2*Math.PI))<.18;const lunar=Math.abs(phase-Math.PI)<.18;if(nearNode&&solar)return"solar eclipse possible";if(nearNode&&lunar)return"lunar eclipse possible";if(solar||lunar)return"right phase, but misses the node";if(nearNode)return"near node, but wrong phase";return"ordinary month: no eclipse"}
+        function render(){ctx.fillStyle="#0b0b14";ctx.fillRect(0,0,view.w,view.h);drawSunlight();drawTopView();drawSideView();drawPhaseDisc();const h=heightAt(theta);ro.textContent=`${phaseName(theta)} · height ${h.toFixed(1)} lunar radii · ${status()}`}
+        function drawSunlight(){for(let i=0;i<7;i++){ctx.strokeStyle="rgba(232,197,71,.10)";ctx.lineWidth=1;const y=view.h*(i+.45)/7;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(view.w,y);ctx.stroke()}const gr=ctx.createRadialGradient(-20,view.h*.38,10,-20,view.h*.38,210);gr.addColorStop(0,"rgba(232,197,71,.9)");gr.addColorStop(1,"rgba(232,197,71,0)");ctx.fillStyle=gr;ctx.fillRect(0,0,230,view.h);ctx.fillStyle="#e8c547";ctx.beginPath();ctx.arc(-10,view.h*.38,30,0,6.28);ctx.fill();ctx.fillStyle="#8a8a8f";ctx.font="11px ui-monospace,monospace";ctx.fillText("Sun",22,view.h*.38-36)}
+        function drawTopView(){const g=geom(),m=moonPos(theta),nr=nodeRad();ctx.strokeStyle="rgba(255,255,255,.14)";ctx.lineWidth=1;ctx.beginPath();ctx.arc(g.earth.x,g.earth.y,g.R,0,6.28);ctx.stroke();ctx.strokeStyle="rgba(232,197,71,.7)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(g.earth.x-g.R*Math.cos(nr),g.earth.y-g.R*Math.sin(nr));ctx.lineTo(g.earth.x+g.R*Math.cos(nr),g.earth.y+g.R*Math.sin(nr));ctx.stroke();ctx.fillStyle="#4fa3ff";ctx.beginPath();ctx.arc(g.earth.x,g.earth.y,13,0,6.28);ctx.fill();ctx.strokeStyle="rgba(0,0,0,.35)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(g.earth.x-13,g.earth.y);ctx.lineTo(g.earth.x-58,g.earth.y);ctx.stroke();ctx.fillStyle="#26262e";ctx.beginPath();ctx.arc(m.x,m.y,12,0,6.28);ctx.fill();ctx.fillStyle="#e8e6d6";ctx.beginPath();ctx.arc(m.x,m.y,12,Math.PI/2,Math.PI*1.5,false);ctx.fill();ctx.strokeStyle=shadowColor();ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(g.earth.x,g.earth.y);ctx.lineTo(m.x,m.y);ctx.stroke();ctx.fillStyle="#8a8a8f";ctx.fillText("top view: phase alignment",16,22);ctx.fillText("node line",g.earth.x+g.R*.45,g.earth.y-g.R*.25)}
+        function drawSideView(){const x0=view.w*.12,x1=view.w*.90,y=view.h*.78,R=(x1-x0)*.36,cx=(x0+x1)/2,nr=nodeRad(),h=heightAt(theta);ctx.fillStyle="rgba(0,0,0,.32)";ctx.fillRect(14,view.h*.60,view.w-28,view.h*.34);ctx.strokeStyle="#3a3a40";ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();ctx.strokeStyle="rgba(255,255,255,.18)";ctx.beginPath();for(let i=0;i<=160;i++){const a=i/160*6.28,xx=cx+Math.cos(a)*R,yy=y-Math.sin(a-nr)*params.tilt*7;i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)}ctx.stroke();ctx.strokeStyle="#e8c547";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-Math.cos(nr)*R,y);ctx.lineTo(cx+Math.cos(nr)*R,y);ctx.stroke();const mx=cx+Math.cos(theta)*R,my=y-Math.sin(theta-nr)*params.tilt*7;ctx.strokeStyle=shadowColor();ctx.lineWidth=12;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(cx-46,y);ctx.lineTo(cx+46,y);ctx.stroke();ctx.fillStyle="#4fa3ff";ctx.beginPath();ctx.arc(cx,y,10,0,6.28);ctx.fill();ctx.fillStyle="#e8e6d6";ctx.beginPath();ctx.arc(mx,my,8,0,6.28);ctx.fill();ctx.fillStyle="#8a8a8f";ctx.font="11px ui-monospace,monospace";ctx.fillText("side view: tilted orbit",24,view.h*.64);ctx.fillText(h>0?"above plane":"below plane",mx+12,my+4)}
+        function drawPhaseDisc(){const x=view.w-74,y=74,r=42;ctx.fillStyle="rgba(0,0,0,.35)";ctx.fillRect(x-r-8,y-r-8,r*2+16,r*2+30);for(let py=-r;py<=r;py++)for(let px=-r;px<=r;px++){const qx=px/r,qy=py/r,rr=qx*qx+qy*qy;if(rr>1)continue;const z=Math.sqrt(1-rr),lit=qx*Math.sin(theta)-z*Math.cos(theta)>0;ctx.fillStyle=lit?"#e8e6d6":"#1c1c22";ctx.fillRect(x+px,y+py,1.5,1.5)}ctx.strokeStyle="#8a8a8f";ctx.beginPath();ctx.arc(x,y,r,0,6.28);ctx.stroke();ctx.fillStyle="#8a8a8f";ctx.textAlign="center";ctx.fillText("from Earth",x,y+r+16);ctx.textAlign="left"}
+        function shadowColor(){return status().includes("eclipse")?"rgba(232,197,71,.85)":"rgba(79,163,255,.32)"}
+        function setThetaDeg(d){target=theta=d*Math.PI/180;sim&&sim.renderOnce()}
+        resize();Sim.bind("tilt",params,"tilt",v=>(+v).toFixed(1)+"°");Sim.bind("node",params,"node",v=>Math.round(+v)+"°");Sim.bind("speed",params,"speed",v=>(+v).toFixed(2)+"×");sim=Sim.loop({update,render,stage:canvas.parentElement});document.getElementById("newMoon").addEventListener("click",()=>{interactive=true;setThetaDeg(0)});document.getElementById("fullMoon").addEventListener("click",()=>{interactive=true;setThetaDeg(180)});document.getElementById("reset").addEventListener("click",()=>{params.tilt=5.1;params.node=0;params.speed=.6;for(const id of["tilt","node","speed"]){const el=document.getElementById(id);el.value=params[id];el.dispatchEvent(new InputEvent("input",{bubbles:true}))}interactive=false;setThetaDeg(0)});document.getElementById("pause").addEventListener("click",e=>{sim.toggle();e.target.textContent=sim.running?"Pause":"Play"});Sim.pointer(canvas,{down:setFromPointer,move(p){if(p.down)setFromPointer(p)}});function setFromPointer(p){const g=geom();interactive=true;target=theta=Math.atan2(g.earth.y-p.y,g.earth.x-p.x);sim.renderOnce()}Sim.steps(document.getElementById("steps"),(i,el)=>{document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));el.classList.add("active");interactive=el.dataset.interactive==="1";if(el.dataset.tilt){params.tilt=+el.dataset.tilt;document.getElementById("tilt").value=params.tilt;document.getElementById("tiltValue").textContent=params.tilt.toFixed(1)+"°"}if(el.dataset.node){params.node=+el.dataset.node;document.getElementById("node").value=params.node;document.getElementById("nodeValue").textContent=Math.round(params.node)+"°"}if(el.dataset.theta)setThetaDeg(+el.dataset.theta)});
+      </script>
+    </main>
+  </body>
+</html>
