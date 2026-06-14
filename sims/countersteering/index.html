@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Countersteering a Bike — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <style>
+      .explain{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}.figure{position:sticky;top:16px}.figure .stage{aspect-ratio:1/1}.steps .step{min-height:80vh;display:flex;flex-direction:column;justify-content:center;border-left:2px solid var(--border);padding-left:18px;transition:border-color .2s}.steps .step.active{border-color:var(--accent)}.steps .step h2{font-size:1.1rem;margin:0 0 8px}.steps .step p{color:var(--muted);margin:0}.try{display:block;margin-top:8px;font-size:.78rem;color:var(--muted)}@media(max-width:760px){.explain{grid-template-columns:1fr;gap:0}.figure{position:sticky;top:0;z-index:2;background:var(--bg);padding:10px 0}.figure .stage{aspect-ratio:3/2}.steps .step{min-height:72vh}}
+    </style>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Countersteering a Bike</h1>
+      <p class="sub">The strange riding fact: to start a left turn, a moving bicycle first steers a little right. That wrong-way twitch moves the tire contact patch out from under the rider, creating the lean that becomes the turn. <strong>Canvas 2D</strong> · bicycle dynamics.</p>
+      <div class="explain">
+        <div class="figure">
+          <div class="stage" aria-label="Top-down bicycle path with a synced lean meter showing countersteer, lean, then turn"><canvas id="c"></canvas></div>
+          <div class="readout" id="ro"></div>
+          <div class="controls">
+            <label class="row"><span>Speed <strong id="speedValue"></strong></span><input id="speed" type="range" min="2" max="12" step="0.2" value="7" /></label>
+            <label class="row"><span>Pulse <strong id="pulseValue"></strong></span><input id="pulse" type="range" min="0.1" max="1" step="0.02" value="0.58" /></label>
+            <label class="row"><span>Trail <strong id="trailValue"></strong></span><input id="trail" type="range" min="0" max="1" step="0.02" value="0.65" /></label>
+            <button id="left">Turn left</button><button id="right">Turn right</button><button id="pause">Pause</button><button id="reset">Reset</button>
+          </div>
+          <span class="try">Tap the left or right side of the stage to request a turn. The first burst marks the countersteer pulse.</span>
+        </div>
+        <div class="steps" id="steps">
+          <section class="step" data-step data-mode="straight"><h2>1 · Straight is balanced</h2><p>Rolling straight, the wheels stay under the rider. With no lean, the bike has no reason to carve.</p></section>
+          <section class="step" data-step data-mode="left" data-pulse="0.58"><h2>2 · To turn left, steer right first</h2><p>The front wheel makes a short wrong-way move. The support point shifts right while the rider's mass keeps moving, so the bike begins to lean left.</p></section>
+          <section class="step" data-step data-mode="left" data-pulse="0.9"><h2>3 · The lean becomes the turn</h2><p>Once the bike leans left, the front wheel steers into the lean and the path curves left. Countersteering is the little trick that creates the lean.</p></section>
+          <section class="step" data-step data-mode="right" data-pulse="0.58"><h2>4 · Mirror it to the right</h2><p>A right turn starts with the opposite twitch: steer left, lean right, then carve right.</p></section>
+          <section class="step" data-step data-mode="left" data-pulse="0.12"><h2>5 · Too small and nothing happens</h2><p>A weak pulse barely creates lean. A rider adds a tiny handlebar impulse until the bike tips into the arc.</p></section>
+          <section class="step" data-step data-mode="interactive"><h2>6 · Your turn</h2><p>Use the controls. More speed or trail makes the steer-lean feedback crisper; zero trail makes the model sluggish and harder to settle.</p></section>
+        </div>
+      </div>
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas=document.getElementById("c"),ctx=canvas.getContext("2d"),ro=document.getElementById("ro");
+        const params={speed:7,pulse:.58,trail:.65};let view={w:1,h:1},bike,path=[],sparks=[],mode="left",timer=0,manual=false,sim;
+        function resize(){view=Sim.fitCanvas(canvas,ctx);resetBike();startTurn(-1,false)}
+        window.addEventListener("resize",()=>{resize();sim&&sim.renderOnce()});
+        function resetBike(){bike={x:view.w*.5,y:view.h*.78,h:-Math.PI/2,lean:0,leanV:0,steer:0,target:0,dir:0,phase:"straight"};path=[{x:bike.x,y:bike.y}];sparks=[];timer=0}
+        function startTurn(dir,isManual=true){manual=isManual;bike.dir=dir;bike.phase="countersteer";timer=0;sparks.push({x:front().x,y:front().y,dir,age:0});mode=dir<0?"left":"right"}
+        function setMode(m){manual=false;mode=m;resetBike();if(m==="left")startTurn(-1,false);else if(m==="right")startTurn(1,false)}
+        function update(dt){timer+=dt;if(!manual&&(mode==="left"||mode==="right")&&timer>4.8){setMode(mode);return}const d=bike.dir,ct=.38+params.pulse*.28;if(bike.phase==="countersteer"){bike.target=-d*params.pulse*.58;if(timer>ct)bike.phase="catch"}else if(bike.phase==="catch"){bike.target=d*(.16+params.trail*.28)+bike.lean*.9;if(timer>ct+1.1)bike.phase="carve"}else if(bike.phase==="carve"){bike.target=d*(.18+Math.min(.5,Math.abs(bike.lean)*1.15))}else{bike.target=0}bike.steer+=(bike.target-bike.steer)*Math.min(1,dt*7);const leanAcc=-bike.steer*params.speed*.55-bike.lean*(.85+params.trail*1.4)-bike.leanV*1.45;bike.leanV+=leanAcc*dt;bike.lean+=bike.leanV*dt;bike.lean=Math.max(-.7,Math.min(.7,bike.lean));const curve=(bike.lean*1.15+bike.steer*.42)*params.speed*.018;bike.h+=curve;bike.x+=Math.cos(bike.h)*params.speed*18*dt;bike.y+=Math.sin(bike.h)*params.speed*18*dt;if(bike.x<-60||bike.x>view.w+60||bike.y<-60||bike.y>view.h+60){setMode(mode);return}path.push({x:bike.x,y:bike.y});if(path.length>360)path.shift();sparks.forEach(s=>s.age+=dt);sparks=sparks.filter(s=>s.age<1.1)}
+        function front(){const L=Math.min(view.w,view.h)*.12;return{x:bike.x+Math.cos(bike.h)*L,y:bike.y+Math.sin(bike.h)*L}}
+        function render(){ctx.fillStyle="#0e0e10";ctx.fillRect(0,0,view.w,view.h);grid();drawPath();drawBike();drawInset();legend();ro.textContent=`${bike.phase} · steer ${deg(bike.steer)} · lean ${deg(bike.lean)} · speed ${params.speed.toFixed(1)}`}
+        function grid(){ctx.strokeStyle="rgba(255,255,255,.055)";ctx.lineWidth=1;for(let x=0;x<view.w;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,view.h);ctx.stroke()}for(let y=0;y<view.h;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(view.w,y);ctx.stroke()}}
+        function drawPath(){if(path.length<2)return;ctx.strokeStyle="rgba(232,197,71,.55)";ctx.lineWidth=3;ctx.beginPath();path.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();sparks.forEach(s=>{const a=1-s.age/1.1;ctx.strokeStyle=`rgba(79,163,255,${a})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(s.x,s.y,10+s.age*34,0,6.28);ctx.stroke()})}
+        function drawBike(){const S=Math.min(view.w,view.h),L=S*.20,W=S*.055,c=Math.cos(bike.h),s=Math.sin(bike.h),cx=bike.x,cy=bike.y,fx=cx+c*L*.5,fy=cy+s*L*.5,rx=cx-c*L*.5,ry=cy-s*L*.5,nx=-s,ny=c;ctx.save();ctx.lineCap="round";ctx.strokeStyle="#cfcfd4";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(rx,ry);ctx.lineTo(fx,fy);ctx.stroke();wheel(rx,ry,bike.h,W);wheel(fx,fy,bike.h+bike.steer,W);ctx.strokeStyle="#4fa3ff";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx+nx*bike.lean*34,cy+ny*bike.lean*34);ctx.lineTo(cx,cy);ctx.stroke();ctx.fillStyle="#e8c547";ctx.beginPath();ctx.arc(cx+nx*bike.lean*34,cy+ny*bike.lean*34,6,0,6.28);ctx.fill();ctx.restore()}
+        function wheel(x,y,a,r){ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.strokeStyle="#ededed";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-r,0);ctx.lineTo(r,0);ctx.stroke();ctx.restore()}
+        function drawInset(){const x=view.w-156,y=16,w=140,h=100,cx=x+w/2,gy=y+h-22;ctx.fillStyle="rgba(0,0,0,.35)";ctx.fillRect(x,y,w,h);ctx.strokeStyle="#3a3a40";ctx.beginPath();ctx.moveTo(x+12,gy);ctx.lineTo(x+w-12,gy);ctx.stroke();ctx.strokeStyle="#8a8a8f";ctx.beginPath();ctx.moveTo(cx,gy);ctx.lineTo(cx+bike.lean*70,gy-58);ctx.stroke();ctx.fillStyle="#4fa3ff";ctx.beginPath();ctx.arc(cx+bike.lean*70,gy-58,7,0,6.28);ctx.fill();ctx.strokeStyle="#e8c547";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx,gy);ctx.lineTo(cx+bike.steer*72,gy);ctx.stroke();ctx.fillStyle="#8a8a8f";ctx.font="10px ui-monospace,monospace";ctx.fillText("lean + support",x+18,y+16)}
+        function legend(){ctx.fillStyle="#8a8a8f";ctx.font="11px ui-monospace,monospace";ctx.fillText("yellow path = actual turn",16,24);ctx.fillText("blue burst = wrong-way steer",16,40)}
+        function deg(x){return (x*180/Math.PI).toFixed(0)+"°"}
+        resize();Sim.bind("speed",params,"speed",v=>(+v).toFixed(1));Sim.bind("pulse",params,"pulse",v=>(+v).toFixed(2));Sim.bind("trail",params,"trail",v=>(+v).toFixed(2));sim=Sim.loop({update,render,stage:canvas.parentElement});document.getElementById("left").addEventListener("click",()=>startTurn(-1));document.getElementById("right").addEventListener("click",()=>startTurn(1));document.getElementById("reset").addEventListener("click",()=>{resetBike();startTurn(-1,false)});document.getElementById("pause").addEventListener("click",e=>{sim.toggle();e.target.textContent=sim.running?"Pause":"Play"});Sim.pointer(canvas,{down(p){startTurn(p.x<view.w/2?-1:1)}});Sim.steps(document.getElementById("steps"),(i,el)=>{document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));el.classList.add("active");if(el.dataset.pulse){params.pulse=+el.dataset.pulse;document.getElementById("pulse").value=params.pulse;document.getElementById("pulseValue").textContent=params.pulse.toFixed(2)}if(el.dataset.mode!=="interactive")setMode(el.dataset.mode)});
+      </script>
+    </main>
+  </body>
+</html>
