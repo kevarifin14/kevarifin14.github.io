@@ -12,12 +12,13 @@
       <h1>Supply &amp; Demand</h1>
       <p class="sub">Shift the curves and the market finds a new equilibrium price and quantity. Shaded areas are consumer and producer surplus. <strong>Canvas 2D</strong> · economics.</p>
 
-      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="stage" aria-label="Supply and demand curve chart"><canvas id="c"></canvas></div>
       <div class="controls">
-        <div class="row"><span>Demand <strong id="aValue"></strong></span>
-          <input id="a" type="range" min="6" max="16" step="0.1" value="12" /></div>
-        <div class="row"><span>Supply cost <strong id="cValue"></strong></span>
-          <input id="c2" type="range" min="0" max="8" step="0.1" value="2" /></div>
+        <label class="row"><span>Demand <strong id="aValue"></strong></span>
+          <input id="a" type="range" min="6" max="16" step="0.1" value="12" /></label>
+        <label class="row"><span>Supply cost <strong id="cValue"></strong></span>
+          <input id="c2" type="range" min="0" max="8" step="0.1" value="2" /></label>
+        <button id="reset">Reset</button>
       </div>
       <div class="readout" id="ro"></div>
 
@@ -70,6 +71,14 @@
         resize();
         Sim.bind("a", P, "a", (v) => { draw(); return (+v).toFixed(1); });
         Sim.bind("c2", P, "c", (v) => { draw(); return (+v).toFixed(1); });
+        document.getElementById("reset").addEventListener("click", () => {
+          P.a = 12; P.c = 2;
+          document.getElementById("a").value = P.a;
+          document.getElementById("c2").value = P.c;
+          document.getElementById("aValue").textContent = P.a.toFixed(1);
+          document.getElementById("cValue").textContent = P.c.toFixed(1);
+          draw();
+        });
       </script>
     </main>
   </body>

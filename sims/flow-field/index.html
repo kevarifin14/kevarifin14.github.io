@@ -13,18 +13,28 @@
       <h1>Flow Field</h1>
       <p class="sub">Particles drift along a Perlin-noise vector field. <strong>p5.js</strong> — the fastest path for generative sketches.</p>
 
-      <div class="stage" id="stage"></div>
+      <div class="stage" id="stage" aria-label="Particles following a Perlin-noise vector field"></div>
       <div class="controls">
-        <div class="row"><span>Noise scale <strong id="scaleValue">0.004</strong></span>
-          <input id="scale" type="range" min="0.001" max="0.012" step="0.001" value="0.004" /></div>
+        <label class="row"><span>Noise scale <strong id="scaleValue">0.004</strong></span>
+          <input id="scale" type="range" min="0.001" max="0.012" step="0.001" value="0.004" /></label>
+        <button id="toggle">Pause</button>
         <button id="reset">Reset</button>
       </div>
+      <div class="readout" id="ro" aria-live="polite">Particles: 900 · noise scale 0.004</div>
 
       <script>
-        let particles = [], noiseScale = 0.004, W, H;
+        let particles = [], noiseScale = 0.004, W, H, running = true;
         const N = 900;
         const stage = () => document.getElementById("stage");
         const seed = () => ({ x: Math.random() * W, y: Math.random() * H });
+        const ro = () => document.getElementById("ro");
+        const toggleButton = () => document.getElementById("toggle");
+        function updateReadout() { ro().innerHTML = "Particles: <strong>" + N + "</strong> · noise scale <strong>" + noiseScale.toFixed(3) + "</strong>"; }
+        function setRunning(next) {
+          running = next;
+          toggleButton().textContent = running ? "Pause" : "Play";
+          running ? loop() : noLoop();
+        }
 
         function setup() {
           W = stage().clientWidth; H = stage().clientHeight;
@@ -35,8 +45,16 @@
           document.getElementById("scale").addEventListener("input", (e) => {
             noiseScale = +e.target.value;
             document.getElementById("scaleValue").textContent = noiseScale.toFixed(3);
+            updateReadout();
           });
-          document.getElementById("reset").addEventListener("click", () => { background(14); particles = Array.from({ length: N }, seed); });
+          document.getElementById("toggle").addEventListener("click", () => setRunning(!running));
+          document.getElementById("reset").addEventListener("click", () => { background(14); particles = Array.from({ length: N }, seed); updateReadout(); });
+          document.addEventListener("visibilitychange", () => { if (document.hidden) noLoop(); else if (running) loop(); });
+          if ("IntersectionObserver" in window) {
+            new IntersectionObserver((entries) => { if (!entries[0].isIntersecting) noLoop(); else if (running) loop(); }).observe(stage());
+          }
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setRunning(false);
+          updateReadout();
         }
         function draw() {
           noStroke(); fill(14, 14, 16, 16); rect(0, 0, W, H);     // fade for trails

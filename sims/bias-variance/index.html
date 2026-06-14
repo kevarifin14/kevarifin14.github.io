@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bias-Variance — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Bias-Variance</h1>
+      <p class="sub">Polynomial models underfit, fit, then overfit noisy data. Change degree and sample size to watch train/test error split apart. <strong>Canvas 2D</strong> · machine learning.</p>
+
+      <div class="stage" aria-label="Polynomial model fit with train and test error curves"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Degree <strong id="degreeValue"></strong></span>
+          <input id="degree" type="range" min="0" max="12" step="1" value="3" /></label>
+        <label class="row"><span>Noise <strong id="noiseValue"></strong></span>
+          <input id="noise" type="range" min="0" max="0.6" step="0.01" value="0.18" /></label>
+        <label class="row"><span>Train points <strong id="nValue"></strong></span>
+          <input id="n" type="range" min="8" max="60" step="1" value="22" /></label>
+        <button id="resample">Resample</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const P = { degree: 3, noise: 0.18, n: 22 };
+        const M = { l: 36, r: 18, t: 18, b: 28 };
+        let view = { w: 0, h: 0 }, seed = 4, train = [], test = [], coeffs = [];
+
+        function trueFn(x) { return Math.sin(2.2 * Math.PI * x) * 0.62 + 0.25 * Math.cos(4.5 * Math.PI * x); }
+        function randn(r) {
+          const u = Math.max(1e-9, r()), v = Math.max(1e-9, r());
+          return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+        }
+        function sampleData(n, localSeed) {
+          const r = Sim.rng(localSeed);
+          return Array.from({ length: n }, () => {
+            const x = r();
+            return { x, y: trueFn(x) + randn(r) * P.noise };
+          }).sort((a, b) => a.x - b.x);
+        }
+        function solve(A, b) {
+          const n = b.length;
+          for (let i = 0; i < n; i++) {
+            let piv = i;
+            for (let r = i + 1; r < n; r++) if (Math.abs(A[r][i]) > Math.abs(A[piv][i])) piv = r;
+            [A[i], A[piv]] = [A[piv], A[i]]; [b[i], b[piv]] = [b[piv], b[i]];
+            const d = A[i][i] || 1e-9;
+            for (let c = i; c < n; c++) A[i][c] /= d;
+            b[i] /= d;
+            for (let r = 0; r < n; r++) if (r !== i) {
+              const f = A[r][i];
+              for (let c = i; c < n; c++) A[r][c] -= f * A[i][c];
+              b[r] -= f * b[i];
+            }
+          }
+          return b;
+        }
+        function fit() {
+          const d = P.degree + 1, lambda = 0.002;
+          const A = Array.from({ length: d }, () => Array(d).fill(0)), b = Array(d).fill(0);
+          for (const pt of train) {
+            const xs = Array.from({ length: d }, (_, i) => pt.x ** i);
+            for (let i = 0; i < d; i++) {
+              b[i] += xs[i] * pt.y;
+              for (let j = 0; j < d; j++) A[i][j] += xs[i] * xs[j];
+            }
+          }
+          for (let i = 1; i < d; i++) A[i][i] += lambda * i * i;
+          coeffs = solve(A, b);
+        }
+        function predict(x) { return coeffs.reduce((s, c, i) => s + c * x ** i, 0); }
+        function mse(data) { return data.reduce((s, p) => s + (predict(p.x) - p.y) ** 2, 0) / data.length; }
+        function resetData() { train = sampleData(P.n, seed); test = sampleData(160, seed + 999); fit(); draw(); }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); draw(); }
+        window.addEventListener("resize", resize);
+        const X = (x) => M.l + x * (view.w - M.l - M.r);
+        const Y = (y) => M.t + (1.35 - y) / 2.7 * (view.h - M.t - M.b);
+
+        function drawCurve(fn, color, width) {
+          ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
+          for (let i = 0; i <= 220; i++) {
+            const x = i / 220, y = fn(x);
+            i ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y));
+          }
+          ctx.stroke();
+        }
+        function draw() {
+          if (!view.w || !train.length) return;
+          fit();
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          ctx.strokeStyle = "#232326"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(1), Y(0)); ctx.stroke();
+          drawCurve(trueFn, "rgba(255,255,255,0.22)", 2);
+          drawCurve(predict, "#e8c547", 2.4);
+          ctx.fillStyle = "#4fa3ff";
+          for (let i = 0; i < test.length; i += 4) {
+            const p = test[i];
+            ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 2, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.fillStyle = "#e8c547";
+          for (const p of train) { ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 3.5, 0, Math.PI * 2); ctx.fill(); }
+          ctx.fillStyle = "#8a8a8f"; ctx.font = "11px ui-monospace, monospace";
+          ctx.fillText("white=true function  yellow=model  blue=test", M.l, view.h - 9);
+          const trainMse = mse(train), testMse = mse(test);
+          ro.innerHTML = "Train MSE <strong>" + trainMse.toFixed(3) + "</strong> · test MSE <strong>" + testMse.toFixed(3) +
+            "</strong> · " + (P.degree < 2 ? "high bias" : P.degree > 8 ? "high variance risk" : "balanced capacity");
+        }
+        function setDefaults() {
+          P.degree = 3; P.noise = 0.18; P.n = 22; seed = 4;
+          document.getElementById("degree").value = P.degree;
+          document.getElementById("noise").value = P.noise;
+          document.getElementById("n").value = P.n;
+          document.getElementById("degreeValue").textContent = P.degree;
+          document.getElementById("noiseValue").textContent = P.noise.toFixed(2);
+          document.getElementById("nValue").textContent = P.n;
+          resetData();
+        }
+
+        resize();
+        Sim.bind("degree", P, "degree", (v) => { draw(); return v; });
+        Sim.bind("noise", P, "noise", (v) => { resetData(); return (+v).toFixed(2); });
+        Sim.bind("n", P, "n", (v) => { resetData(); return v; });
+        document.getElementById("resample").addEventListener("click", () => { seed++; resetData(); });
+        document.getElementById("reset").addEventListener("click", setDefaults);
+        setDefaults();
+      </script>
+    </main>
+  </body>
+</html>

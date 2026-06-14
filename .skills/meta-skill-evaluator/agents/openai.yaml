@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Skill Evaluator"
+  short_description: "Evaluate and improve skills from outputs"
+  default_prompt: "Use $meta-skill-evaluator to review a skill output, log the eval, and decide whether the skill should be updated."

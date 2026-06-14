@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gradient Descent — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Gradient Descent</h1>
+      <p class="sub">Drag the starting point, tune the learning rate and momentum, and watch optimization either settle into a basin or overshoot. Inspired by Stanford CS229. <strong>Canvas 2D</strong> · machine learning.</p>
+
+      <div class="stage" aria-label="Gradient descent contour map"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Learning rate <strong id="lrValue"></strong></span>
+          <input id="lr" type="range" min="0.005" max="0.22" step="0.005" value="0.055" /></label>
+        <label class="row"><span>Momentum <strong id="momValue"></strong></span>
+          <input id="mom" type="range" min="0" max="0.94" step="0.01" value="0.55" /></label>
+        <button id="toggle">Pause</button>
+        <button id="step">Step</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { lr: 0.055, mom: 0.55 };
+        const domain = { x0: -4, x1: 4, y0: -3, y1: 3 };
+        let view = { w: 0, h: 0 }, bg = null, sim;
+        let state = { x: -3.25, y: 2.35, vx: 0, vy: 0, step: 0, path: [] };
+
+        function loss(x, y) {
+          return 0.11 * (x * x + 1.8 * y * y) + 0.75 * Math.sin(1.7 * x + 0.3) * Math.cos(1.35 * y) + 0.25 * Math.sin(2.2 * y);
+        }
+        function grad(x, y) {
+          return {
+            x: 0.22 * x + 1.275 * Math.cos(1.7 * x + 0.3) * Math.cos(1.35 * y),
+            y: 0.396 * y - 1.0125 * Math.sin(1.7 * x + 0.3) * Math.sin(1.35 * y) + 0.55 * Math.cos(2.2 * y)
+          };
+        }
+        const sx = (x) => (x - domain.x0) / (domain.x1 - domain.x0) * view.w;
+        const sy = (y) => view.h - (y - domain.y0) / (domain.y1 - domain.y0) * view.h;
+        const mx = (x) => domain.x0 + x / view.w * (domain.x1 - domain.x0);
+        const my = (y) => domain.y0 + (view.h - y) / view.h * (domain.y1 - domain.y0);
+
+        function reset(x, y) {
+          state = { x: x ?? -3.25, y: y ?? 2.35, vx: 0, vy: 0, step: 0, path: [] };
+          sim && sim.renderOnce();
+        }
+        function descend() {
+          const g = grad(state.x, state.y);
+          state.vx = params.mom * state.vx - params.lr * g.x;
+          state.vy = params.mom * state.vy - params.lr * g.y;
+          state.x = Math.max(domain.x0, Math.min(domain.x1, state.x + state.vx));
+          state.y = Math.max(domain.y0, Math.min(domain.y1, state.y + state.vy));
+          state.step++;
+          state.path.push([state.x, state.y]);
+          if (state.path.length > 260) state.path.shift();
+        }
+        function update() {
+          for (let i = 0; i < 2; i++) descend();
+        }
+        function makeBackground() {
+          const off = document.createElement("canvas");
+          off.width = 180; off.height = 130;
+          const b = off.getContext("2d"), img = b.createImageData(off.width, off.height);
+          let min = Infinity, max = -Infinity, vals = [];
+          for (let y = 0; y < off.height; y++) for (let x = 0; x < off.width; x++) {
+            const v = loss(mx(x / off.width * view.w), my(y / off.height * view.h));
+            vals.push(v); min = Math.min(min, v); max = Math.max(max, v);
+          }
+          vals.forEach((v, i) => {
+            const t = Math.max(0, Math.min(1, (v - min) / (max - min)));
+            const p = i * 4, band = Math.abs((t * 22) % 1 - 0.5) < 0.055 ? 38 : 0;
+            img.data[p] = 15 + 20 * t + band;
+            img.data[p + 1] = 20 + 80 * (1 - t) + band;
+            img.data[p + 2] = 28 + 120 * (1 - Math.abs(t - 0.5)) + band;
+            img.data[p + 3] = 255;
+          });
+          b.putImageData(img, 0, 0);
+          bg = off;
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); makeBackground(); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        function render() {
+          ctx.drawImage(bg, 0, 0, view.w, view.h);
+          ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(0, sy(0)); ctx.lineTo(view.w, sy(0)); ctx.moveTo(sx(0), 0); ctx.lineTo(sx(0), view.h); ctx.stroke();
+          ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 2; ctx.beginPath();
+          state.path.forEach(([x, y], i) => { i ? ctx.lineTo(sx(x), sy(y)) : ctx.moveTo(sx(x), sy(y)); });
+          ctx.stroke();
+          const g = grad(state.x, state.y), px = sx(state.x), py = sy(state.y);
+          ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = "#ff6a3d"; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - g.x * 18, py + g.y * 18); ctx.stroke();
+          ro.innerHTML = "step <strong>" + state.step + "</strong> · loss <strong>" + loss(state.x, state.y).toFixed(3) + "</strong> · |gradient| <strong>" + Math.hypot(g.x, g.y).toFixed(3) + "</strong>";
+        }
+
+        resize();
+        Sim.bind("lr", params, "lr", (v) => (+v).toFixed(3));
+        Sim.bind("mom", params, "mom", (v) => (+v).toFixed(2));
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.pointer(canvas, { down(p) { reset(mx(p.x), my(p.y)); }, move(p) { if (p.down) reset(mx(p.x), my(p.y)); } });
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("step").addEventListener("click", () => { descend(); sim.renderOnce(); });
+        document.getElementById("reset").addEventListener("click", () => reset());
+      </script>
+    </main>
+  </body>
+</html>

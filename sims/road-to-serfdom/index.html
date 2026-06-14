@@ -33,7 +33,7 @@
 
       <div class="explain">
         <div class="figure">
-          <div class="stage"><canvas id="c"></canvas></div>
+          <div class="stage" aria-label="Interactive planning pressure diagram"><canvas id="c"></canvas></div>
           <div class="cap" id="cap"></div>
         </div>
         <div class="steps" id="steps">
@@ -42,8 +42,10 @@
           <section class="step" data-step data-p="0.72"><h2>3 · We can't agree</h2><p>No majority agrees on the one plan in detail. The planners stall — and a cry rises for a strong leader who can "get things done."</p></section>
           <section class="step" data-step data-p="0.95"><h2>4 · The strong man</h2><p>Power concentrates around the plan. Dissent is no longer mere disagreement but an obstacle — to be removed.</p></section>
           <section class="step" data-step data-p="0.5" data-interactive="1"><h2>5 · Your dial</h2><p>Coordination and freedom trade off. Move the dial and watch the cost. How far would you go?</p>
-            <div class="controls sandbox"><div class="row"><span>Central planning <strong id="planValue">50%</strong></span>
-              <input id="plan" type="range" min="0" max="100" step="1" value="50" /></div></div>
+            <div class="controls sandbox"><label class="row"><span>Central planning <strong id="planValue">50%</strong></span>
+              <input id="plan" type="range" min="0" max="100" step="1" value="50" /></label>
+              <button id="toggle">Pause</button>
+              <button id="reset">Reset</button></div>
           </section>
         </div>
       </div>
@@ -126,6 +128,14 @@
         document.getElementById("plan").addEventListener("input", (e) => {
           M.target = +e.target.value / 100;
           document.getElementById("planValue").textContent = e.target.value + "%";
+        });
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("reset").addEventListener("click", () => {
+          init();
+          M.planning = 0.5; M.target = 0.5;
+          document.getElementById("plan").value = 50;
+          document.getElementById("planValue").textContent = "50%";
+          sim.renderOnce();
         });
       </script>
     </main>

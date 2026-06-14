@@ -12,13 +12,13 @@
       <h1>Simulation Template</h1>
       <p class="sub">Copy this folder to <code>/sims/&lt;name&gt;/</code> and replace the model. It already wires HiDPI, a fixed-timestep loop, offscreen pause, pointer input, and themed controls.</p>
 
-      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="stage" aria-label="Canvas simulation stage"><canvas id="c"></canvas></div>
 
       <div class="controls">
-        <div class="row"><span>Count <strong id="countValue"></strong></span>
-          <input id="count" type="range" min="10" max="300" step="10" value="120" /></div>
-        <div class="row"><span>Speed <strong id="speedValue"></strong></span>
-          <input id="speed" type="range" min="0" max="2" step="0.01" value="1" /></div>
+        <label class="row"><span>Count <strong id="countValue"></strong></span>
+          <input id="count" type="range" min="10" max="300" step="10" value="120" /></label>
+        <label class="row"><span>Speed <strong id="speedValue"></strong></span>
+          <input id="speed" type="range" min="0" max="2" step="0.01" value="1" /></label>
         <button id="toggle">Pause</button>
         <button id="reset">Reset</button>
       </div>

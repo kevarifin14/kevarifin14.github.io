@@ -33,7 +33,7 @@
 
       <div class="explain">
         <div class="figure">
-          <div class="stage"><canvas id="c"></canvas></div>
+          <div class="stage" aria-label="Wave interference explainer stage"><canvas id="c"></canvas></div>
           <div class="cap" id="cap"></div>
         </div>
 
@@ -54,8 +54,10 @@
             <h2>4 · Your turn</h2>
             <p>Drag either source and change the wavelength. Handing the reader the controls at the end is what turns an animation into an explorable.</p>
             <div class="controls sandbox">
-              <div class="row"><span>Wavelength <strong id="wlValue"></strong></span>
-                <input id="wl" type="range" min="6" max="40" step="1" value="18" /></div>
+              <label class="row"><span>Wavelength <strong id="wlValue"></strong></span>
+                <input id="wl" type="range" min="6" max="40" step="1" value="18" /></label>
+              <button id="toggle">Pause</button>
+              <button id="reset">Reset</button>
             </div>
           </section>
         </div>
@@ -76,6 +78,12 @@
         }
         function resize() { view = Sim.fitCanvas(canvas, ctx); buildBuffer(); }
         window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
+        function reset() {
+          sources[0].x = GW * 0.5; sources[0].y = GH * 0.42;
+          sources[1].x = GW * 0.5; sources[1].y = GH * 0.58;
+          t = 0;
+          sim && sim.renderOnce();
+        }
 
         function update(dt) { t += 3 * dt; }
         function render() {
@@ -101,6 +109,8 @@
           up() { drag = -1; },
         });
         Sim.bind("wl", stateModel, "wl", (v) => v);
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("reset").addEventListener("click", reset);
 
         const captions = [
           "One source · circular wavefronts.",

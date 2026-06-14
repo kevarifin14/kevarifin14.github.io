@@ -12,7 +12,7 @@
       <h1>Pendulum</h1>
       <p class="sub">A damped pendulum. Drag the bob to set its angle, then let go. <strong>SVG</strong> — crisp vector geometry and a live label.</p>
 
-      <div class="stage">
+      <div class="stage" aria-label="Damped pendulum with draggable bob">
         <svg id="s" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet">
           <line id="rod" x1="150" y1="40" x2="150" y2="150" stroke="#8a8a8f" stroke-width="2" />
           <circle cx="150" cy="40" r="3" fill="#8a8a8f" />
@@ -22,19 +22,21 @@
       </div>
 
       <div class="controls">
-        <div class="row"><span>Length <strong id="lenValue"></strong></span>
-          <input id="len" type="range" min="60" max="150" step="1" value="110" /></div>
-        <div class="row"><span>Gravity <strong id="gValue"></strong></span>
-          <input id="g" type="range" min="2" max="30" step="0.5" value="14" /></div>
-        <div class="row"><span>Damping <strong id="dmpValue"></strong></span>
-          <input id="dmp" type="range" min="0" max="0.6" step="0.01" value="0.08" /></div>
+        <label class="row"><span>Length <strong id="lenValue"></strong></span>
+          <input id="len" type="range" min="60" max="150" step="1" value="110" /></label>
+        <label class="row"><span>Gravity <strong id="gValue"></strong></span>
+          <input id="g" type="range" min="2" max="30" step="0.5" value="14" /></label>
+        <label class="row"><span>Damping <strong id="dmpValue"></strong></span>
+          <input id="dmp" type="range" min="0" max="0.6" step="0.01" value="0.08" /></label>
+        <button id="toggle">Pause</button>
         <button id="reset">Reset</button>
       </div>
+      <div class="readout" id="ro">Drag the bob to start with a large angle; damping removes energy over time.</div>
 
       <script src="../lib/simkit.js"></script>
       <script>
         const svg = document.getElementById("s");
-        const rod = document.getElementById("rod"), bob = document.getElementById("bob"), lbl = document.getElementById("lbl");
+        const rod = document.getElementById("rod"), bob = document.getElementById("bob"), lbl = document.getElementById("lbl"), ro = document.getElementById("ro");
         const PX = 150, PY = 40;                       // pivot, in SVG units
         const params = { len: 110, g: 14, dmp: 0.08 };
         let theta = Math.PI * 0.5, omega = 0, dragging = false;
@@ -55,6 +57,7 @@
           bob.setAttribute("cx", x); bob.setAttribute("cy", y);
           rod.setAttribute("x2", x); rod.setAttribute("y2", y);
           lbl.textContent = "θ = " + (theta * 180 / Math.PI).toFixed(0) + "°";
+          ro.innerHTML = "Angle <strong>" + (theta * 180 / Math.PI).toFixed(0) + "°</strong> · angular velocity <strong>" + omega.toFixed(2) + "</strong>";
         }
 
         bob.addEventListener("pointerdown", (e) => { dragging = true; omega = 0; bob.setPointerCapture(e.pointerId); });
@@ -64,9 +67,10 @@
         Sim.bind("len", params, "len", (v) => v);
         Sim.bind("g", params, "g", (v) => (+v).toFixed(1));
         Sim.bind("dmp", params, "dmp", (v) => (+v).toFixed(2));
-        document.getElementById("reset").addEventListener("click", () => { theta = Math.PI * 0.5; omega = 0; });
+        document.getElementById("reset").addEventListener("click", () => { theta = Math.PI * 0.5; omega = 0; sim.renderOnce(); });
 
-        Sim.loop({ update, render, stage: svg.parentElement });
+        const sim = Sim.loop({ update, render, stage: svg.parentElement });
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
       </script>
     </main>
   </body>

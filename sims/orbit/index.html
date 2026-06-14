@@ -18,10 +18,10 @@
       <h1>3D Orbit</h1>
       <p class="sub">Drag to orbit, scroll to zoom. <strong>three.js / WebGL</strong> — the right tool when the phenomenon is genuinely 3D.</p>
 
-      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="stage" aria-label="Three-dimensional torus knot orbit scene"><canvas id="c"></canvas></div>
       <div class="controls">
         <label class="row check"><input id="spin" type="checkbox" checked /> <span>Auto-rotate</span></label>
-        <button id="home">Home view</button>
+        <button id="reset">Reset</button>
       </div>
       <div class="readout">Runs on three.js's own render loop — the fixed-timestep 2D toolkit isn't the right fit here.</div>
 
@@ -57,9 +57,11 @@
         }
         window.addEventListener("resize", resize); resize();
 
-        let spin = true;
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let spin = !reduceMotion.matches;
+        document.getElementById("spin").checked = spin;
         document.getElementById("spin").addEventListener("change", (e) => (spin = e.target.checked));
-        document.getElementById("home").addEventListener("click", () => {
+        document.getElementById("reset").addEventListener("click", () => {
           camera.position.copy(HOME); controls.target.set(0, 0, 0); controls.update();
         });
 

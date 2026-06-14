@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Making Playbook"
+  short_description: "Design sharper reusable agent skills"
+  default_prompt: "Use $skill-making-playbook to design or critique an agent skill from my workflow."

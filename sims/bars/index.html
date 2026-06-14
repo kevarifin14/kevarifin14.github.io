@@ -13,11 +13,12 @@
       <h1>Interactive Bars</h1>
       <p class="sub">A data-driven chart with hover and live regeneration. <strong>D3</strong> — scales, axes, and data joins.</p>
 
-      <div class="stage"><svg id="chart"></svg></div>
+      <div class="stage" aria-label="Interactive bar chart"><svg id="chart"></svg></div>
       <div class="controls">
-        <div class="row"><span>Bars <strong id="nValue">12</strong></span>
-          <input id="n" type="range" min="4" max="32" step="1" value="12" /></div>
+        <label class="row"><span>Bars <strong id="nValue">12</strong></span>
+          <input id="n" type="range" min="4" max="32" step="1" value="12" /></label>
         <button id="shuffle">Reshuffle</button>
+        <button id="reset">Reset</button>
       </div>
       <div class="readout" id="ro">Hover a bar to read its value.</div>
 
@@ -51,6 +52,12 @@
 
         document.getElementById("n").addEventListener("input", (e) => { n = +e.target.value; document.getElementById("nValue").textContent = n; gen(); draw(); });
         document.getElementById("shuffle").addEventListener("click", () => { gen(); draw(); });
+        document.getElementById("reset").addEventListener("click", () => {
+          n = 12;
+          document.getElementById("n").value = n;
+          document.getElementById("nValue").textContent = n;
+          gen(); draw();
+        });
         window.addEventListener("resize", draw);
         gen(); draw();
       </script>

@@ -12,12 +12,13 @@
       <h1>Galton Board</h1>
       <p class="sub">Each ball turns left or right at every peg — pure coin flips — yet the pile becomes a bell curve. Run the experiment. <strong>Canvas 2D</strong> · statistics.</p>
 
-      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="stage" aria-label="Galton board falling balls and outcome histogram"><canvas id="c"></canvas></div>
       <div class="controls">
-        <div class="row"><span>Rows <strong id="rowsValue"></strong></span>
-          <input id="rows" type="range" min="6" max="18" step="1" value="12" /></div>
+        <label class="row"><span>Rows <strong id="rowsValue"></strong></span>
+          <input id="rows" type="range" min="6" max="18" step="1" value="12" /></label>
         <button id="drop1">Drop 1</button>
         <button id="drop50">Drop 50</button>
+        <button id="toggle">Pause</button>
         <button id="reset">Reset</button>
       </div>
       <div class="readout" id="ro">Trials: <strong>0</strong></div>
@@ -26,7 +27,7 @@
       <script>
         const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
         const params = { rows: 12 };
-        let view = { w: 0, h: 0 }, balls = [], counts = [], total = 0;
+        let view = { w: 0, h: 0 }, balls = [], counts = [], total = 0, sim;
         let topY, rowGap, colGap, cx, histTop;
 
         function geom() {
@@ -43,6 +44,15 @@
 
         function drop(n) {
           for (let i = 0; i < n; i++) balls.push({ x: cx, y: topY - 12 - i * 10, row: 0, rights: 0, done: false });
+          render();
+        }
+        function seedTrials(n) {
+          const rnd = Sim.rng(31);
+          for (let i = 0; i < n; i++) {
+            let rights = 0;
+            for (let r = 0; r < params.rows; r++) if (rnd() < 0.5) rights++;
+            counts[rights]++; total++;
+          }
         }
         function update(dt) {
           const vy = rowGap * 3.2;
@@ -90,16 +100,20 @@
           for (const b of balls) if (!b.done) { ctx.beginPath(); ctx.arc(b.x, b.y, 3.2, 0, Math.PI * 2); ctx.fill(); }
 
           let mean = 0; for (let i = 0; i < bins; i++) mean += i * counts[i]; mean = total ? mean / total : 0;
-          ro.innerHTML = "Trials: <strong>" + total + "</strong>" + (total ? " · mean bin <strong>" + mean.toFixed(2) + "</strong> (expected " + (params.rows / 2).toFixed(1) + ")" : "");
+          const falling = balls.filter((b) => !b.done).length;
+          ro.innerHTML = "Trials: <strong>" + total + "</strong>" + (falling ? " · falling <strong>" + falling + "</strong>" : "") +
+            (total ? " · mean bin <strong>" + mean.toFixed(2) + "</strong> (expected " + (params.rows / 2).toFixed(1) + ")" : "");
         }
 
         resize();
         resetCounts();
         Sim.bind("rows", params, "rows", (v) => { geom(); resetCounts(); return v; });
-        Sim.loop({ update, render, stage: canvas.parentElement });
+        seedTrials(180);
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
         document.getElementById("drop1").addEventListener("click", () => drop(1));
         document.getElementById("drop50").addEventListener("click", () => drop(50));
-        document.getElementById("reset").addEventListener("click", resetCounts);
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("reset").addEventListener("click", () => { resetCounts(); render(); });
       </script>
     </main>
   </body>

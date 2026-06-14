@@ -12,11 +12,11 @@
       <h1>Central Limit Theorem</h1>
       <p class="sub">Average enough samples from <em>any</em> shape and the averages form a bell curve. Pick a weird population, set the sample size, and run the experiment. <strong>Canvas 2D</strong> · statistics.</p>
 
-      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="stage" aria-label="Central Limit Theorem sampling histogram"><canvas id="c"></canvas></div>
       <div class="controls"><div class="presets" id="pops"></div></div>
       <div class="controls">
-        <div class="row"><span>Sample size n <strong id="nValue"></strong></span>
-          <input id="n" type="range" min="1" max="50" step="1" value="5" /></div>
+        <label class="row"><span>Sample size n <strong id="nValue"></strong></span>
+          <input id="n" type="range" min="1" max="50" step="1" value="5" /></label>
         <button id="draw100">Draw 100</button>
         <button id="draw1000">Draw 1000</button>
         <button id="reset">Reset</button>

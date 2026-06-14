@@ -14,13 +14,14 @@
       <h1>Fourier Epicycles</h1>
       <p class="sub">A stack of rotating circles sums into a square wave. Add terms and watch the approximation sharpen. <strong>Canvas 2D</strong> · math.</p>
 
-      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="stage" aria-label="Fourier epicycle construction and square-wave trace"><canvas id="c"></canvas></div>
       <div class="controls">
-        <div class="row"><span>Terms <strong id="termsValue"></strong></span>
-          <input id="terms" type="range" min="1" max="40" step="1" value="5" /></div>
-        <div class="row"><span>Speed <strong id="spdValue"></strong></span>
-          <input id="spd" type="range" min="0" max="2" step="0.01" value="1" /></div>
+        <label class="row"><span>Terms <strong id="termsValue"></strong></span>
+          <input id="terms" type="range" min="1" max="40" step="1" value="5" /></label>
+        <label class="row"><span>Speed <strong id="spdValue"></strong></span>
+          <input id="spd" type="range" min="0" max="2" step="0.01" value="1" /></label>
         <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
       </div>
       <div class="readout" id="formula"></div>
 
@@ -67,6 +68,7 @@
         Sim.bind("spd", params, "spd", (v) => (+v).toFixed(2));
         const sim = Sim.loop({ update, render, stage: canvas.parentElement });
         document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("reset").addEventListener("click", () => { t = 0; wave = []; sim.renderOnce(); });
         formula();
       </script>
     </main>

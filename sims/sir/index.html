@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SIR Epidemic — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>SIR Epidemic</h1>
+      <p class="sub">A compartment model from differential equations: susceptible people become infected, then recover. Tune transmission, recovery, and vaccination to flatten the curve. <strong>Canvas 2D</strong> · systems biology.</p>
+
+      <div class="stage" aria-label="SIR epidemic curves"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Transmission beta <strong id="betaValue"></strong></span>
+          <input id="beta" type="range" min="0.05" max="1.2" step="0.01" value="0.52" /></label>
+        <label class="row"><span>Recovery gamma <strong id="gammaValue"></strong></span>
+          <input id="gamma" type="range" min="0.03" max="0.45" step="0.01" value="0.14" /></label>
+        <label class="row"><span>Vaccinated <strong id="vaccValue"></strong></span>
+          <input id="vacc" type="range" min="0" max="0.85" step="0.01" value="0.12" /></label>
+        <button id="toggle">Pause</button>
+        <button id="week">+7 days</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { beta: 0.52, gamma: 0.14, vacc: 0.12 };
+        const daysMax = 180, speed = 8;
+        let view = { w: 0, h: 0 }, model, hist, sim;
+
+        function reset() {
+          const i0 = 0.01;
+          model = { day: 0, s: Math.max(0, 1 - params.vacc - i0), i: i0, r: params.vacc, peak: i0, peakDay: 0 };
+          hist = [{ ...model }];
+          sim && sim.renderOnce();
+        }
+        function integrate(dtDays) {
+          const ds = -params.beta * model.s * model.i;
+          const di = params.beta * model.s * model.i - params.gamma * model.i;
+          const dr = params.gamma * model.i;
+          model.s = Math.max(0, Math.min(1, model.s + ds * dtDays));
+          model.i = Math.max(0, Math.min(1, model.i + di * dtDays));
+          model.r = Math.max(0, Math.min(1, model.r + dr * dtDays));
+          const total = model.s + model.i + model.r;
+          model.s /= total; model.i /= total; model.r /= total;
+          model.day += dtDays;
+          if (model.i > model.peak) { model.peak = model.i; model.peakDay = model.day; }
+          if (hist.length === 0 || model.day - hist[hist.length - 1].day >= 0.5) hist.push({ ...model });
+        }
+        function update(dt) {
+          if (model.day >= daysMax) return;
+          const steps = 5, h = dt * speed / steps;
+          for (let k = 0; k < steps; k++) integrate(h);
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        const X = (d) => 38 + d / daysMax * (view.w - 54);
+        const Y = (v) => view.h - 28 - v * (view.h - 52);
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          ctx.strokeStyle = "#232326"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(daysMax), Y(0)); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(0), Y(1)); ctx.stroke();
+          [["S", "#4fa3ff"], ["I", "#ff6a3d"], ["R", "#e8c547"]].forEach(([label, color], idx) => {
+            ctx.fillStyle = color; ctx.fillText(label, view.w - 50 + idx * 16, 18);
+          });
+          function line(key, color) {
+            ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+            hist.forEach((p, i) => { i ? ctx.lineTo(X(p.day), Y(p[key])) : ctx.moveTo(X(p.day), Y(p[key])); });
+            ctx.stroke();
+          }
+          line("s", "#4fa3ff"); line("i", "#ff6a3d"); line("r", "#e8c547");
+          ctx.fillStyle = "rgba(255,255,255,0.12)";
+          ctx.fillRect(X(model.day), 24, 1, view.h - 52);
+          const r0 = params.beta / params.gamma;
+          const re = r0 * model.s;
+          ro.innerHTML = "day <strong>" + model.day.toFixed(1) + "</strong> · infected <strong>" + (model.i * 100).toFixed(1) + "%</strong> · peak <strong>" + (model.peak * 100).toFixed(1) + "%</strong> on day " + model.peakDay.toFixed(0) + " · R0 <strong>" + r0.toFixed(2) + "</strong>, Re <strong>" + re.toFixed(2) + "</strong>";
+        }
+        function bindReset(id, key, fmt) {
+          Sim.bind(id, params, key, fmt);
+          document.getElementById(id).addEventListener("input", reset);
+        }
+
+        resize();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        bindReset("beta", "beta", (v) => (+v).toFixed(2));
+        bindReset("gamma", "gamma", (v) => (+v).toFixed(2));
+        bindReset("vacc", "vacc", (v) => Math.round(v * 100) + "%");
+        reset();
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("week").addEventListener("click", () => { for (let i = 0; i < 7 * 12; i++) integrate(1 / 12); sim.renderOnce(); });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>

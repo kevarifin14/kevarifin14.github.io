@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "eval:sims": "node scripts/evaluate-sims.mjs",
+    "eval:skills": "node .skills/meta-skill-evaluator/scripts/check-skill-evals.mjs .skills"
+  },
+  "devDependencies": {
+    "playwright": "^1.53.0"
+  }
+}

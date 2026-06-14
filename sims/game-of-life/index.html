@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Game of Life — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Conway's Game of Life</h1>
+      <p class="sub">Four local rules create gliders, oscillators, explosions, and still lifes. Paint cells, step once, or let the grid run. <strong>Canvas 2D</strong> · complexity.</p>
+
+      <div class="stage" aria-label="Conway Game of Life grid"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Speed <strong id="spdValue"></strong>/s</span>
+          <input id="spd" type="range" min="1" max="30" step="1" value="10" /></label>
+        <button id="toggle">Play</button>
+        <button id="step">Step</button>
+        <button id="rand">Random</button>
+        <button id="clear">Clear</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="controls"><div class="presets" id="presets"></div></div>
+      <div class="readout" id="ro">Click a cell to toggle it. Generation 0.</div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+        const ro = document.getElementById("ro");
+        const CELL = 12;
+        const params = { spd: 10 };
+        let view = { w: 0, h: 0 }, cols = 0, rows = 0, grid, next, gen = 0, acc = 0, paintValue = 1, sim;
+
+        const patterns = {
+          glider: [[1,0],[2,1],[0,2],[1,2],[2,2]],
+          blinker: [[0,1],[1,1],[2,1]],
+          acorn: [[1,0],[3,1],[0,2],[1,2],[4,2],[5,2],[6,2]],
+          diehard: [[6,0],[0,1],[1,1],[1,2],[5,2],[6,2],[7,2]]
+        };
+
+        function build() {
+          cols = Math.max(8, Math.floor(view.w / CELL));
+          rows = Math.max(8, Math.floor(view.h / CELL));
+          grid = new Uint8Array(cols * rows);
+          next = new Uint8Array(cols * rows);
+        }
+        function resize() {
+          const old = grid, oldCols = cols, oldRows = rows;
+          view = Sim.fitCanvas(canvas, ctx);
+          build();
+          if (old) {
+            for (let y = 0; y < Math.min(oldRows, rows); y++) {
+              for (let x = 0; x < Math.min(oldCols, cols); x++) grid[y * cols + x] = old[y * oldCols + x];
+            }
+          }
+          sim && sim.renderOnce();
+        }
+        window.addEventListener("resize", resize);
+
+        const at = (x, y) => ((y + rows) % rows) * cols + ((x + cols) % cols);
+        const aliveCount = () => grid.reduce((a, b) => a + b, 0);
+
+        function lifeStep() {
+          for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+            let n = 0;
+            for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (dx || dy) n += grid[at(x + dx, y + dy)];
+            const alive = grid[y * cols + x];
+            next[y * cols + x] = (alive && (n === 2 || n === 3)) || (!alive && n === 3) ? 1 : 0;
+          }
+          const swap = grid; grid = next; next = swap; gen++;
+        }
+        function update(dt) {
+          acc += dt;
+          const tick = 1 / params.spd;
+          while (acc >= tick) { lifeStep(); acc -= tick; }
+        }
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const cw = view.w / cols, ch = view.h / rows;
+          ctx.fillStyle = "rgba(255,255,255,0.045)";
+          for (let x = 1; x < cols; x++) ctx.fillRect(x * cw, 0, 1, view.h);
+          for (let y = 1; y < rows; y++) ctx.fillRect(0, y * ch, view.w, 1);
+          ctx.fillStyle = "#e8c547";
+          for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+            if (grid[y * cols + x]) ctx.fillRect(x * cw + 1, y * ch + 1, Math.max(1, cw - 2), Math.max(1, ch - 2));
+          }
+          const alive = aliveCount();
+          ro.innerHTML = "Generation <strong>" + gen + "</strong> · live cells <strong>" + alive + "</strong> · density <strong>" + (alive / grid.length * 100).toFixed(1) + "%</strong>";
+        }
+        function cellAt(p) {
+          return { x: Math.floor(p.x / (view.w / cols)), y: Math.floor(p.y / (view.h / rows)) };
+        }
+        function paint(p) {
+          const c = cellAt(p);
+          if (c.x >= 0 && c.x < cols && c.y >= 0 && c.y < rows) grid[c.y * cols + c.x] = paintValue;
+        }
+        function randomize(seed) {
+          const r = Sim.rng(seed || ((Date.now() & 0xffff) + 1));
+          for (let i = 0; i < grid.length; i++) grid[i] = r() < 0.2 ? 1 : 0;
+          gen = 0; acc = 0; sim.renderOnce();
+        }
+        function clear() { grid.fill(0); gen = 0; acc = 0; sim.renderOnce(); }
+        function place(name) {
+          clear();
+          const pts = patterns[name];
+          const ox = Math.max(1, Math.floor(cols * 0.42));
+          const oy = Math.max(1, Math.floor(rows * 0.42));
+          pts.forEach(([x, y]) => { if (oy + y < rows && ox + x < cols) grid[(oy + y) * cols + ox + x] = 1; });
+          sim.renderOnce();
+        }
+
+        resize();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement, autoplay: false });
+        Sim.bind("spd", params, "spd", (v) => v);
+        Sim.pointer(canvas, {
+          down(p) { const c = cellAt(p); paintValue = grid[c.y * cols + c.x] ? 0 : 1; paint(p); sim.renderOnce(); },
+          move(p) { if (p.down) { paint(p); sim.renderOnce(); } }
+        });
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("step").addEventListener("click", () => { lifeStep(); sim.renderOnce(); });
+        document.getElementById("rand").addEventListener("click", () => randomize());
+        document.getElementById("clear").addEventListener("click", clear);
+        document.getElementById("reset").addEventListener("click", () => randomize(3));
+        Object.keys(patterns).forEach((name) => {
+          const b = document.createElement("button");
+          b.textContent = name;
+          b.addEventListener("click", () => place(name));
+          document.getElementById("presets").appendChild(b);
+        });
+        randomize(3);
+      </script>
+    </main>
+  </body>
+</html>

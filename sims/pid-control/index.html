@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PID Control — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>PID Control</h1>
+      <p class="sub">Tune proportional, integral, and derivative feedback on a cart trying to reach a target. Too little gain is sluggish; too much can ring or blow up. <strong>Canvas 2D</strong> · control systems.</p>
+
+      <div class="stage" aria-label="PID control cart and error plot"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>P <strong id="kpValue"></strong></span>
+          <input id="kp" type="range" min="0" max="28" step="0.1" value="10" /></label>
+        <label class="row"><span>I <strong id="kiValue"></strong></span>
+          <input id="ki" type="range" min="0" max="8" step="0.05" value="0.8" /></label>
+        <label class="row"><span>D <strong id="kdValue"></strong></span>
+          <input id="kd" type="range" min="0" max="12" step="0.1" value="5" /></label>
+        <button id="toggle">Pause</button>
+        <button id="kick">Disturb</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro">Drag inside the track to move the target.</div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { kp: 10, ki: 0.8, kd: 5 };
+        let view = { w: 0, h: 0 }, plant, trace = [], lastError = 0, sim;
+
+        function reset() {
+          plant = { x: -0.65, v: 0, target: 0.62, integral: 0, t: 0, maxOver: 0 };
+          trace = []; lastError = plant.target - plant.x;
+          sim && sim.renderOnce();
+        }
+        function update(dt) {
+          const error = plant.target - plant.x;
+          plant.integral = Math.max(-2, Math.min(2, plant.integral + error * dt));
+          const derivative = (error - lastError) / Math.max(dt, 1e-4);
+          lastError = error;
+          const u = Math.max(-80, Math.min(80, params.kp * error + params.ki * plant.integral + params.kd * derivative));
+          const disturbance = 0.25 * Math.sin(plant.t * 0.8);
+          const a = u - 2.2 * plant.v + disturbance;
+          plant.v += a * dt;
+          plant.x += plant.v * dt;
+          plant.x = Math.max(-1.1, Math.min(1.1, plant.x));
+          plant.t += dt;
+          plant.maxOver = Math.max(plant.maxOver, Math.max(0, Math.abs(plant.x - plant.target) - 0.03));
+          if (trace.length === 0 || plant.t - trace[trace.length - 1].t > 0.035) trace.push({ t: plant.t, e: error });
+          if (trace.length > 260) trace.shift();
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        const X = (x) => 38 + (x + 1.1) / 2.2 * (view.w - 76);
+        function render() {
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const trackY = view.h * 0.36;
+          ctx.strokeStyle = "#3a3a40"; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(X(-1.1), trackY); ctx.lineTo(X(1.1), trackY); ctx.stroke();
+          ctx.strokeStyle = "rgba(255,106,61,0.65)"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(X(plant.target), trackY - 42); ctx.lineTo(X(plant.target), trackY + 42); ctx.stroke();
+          ctx.fillStyle = "#ff6a3d"; ctx.fillText("target", X(plant.target) - 16, trackY - 50);
+          ctx.fillStyle = "#e8c547"; ctx.fillRect(X(plant.x) - 18, trackY - 14, 36, 28);
+          ctx.fillStyle = "#ededed"; ctx.beginPath(); ctx.arc(X(plant.x) - 10, trackY + 18, 4, 0, Math.PI * 2); ctx.arc(X(plant.x) + 10, trackY + 18, 4, 0, Math.PI * 2); ctx.fill();
+
+          const top = view.h * 0.60, h = view.h * 0.28, left = 38, w = view.w - 76;
+          ctx.strokeStyle = "#232326"; ctx.lineWidth = 1;
+          ctx.strokeRect(left, top, w, h);
+          ctx.strokeStyle = "rgba(255,255,255,0.18)";
+          ctx.beginPath(); ctx.moveTo(left, top + h / 2); ctx.lineTo(left + w, top + h / 2); ctx.stroke();
+          ctx.strokeStyle = "#4fa3ff"; ctx.lineWidth = 2; ctx.beginPath();
+          trace.forEach((p, i) => {
+            const xx = left + i / Math.max(1, 259) * w;
+            const yy = top + h / 2 - Math.max(-1, Math.min(1, p.e)) * h * 0.42;
+            i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy);
+          });
+          ctx.stroke();
+          const err = plant.target - plant.x;
+          ro.innerHTML = "error <strong>" + err.toFixed(3) + "</strong> · velocity <strong>" + plant.v.toFixed(2) + "</strong> · integral <strong>" + plant.integral.toFixed(2) + "</strong>";
+        }
+        function setTargetFromPointer(p) {
+          plant.target = Math.max(-1.05, Math.min(1.05, -1.1 + (p.x - 38) / Math.max(1, view.w - 76) * 2.2));
+        }
+
+        resize();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.bind("kp", params, "kp", (v) => (+v).toFixed(1));
+        Sim.bind("ki", params, "ki", (v) => (+v).toFixed(2));
+        Sim.bind("kd", params, "kd", (v) => (+v).toFixed(1));
+        Sim.pointer(canvas, { down(p) { setTargetFromPointer(p); sim.renderOnce(); }, move(p) { if (p.down) setTargetFromPointer(p); } });
+        reset();
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("kick").addEventListener("click", () => { plant.v += plant.x < plant.target ? -2.2 : 2.2; });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PageRank Surfer — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>PageRank Surfer</h1>
+      <p class="sub">Rank flows through links like a random web surfer: usually follow an edge, sometimes teleport. Toggle links and watch authority settle. <strong>Canvas 2D</strong> · graphs.</p>
+
+      <div class="stage" aria-label="PageRank graph with random surfer rank bars"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Follow links <strong id="dValue"></strong></span>
+          <input id="d" type="range" min="0" max="0.98" step="0.01" value="0.85" /></label>
+        <label class="row"><span>Preset</span>
+          <select id="preset">
+            <option value="web">web</option>
+            <option value="cycle">cycle</option>
+            <option value="hub">hub</option>
+          </select></label>
+        <button id="step">Step</button>
+        <button id="run">Run 20</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite">Click one node, then another, to toggle a link.</div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const P = { d: 0.85 };
+        const nodes = [
+          { x: 0.20, y: 0.28, label: "A" },
+          { x: 0.44, y: 0.16, label: "B" },
+          { x: 0.67, y: 0.31, label: "C" },
+          { x: 0.25, y: 0.68, label: "D" },
+          { x: 0.54, y: 0.72, label: "E" },
+          { x: 0.78, y: 0.62, label: "F" },
+        ];
+        const presets = {
+          web: [[1,2],[2,4],[0,2,3],[2,4],[1,5],[2]],
+          cycle: [[1],[2],[3],[4],[5],[0]],
+          hub: [[2],[2],[0,1,3,4,5],[2],[2],[2]],
+        };
+        let links = [], rank = [], next = [], iter = 0, selected = -1, view = { w: 0, h: 0 };
+
+        function setPreset(name) {
+          links = presets[name].map((arr) => arr.slice());
+          rank = Array(nodes.length).fill(1 / nodes.length);
+          next = Array(nodes.length).fill(0);
+          iter = 0; selected = -1; draw();
+          for (let i = 0; i < 12; i++) pageRankStep();
+          draw();
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); draw(); }
+        window.addEventListener("resize", resize);
+        function pageRankStep() {
+          const n = nodes.length;
+          next.fill((1 - P.d) / n);
+          for (let i = 0; i < n; i++) {
+            const out = links[i].length ? links[i] : Array.from({ length: n }, (_, j) => j);
+            for (const j of out) next[j] += P.d * rank[i] / out.length;
+          }
+          [rank, next] = [next, rank];
+          iter++;
+        }
+        function nodePos(i) {
+          const graphW = view.w * 0.62, graphH = view.h;
+          return { x: nodes[i].x * graphW + 12, y: nodes[i].y * graphH };
+        }
+        function hitNode(p) {
+          for (let i = nodes.length - 1; i >= 0; i--) {
+            const q = nodePos(i);
+            if (Math.hypot(p.x - q.x, p.y - q.y) < 22) return i;
+          }
+          return -1;
+        }
+        function toggleLink(a, b) {
+          if (a === b) return;
+          const list = links[a], k = list.indexOf(b);
+          if (k >= 0) list.splice(k, 1); else list.push(b);
+          iter = 0; rank = Array(nodes.length).fill(1 / nodes.length); draw();
+        }
+        function arrow(from, to) {
+          const a = nodePos(from), b = nodePos(to);
+          const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
+          const ux = dx / len, uy = dy / len;
+          const sx = a.x + ux * 22, sy = a.y + uy * 22, ex = b.x - ux * 24, ey = b.y - uy * 24;
+          ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+          ctx.fillStyle = "rgba(255,255,255,0.32)";
+          ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex - ux * 9 - uy * 4, ey - uy * 9 + ux * 4); ctx.lineTo(ex - ux * 9 + uy * 4, ey - uy * 9 - ux * 4); ctx.closePath(); ctx.fill();
+        }
+        function draw() {
+          if (!view.w || !rank.length) return;
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          for (let i = 0; i < links.length; i++) for (const j of links[i]) arrow(i, j);
+          for (let i = 0; i < nodes.length; i++) {
+            const p = nodePos(i), r = 14 + rank[i] * 55;
+            ctx.fillStyle = i === selected ? "#fff" : "#e8c547";
+            ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#0b0b0c"; ctx.font = "700 14px ui-monospace, monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(nodes[i].label, p.x, p.y);
+          }
+          const bx = view.w * 0.68, bw = view.w * 0.26, top = 28, gap = 25;
+          const maxRank = Math.max(...rank, 1 / nodes.length);
+          ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+          for (let i = 0; i < nodes.length; i++) {
+            const y = top + i * gap;
+            const barW = (bw - 74) * (rank[i] / maxRank);
+            ctx.fillStyle = "#8a8a8f"; ctx.font = "11px ui-monospace, monospace"; ctx.fillText(nodes[i].label, bx, y + 10);
+            ctx.fillStyle = "rgba(79,163,255,0.62)"; ctx.fillRect(bx + 24, y, barW, 13);
+            ctx.fillStyle = "#ededed"; ctx.fillText(rank[i].toFixed(3), bx + 30 + barW, y + 11);
+          }
+          const topNode = rank.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0])[0][1];
+          ro.innerHTML = "Iteration <strong>" + iter + "</strong> · top page <strong>" + nodes[topNode].label + "</strong> · teleport probability <strong>" + ((1 - P.d) * 100).toFixed(0) + "%</strong>";
+        }
+
+        resize();
+        setPreset("web");
+        Sim.bind("d", P, "d", (v) => { draw(); return (+v).toFixed(2); });
+        document.getElementById("preset").addEventListener("change", (e) => setPreset(e.target.value));
+        Sim.pointer(canvas, {
+          down(p) {
+            const hit = hitNode(p);
+            if (hit < 0) return;
+            if (selected < 0) selected = hit;
+            else { toggleLink(selected, hit); selected = -1; }
+            draw();
+          },
+        });
+        document.getElementById("step").addEventListener("click", () => { pageRankStep(); draw(); });
+        document.getElementById("run").addEventListener("click", () => { for (let i = 0; i < 20; i++) pageRankStep(); draw(); });
+        document.getElementById("reset").addEventListener("click", () => setPreset(document.getElementById("preset").value));
+      </script>
+    </main>
+  </body>
+</html>

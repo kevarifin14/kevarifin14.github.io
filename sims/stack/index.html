@@ -13,16 +13,18 @@
       <h1>Physics Stack</h1>
       <p class="sub">Click empty space to drop a block; drag blocks around. <strong>Matter.js</strong> — don't hand-roll rigid-body physics.</p>
 
-      <div class="stage" id="stage"></div>
+      <div class="stage" id="stage" aria-label="Matter.js rigid body stack with draggable blocks"></div>
       <div class="controls">
-        <div class="row"><span>Gravity <strong id="gValue">1.00</strong></span>
-          <input id="g" type="range" min="0" max="2" step="0.05" value="1" /></div>
+        <label class="row"><span>Gravity <strong id="gValue">1.00</strong></span>
+          <input id="g" type="range" min="0" max="2" step="0.05" value="1" /></label>
+        <button id="toggle">Pause</button>
         <button id="reset">Clear</button>
       </div>
+      <div class="readout" id="ro" aria-live="polite">Drag a block, or tap empty space to add one.</div>
 
       <script>
         const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint } = Matter;
-        const stage = document.getElementById("stage");
+        const stage = document.getElementById("stage"), ro = document.getElementById("ro");
         const W = stage.clientWidth, H = stage.clientHeight;
 
         const engine = Engine.create();
@@ -31,7 +33,9 @@
           options: { width: W, height: H, background: "#0e0e10", wireframes: false, pixelRatio: Math.min(window.devicePixelRatio, 2) },
         });
         Render.run(render);
-        Runner.run(Runner.create(), engine);
+        const runner = Runner.create();
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let running = false;
 
         function walls() {
           const t = 60;
@@ -44,6 +48,23 @@
         function addBox(x, y) {
           const s = 18 + Math.random() * 26;
           Composite.add(engine.world, Bodies.rectangle(x, y, s, s, { restitution: 0.2, friction: 0.6, render: { fillStyle: "#e8c547" } }));
+          updateReadout();
+        }
+        function updateReadout() {
+          const bodies = Composite.allBodies(engine.world).filter((body) => !body.isStatic).length;
+          ro.innerHTML = "Bodies <strong>" + bodies + "</strong> · gravity <strong>" + engine.gravity.y.toFixed(2) + "</strong>";
+        }
+        function play() {
+          if (running) return;
+          Runner.run(runner, engine);
+          running = true;
+          document.getElementById("toggle").textContent = "Pause";
+        }
+        function pause() {
+          if (!running) return;
+          Runner.stop(runner);
+          running = false;
+          document.getElementById("toggle").textContent = "Play";
         }
 
         Composite.add(engine.world, walls());
@@ -55,7 +76,7 @@
         render.mouse = mouse;
 
         // Drop a box only when not grabbing an existing body.
-        render.canvas.addEventListener("mousedown", (e) => {
+        render.canvas.addEventListener("pointerdown", (e) => {
           if (mc.body) return;
           const r = render.canvas.getBoundingClientRect();
           addBox(e.clientX - r.left, e.clientY - r.top);
@@ -64,12 +85,21 @@
         document.getElementById("g").addEventListener("input", (e) => {
           engine.gravity.y = +e.target.value;
           document.getElementById("gValue").textContent = (+e.target.value).toFixed(2);
+          updateReadout();
         });
+        document.getElementById("toggle").addEventListener("click", () => { running ? pause() : play(); });
         document.getElementById("reset").addEventListener("click", () => {
           Composite.clear(engine.world, false);
           Composite.add(engine.world, walls());
           Composite.add(engine.world, mc);
+          updateReadout();
         });
+        document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); else if (!reduceMotion) play(); });
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver((entries) => { entries[0].isIntersecting && !reduceMotion ? play() : pause(); }).observe(stage);
+        }
+        if (reduceMotion) pause(); else play();
+        updateReadout();
       </script>
     </main>
   </body>

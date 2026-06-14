@@ -1,7 +1,6 @@
 ---
 name: building-html-simulations
-description: This skill should be used whenever the user wants to build an interactive HTML simulation, explorable explanation, physics/math visualization, generative-art toy, or 3D/WebGL experience for the web — e.g. "make a ripple tank", "build a double-pendulum sim", "add an interactive visualization to the site", "create an explorable explanation", "do something with three.js/canvas/shaders". Evaluates each request to choose the right rendering and interaction method — SVG/HTML, Canvas 2D, WebGL/three.js/Babylon, D3, Matter/Rapier, or p5 — rather than defaulting to one. Covers the render loop, interaction design, explorable-explanation patterns, performance, accessibility, verification, and dropping a self-contained simulation into a static GitHub Pages site. See reference/inspiration.md, reference/patterns.md, and reference/verification.md.
-version: 0.1.0
+description: This skill should be used whenever the user wants to build, repair, review, evaluate, or extend an interactive HTML simulation, explorable explanation, physics/math visualization, generative-art toy, data map, city atlas, or 3D/WebGL experience for the web — e.g. "make a ripple tank", "build a double-pendulum sim", "grade these sims", "add an interactive visualization to the site", "create an explorable explanation", "do something with three.js/canvas/shaders", "turn this course topic into a sim". Evaluates each request to choose SVG/HTML, Canvas 2D, WebGL/three.js/Babylon, D3, Matter/Rapier, p5, or a data-build pipeline. Covers render loops, direct manipulation, explorable design, performance, accessibility, verification, eval grading, GitHub Pages static delivery, and the local `/sims/` toolkit. See reference/inspiration.md, reference/patterns.md, reference/verification.md, reference/evaluation.md, reference/data-webgl.md, and reference/idea-bank.md.
 ---
 
 # Building HTML Simulations
@@ -15,6 +14,8 @@ This site is plain, framework-free static HTML — meaning **no build step or bu
 ## Evaluate the request, then choose the method
 
 **There is no default rendering method.** Read the request, classify the phenomenon, and let the method fall out of it. When several methods fit, pick the **simplest one that fully expresses the phenomenon** — sometimes SVG, sometimes Canvas, sometimes WebGL. Right tool for the job, every time.
+
+When the request is course-inspired, research-driven, or based on an existing explorable, do a short source pass first. Prefer official course notes, primary docs, and the local research references; extract the core mechanism and interaction pattern, then build an original sim around that mechanism. Do not copy another explorable's code or surface styling. Save the source trail in `/sims/README.md`, the relevant skill reference, or the final response when it materially shaped the build.
 
 Classify the request, then read the table:
 - **Dimensionality** — a 2D plane, or 3D space with a camera you navigate?
@@ -124,6 +125,19 @@ This repo ships a working component library and one example per method at `/sims
 
 To add a sim: copy the closest example, swap in your `reset`/`update`/`render`, add a card to `/sims/index.html`, commit. Details in `/sims/README.md`.
 
+## Data-heavy and WebGL sims
+
+When the simulation is a real dataset, map, city system, or large visual artifact, follow the Fog City Atlas pattern instead of trying to keep everything tiny:
+
+- Build from one shared template/engine plus region- or dataset-specific metadata.
+- Prefer no runtime network for public artifacts: fetch/clean/quantize/compress during build, then inject static data into the HTML.
+- Keep every factual layer traceable to a source. Label procedural or simulated layers honestly.
+- Add a debug hook for verification, such as `window.__sim = { setTime, setPreset, cam, state }`.
+- Include screenshot or browser harnesses for canonical views, not only manual checks.
+- Preserve static-site delivery: generated `*.html` files are product artifacts and may be committed when that is how the sim ships.
+
+Read `reference/data-webgl.md` before working on a map, dataset explorer, WebGL artifact, generated HTML bundle, or multi-file simulation pipeline.
+
 ## Pair every sim with an explanation (the explorable layer)
 
 A bare sim rarely teaches on its own — the best explorables wrap the interactive in **narrative that tells the reader what to notice**. Treat the explanation as part of the build, not an afterthought, and pick the medium by the shape of the content (the same "right tool" rule):
@@ -151,13 +165,18 @@ To reach the bar of the best explorables, go past a single toy:
 ```
 Build Progress:
 - [ ] 1. Name the phenomenon and the ONE thing the reader should grasp
-- [ ] 2. Evaluate the request → pick the rendering + interaction method (decision table above)
-- [ ] 3. Render one static frame of the system (no motion yet)
-- [ ] 4. Add the update loop (fixed timestep) — verify it's stable
-- [ ] 5. Add interaction (pointer + sliders bound to params)
-- [ ] 6. Tune defaults/presets so frame 1 is already interesting
-- [ ] 7. Perf pass (HiDPI, offscreen pause, no per-frame allocs)
-- [ ] 8. Mobile + reduced-motion + aria pass
+- [ ] 2. Do the research pass when needed: course source, existing explorable, or local reference → extract the mechanism to simulate
+- [ ] 3. Evaluate the request → pick the rendering + interaction method (decision table above)
+- [ ] 4. Render one static frame of the system (no motion yet)
+- [ ] 5. Add the update loop (fixed timestep) — verify it's stable
+- [ ] 6. Add interaction (pointer + sliders bound to params)
+- [ ] 7. Tune defaults/presets so frame 1 is already interesting
+- [ ] 8. Perf pass (HiDPI, offscreen pause, no per-frame allocs)
+- [ ] 9. Add/update `/sims/index.html` and any short `/sims/README.md` note
+- [ ] 10. Mobile + reduced-motion + aria pass
+- [ ] 11. Browser verify using `reference/verification.md`
+- [ ] 12. Run `npm run eval:sims`; fix objective failures before polishing
+- [ ] 13. Log durable eval lessons with `$meta-skill-evaluator`; update this skill only for recurring or reusable lessons
 ```
 
 ## Anti-patterns
@@ -167,10 +186,17 @@ Build Progress:
 - Twenty sliders and no default state — the reader bounces before understanding anything.
 - A build step or npm dependency that breaks plain static hosting.
 - Allocating garbage every frame; never pausing offscreen.
+- Shipping a new sim without the deterministic eval report and an independent pedagogy/affordance review.
+- Patching generated HTML repeatedly while leaving the skill, starter, evaluator, or references unchanged when the same failure will recur.
 
 ## References
 
 - **Inspiration catalog** (who to study + what to steal): [reference/inspiration.md](reference/inspiration.md)
 - **Copy-paste code patterns** (HiDPI canvas, fixed-timestep loop, pointer drag, SVG binding, three.js/p5 skeletons): [reference/patterns.md](reference/patterns.md)
 - **Verification checklist** (run, visual, interaction, 3D/WebGL, blank-canvas debugging, automated Playwright checks): [reference/verification.md](reference/verification.md)
+- **Evaluation rubric & independent grader workflow** (deterministic Playwright grader, saved artifacts, agent review prompt): [reference/evaluation.md](reference/evaluation.md)
+- **Data/WebGL production pattern** (Fog City Atlas lessons, static data pipelines, debug hooks, generated artifacts): [reference/data-webgl.md](reference/data-webgl.md)
+- **Course idea bank** (Stanford/MIT/Berkeley/Harvard-inspired concepts to turn into sims): [reference/idea-bank.md](reference/idea-bank.md)
+- **General design patterns** (PhET, GeoGebra, NASA Eyes, Nicky Case, TensorFlow Playground): [reference/design-patterns.md](reference/design-patterns.md)
+- **Broader stack and source notes** (outside this static-site repo): [reference/tech-stack.md](reference/tech-stack.md), [reference/source-map.md](reference/source-map.md)
 - **Live component library & examples** in this repo at `/sims/` — `lib/simkit.js`, `_template/`, `_explainer/`, and one example per method (see `/sims/README.md`).

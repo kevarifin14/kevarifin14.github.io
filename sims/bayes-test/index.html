@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bayes Test — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Bayes Test</h1>
+      <p class="sub">A medical test can be accurate and still produce mostly false alarms when the base rate is low. Vary prevalence, sensitivity, and specificity. <strong>Canvas 2D</strong> · probability.</p>
+
+      <div class="stage" aria-label="Bayes theorem base-rate grid and confusion matrix"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Prevalence <strong id="prevValue"></strong></span>
+          <input id="prev" type="range" min="0.1" max="20" step="0.1" value="2" /></label>
+        <label class="row"><span>Sensitivity <strong id="sensValue"></strong></span>
+          <input id="sens" type="range" min="50" max="99.9" step="0.1" value="95" /></label>
+        <label class="row"><span>Specificity <strong id="specValue"></strong></span>
+          <input id="spec" type="range" min="50" max="99.9" step="0.1" value="90" /></label>
+        <button id="rare">Rare</button>
+        <button id="good">Good test</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const P = { prev: 2, sens: 95, spec: 90 };
+        let view = { w: 0, h: 0 };
+
+        function resize() { view = Sim.fitCanvas(canvas, ctx); draw(); }
+        window.addEventListener("resize", resize);
+
+        function metrics() {
+          const prevalence = P.prev / 100;
+          const sensitivity = P.sens / 100;
+          const specificity = P.spec / 100;
+          const diseased = prevalence;
+          const healthy = 1 - prevalence;
+          const tp = diseased * sensitivity;
+          const fn = diseased * (1 - sensitivity);
+          const fp = healthy * (1 - specificity);
+          const tn = healthy * specificity;
+          const positives = tp + fp;
+          return { prevalence, sensitivity, specificity, tp, fn, fp, tn, positives, ppv: positives ? tp / positives : 0, npv: (tn + fn) ? tn / (tn + fn) : 0 };
+        }
+
+        function drawPeople(m) {
+          const cols = 50, rows = 20, n = cols * rows;
+          const left = 18, top = 18, gap = Math.min((view.w * 0.58 - 36) / cols, (view.h - 46) / rows);
+          const totalDiseased = Math.round(n * m.prevalence);
+          const truePos = Math.round(n * m.tp);
+          const falseNeg = Math.max(0, totalDiseased - truePos);
+          const falsePos = Math.round(n * m.fp);
+          for (let i = 0; i < n; i++) {
+            const x = left + (i % cols) * gap;
+            const y = top + Math.floor(i / cols) * gap;
+            let color = "#2d3340";
+            if (i < truePos) color = "#e8c547";
+            else if (i < truePos + falseNeg) color = "#7a5d19";
+            else if (i < truePos + falseNeg + falsePos) color = "#4fa3ff";
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, Math.max(2, gap - 1), Math.max(2, gap - 1));
+          }
+          ctx.fillStyle = "#8a8a8f";
+          ctx.font = "11px ui-monospace, monospace";
+          ctx.fillText("1000 people", left, view.h - 12);
+        }
+
+        function drawMatrix(m) {
+          const x = view.w * 0.64, y = 34, w = view.w * 0.31, h = view.h - 76;
+          const cells = [
+            ["true +", m.tp, "#e8c547"],
+            ["false +", m.fp, "#4fa3ff"],
+            ["false -", m.fn, "#7a5d19"],
+            ["true -", m.tn, "#2f7d52"],
+          ];
+          ctx.strokeStyle = "#232326"; ctx.lineWidth = 1;
+          ctx.strokeRect(x, y, w, h);
+          cells.forEach((cell, i) => {
+            const cx = x + (i % 2) * w / 2, cy = y + Math.floor(i / 2) * h / 2;
+            ctx.fillStyle = "rgba(255,255,255,0.025)";
+            ctx.fillRect(cx, cy, w / 2, h / 2);
+            ctx.fillStyle = cell[2];
+            ctx.font = "700 20px ui-monospace, monospace";
+            ctx.fillText(Math.round(cell[1] * 1000), cx + 14, cy + 38);
+            ctx.fillStyle = "#8a8a8f";
+            ctx.font = "11px ui-monospace, monospace";
+            ctx.fillText(cell[0], cx + 14, cy + 58);
+          });
+          ctx.beginPath();
+          ctx.moveTo(x + w / 2, y); ctx.lineTo(x + w / 2, y + h);
+          ctx.moveTo(x, y + h / 2); ctx.lineTo(x + w, y + h / 2); ctx.stroke();
+        }
+
+        function draw() {
+          const m = metrics();
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          drawPeople(m); drawMatrix(m);
+          ro.innerHTML = "Positive predictive value <strong>" + (m.ppv * 100).toFixed(1) + "%</strong> · false positives <strong>" +
+            Math.round(m.fp * 1000) + "</strong> per 1000 · true positives <strong>" + Math.round(m.tp * 1000) + "</strong> per 1000";
+        }
+
+        function setVals(prev, sens, spec) {
+          P.prev = prev; P.sens = sens; P.spec = spec;
+          document.getElementById("prev").value = prev;
+          document.getElementById("sens").value = sens;
+          document.getElementById("spec").value = spec;
+          document.getElementById("prevValue").textContent = prev.toFixed(1) + "%";
+          document.getElementById("sensValue").textContent = sens.toFixed(1) + "%";
+          document.getElementById("specValue").textContent = spec.toFixed(1) + "%";
+          draw();
+        }
+
+        resize();
+        Sim.bind("prev", P, "prev", (v) => { draw(); return (+v).toFixed(1) + "%"; });
+        Sim.bind("sens", P, "sens", (v) => { draw(); return (+v).toFixed(1) + "%"; });
+        Sim.bind("spec", P, "spec", (v) => { draw(); return (+v).toFixed(1) + "%"; });
+        document.getElementById("rare").addEventListener("click", () => setVals(0.5, 95, 90));
+        document.getElementById("good").addEventListener("click", () => setVals(2, 99, 99));
+        document.getElementById("reset").addEventListener("click", () => setVals(2, 95, 90));
+      </script>
+    </main>
+  </body>
+</html>

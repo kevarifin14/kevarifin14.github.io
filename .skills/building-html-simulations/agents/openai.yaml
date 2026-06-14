@@ -1,0 +1,4 @@
+interface:
+  display_name: "Building HTML Simulations"
+  short_description: "Build interactive browser simulations"
+  default_prompt: "Use $building-html-simulations to build an interactive HTML simulation."
