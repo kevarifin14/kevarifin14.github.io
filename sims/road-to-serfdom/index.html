@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Road to Serfdom — Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <style>
+      .explain { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+      .figure { position: sticky; top: 16px; }
+      .figure .stage { aspect-ratio: 1 / 1; }
+      .figure .cap { margin-top: 8px; font-size: 0.8rem; color: var(--muted); min-height: 2.4em; }
+      .steps .step { min-height: 80vh; display: flex; flex-direction: column; justify-content: center;
+        border-left: 2px solid var(--border); padding-left: 18px; transition: border-color 0.2s ease; }
+      .steps .step.active { border-color: var(--accent); }
+      .steps .step h2 { font-size: 1.1rem; margin: 0 0 8px; }
+      .steps .step p { color: var(--muted); margin: 0; }
+      .steps .sandbox { display: none; margin-top: 14px; }
+      .steps .step.active .sandbox { display: flex; }
+      @media (max-width: 760px) {
+        .explain { grid-template-columns: 1fr; gap: 0; }
+        .figure { position: sticky; top: 0; z-index: 2; background: var(--bg); padding: 10px 0; }
+        .figure .stage { aspect-ratio: 3 / 2; }
+        .steps .step { min-height: 72vh; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>The Road to Serfdom</h1>
+      <p class="sub">An interactive reading of Hayek's argument (after the 1945 comic): how central planning trades freedom for control. Scroll the story, then take the dial. <strong>Canvas 2D</strong> · ideas.</p>
+
+      <div class="explain">
+        <div class="figure">
+          <div class="stage"><canvas id="c"></canvas></div>
+          <div class="cap" id="cap"></div>
+        </div>
+        <div class="steps" id="steps">
+          <section class="step" data-step data-p="0"><h2>1 · A free people</h2><p>Millions of individuals, each pursuing their own ends — a riot of different goals, coordinated by no one in particular.</p></section>
+          <section class="step" data-step data-p="0.5"><h2>2 · The single plan</h2><p>To <em>plan</em> the whole economy, one collective goal must replace the many. Individual ends get bent toward the center.</p></section>
+          <section class="step" data-step data-p="0.72"><h2>3 · We can't agree</h2><p>No majority agrees on the one plan in detail. The planners stall — and a cry rises for a strong leader who can "get things done."</p></section>
+          <section class="step" data-step data-p="0.95"><h2>4 · The strong man</h2><p>Power concentrates around the plan. Dissent is no longer mere disagreement but an obstacle — to be removed.</p></section>
+          <section class="step" data-step data-p="0.5" data-interactive="1"><h2>5 · Your dial</h2><p>Coordination and freedom trade off. Move the dial and watch the cost. How far would you go?</p>
+            <div class="controls sandbox"><div class="row"><span>Central planning <strong id="planValue">50%</strong></span>
+              <input id="plan" type="range" min="0" max="100" step="1" value="50" /></div></div>
+          </section>
+        </div>
+      </div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), cap = document.getElementById("cap");
+        const N = 150, central = { x: 0.5, y: 0.46 };
+        const M = { planning: 0, target: 0, interactive: false };
+        let view = { w: 0, h: 0 }, agents = [];
+
+        function init() {
+          const rnd = Sim.rng(7);
+          agents = Array.from({ length: N }, () => ({
+            ox: 0.07 + rnd() * 0.86, oy: 0.10 + rnd() * 0.78,
+            x: 0.07 + rnd() * 0.86, y: 0.10 + rnd() * 0.78,
+            hue: rnd() * 360, resist: rnd() < 0.12, phase: rnd() * 6.28,
+          }));
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); }
+        window.addEventListener("resize", () => { resize(); sim && sim.renderOnce(); });
+
+        function update(dt) {
+          M.planning += (M.target - M.planning) * Math.min(1, dt * 1.5);
+          const P = M.planning;
+          for (const a of agents) {
+            const w = a.resist ? P * 0.3 : P;                 // resisters cling to their own ends
+            const tx = a.ox * (1 - w) + central.x * w, ty = a.oy * (1 - w) + central.y * w;
+            a.phase += dt;
+            const wob = (1 - P) * 0.02;
+            a.x += (tx - a.x) * Math.min(1, dt * 2) + Math.cos(a.phase) * wob * dt * 10;
+            a.y += (ty - a.y) * Math.min(1, dt * 2) + Math.sin(a.phase * 1.3) * wob * dt * 10;
+          }
+        }
+        function render() {
+          const P = M.planning, W = view.w, H = view.h;
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, W, H);
+          if (P > 0.1) {
+            const g = ctx.createRadialGradient(central.x * W, central.y * H, 0, central.x * W, central.y * H, 70 + P * 130);
+            g.addColorStop(0, "rgba(232,197,71," + (0.05 + P * 0.18) + ")"); g.addColorStop(1, "rgba(232,197,71,0)");
+            ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          }
+          if (P > 0.6) {  // strong-man silhouette fades in
+            ctx.globalAlpha = (P - 0.6) / 0.4; ctx.fillStyle = "rgba(232,197,71,0.5)";
+            const cx = central.x * W, cy = central.y * H, s = 46 + P * 36;
+            ctx.beginPath(); ctx.arc(cx, cy - s * 0.55, s * 0.26, 0, 6.28); ctx.fill();
+            ctx.fillRect(cx - s * 0.30, cy - s * 0.22, s * 0.60, s * 0.72);
+            ctx.globalAlpha = 1;
+          }
+          for (const a of agents) {
+            let alpha = 1, red = false;
+            if (a.resist && P > 0.82) { alpha = 1 - 0.85 * ((P - 0.82) / 0.18); red = true; }
+            ctx.globalAlpha = Math.max(0, alpha);
+            ctx.fillStyle = red ? "hsl(0,70%,55%)" : "hsl(" + (a.hue * (1 - P) + 47 * P) + "," + (60 * (1 - P) + 72 * P) + "%,58%)";
+            ctx.beginPath(); ctx.arc(a.x * W, a.y * H, 3.4, 0, 6.28); ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+          // meters
+          const freedom = Math.round((1 - P) * 100), control = Math.round(P * 100);
+          ctx.font = "12px ui-monospace, monospace";
+          ctx.fillStyle = "#8a8a8f"; ctx.fillText("freedom", 12, H - 32);
+          ctx.fillStyle = "rgba(79,163,255,0.85)"; ctx.fillRect(74, H - 41, freedom, 8);
+          ctx.fillStyle = "#8a8a8f"; ctx.fillText(freedom + "%", 180, H - 32);
+          ctx.fillStyle = "#8a8a8f"; ctx.fillText("control", 12, H - 14);
+          ctx.fillStyle = "rgba(232,197,71,0.85)"; ctx.fillRect(74, H - 23, control, 8);
+          ctx.fillStyle = "#8a8a8f"; ctx.fillText(control + "%", 180, H - 14);
+        }
+
+        resize(); init();
+        const sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        const captions = ["Everyone pursues their own ends.", "One plan replaces the many.", "Gridlock — a cry for a strong leader.", "Power concentrates; dissent is suppressed.", "You hold the dial."];
+        const stepsEl = document.getElementById("steps");
+        Sim.steps(stepsEl, (i, el) => {
+          stepsEl.querySelectorAll(".step").forEach((s) => s.classList.remove("active"));
+          el.classList.add("active");
+          M.interactive = el.dataset.interactive === "1";
+          M.target = M.interactive ? +document.getElementById("plan").value / 100 : +el.dataset.p;
+          cap.textContent = captions[i] || "";
+        });
+        document.getElementById("plan").addEventListener("input", (e) => {
+          M.target = +e.target.value / 100;
+          document.getElementById("planValue").textContent = e.target.value + "%";
+        });
+      </script>
+    </main>
+  </body>
+</html>
