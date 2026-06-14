@@ -251,6 +251,21 @@ A **use-case map** in `/sims/lib/README.md` decomposes his archive: his figures 
 
 Copy-paste usage for each is in **`/sims/lib/README.md`**. Add new primitives there when a second sim needs them — never re-draw an arrowhead by hand again.
 
+## Visual fidelity — matching the look
+
+The reason Ciechanowski's figures look so much better is **not assets** — his site loads zero model or texture files; every figure is procedural. The gap is purely **rendering technique**: his are hand-written WebGL with antialiasing, per-pixel lighting from surface normals, soft contact shadows, and perspective cameras. Ours default to flat 2D line art. Close the gap deliberately:
+
+**For anything spatial, render real 3D in three.js** — it gives ~80% of his look without writing a shader. Copy `/sims/_three/` (the look template), which bakes in the recipe:
+- `WebGLRenderer({ antialias: true })`, `setPixelRatio(min(dpr, 2))` — crisp edges.
+- `shadowMap.enabled` + `PCFSoftShadowMap`, a key `DirectionalLight.castShadow`, and an invisible `ShadowMaterial` ground plane that catches a **soft contact shadow** — this "grounding" is most of the premium feel.
+- A **3-light setup**: `HemisphereLight` (sky/ground fill) + key + a cool rim light.
+- `MeshStandardMaterial` (matte `roughness ~0.4`, slight `metalness`) and `ACESFilmicToneMapping`.
+- Build geometry **procedurally** (cylinders for tubes, torus for wheels, capsules for limbs) — no model files, exactly like he does.
+
+**For genuinely 2D figures**, raise the bar without 3D: lean on canvas's built-in AA, add subtle gradients and a faint drop/contact shadow under objects, use consistent line weights and the shared palette, and color-code magnitude (`Sim.heat`). Flat is fine for fields, charts, and diagrams — but give them depth cues and polish.
+
+Rule of thumb: if the phenomenon lives in space (mechanisms, the bike, the moon, molecules), it should probably be lit 3D from `/sims/_three/`, not a line drawing.
+
 ## Workflow
 
 ```
