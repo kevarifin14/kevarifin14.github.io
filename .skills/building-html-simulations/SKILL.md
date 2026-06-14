@@ -11,6 +11,19 @@ An interactive simulation lets a reader *poke the thing* and build intuition tha
 
 This site is plain, framework-free static HTML — meaning **no build step or bundler**, not "no libraries." A sim is **one self-contained page** (or `sim.html` + `sim.js` + `sim.css`) under `/sims/` that works on GitHub Pages as raw files; libraries are fine when loaded via CDN or an importmap. The *method* is never fixed in advance — choose it per request (next section).
 
+## The flow, end to end
+
+Every build follows the same arc. The sections below detail each step; this is the spine that ties them together.
+
+1. **Decide the shape** — a single-page sim (one idea) or a module (a concept that must be built up)? → *Lesson length & shape*.
+2. **Map the ground-up ladder** (for modules) — list the prerequisite ideas the reader needs *before* the headline concept, in dependency order. Each rung is a figure taught from first principles. → *Build intuition from the ground up*.
+3. **Pick the method per figure** — right tool for each phenomenon. → *Evaluate the request*.
+4. **Build figure by figure** on the shared kit (`/sims/lib/simkit.js`): stage + params + loop, one new variable at a time, everything draggable. → *Anatomy*, *Components*.
+5. **Wrap it in teaching** — prose rhythm, synced views, immediate feedback, experiment where it helps. → *Explorable design*, *the Ciechanowski method*.
+6. **Ship it** — gallery card + thumbnail, mobile/a11y, verify, eval. → *Workflow*.
+
+The spine never changes; what changes is how many rungs (figures) the ladder needs. A quick toy has one; a deep explainer has a dozen.
+
 ## Evaluate the request, then choose the method
 
 **There is no default rendering method.** Read the request, classify the phenomenon, and let the method fall out of it. When several methods fit, pick the **simplest one that fully expresses the phenomenon** — sometimes SVG, sometimes Canvas, sometimes WebGL. Right tool for the job, every time.
@@ -190,6 +203,18 @@ Match the format to the concept — and **do not cap a lesson at ~6 steps.** A s
 
 Plan the arc before building: write the section list (like Ciechanowski's headings), decide which need their own figure, then build figure by figure.
 
+## Build intuition from the ground up (the prerequisite ladder)
+
+The deepest explainers don't start at the headline concept — they start *below* it and climb. Ciechanowski's Bicycle spends its opening sections on **Newton's basics** — forces, then moments (torque), then load transfer — each as its own interactive figure, *before* a bicycle ever balances. By the time the bike appears, the reader already owns every piece, so the hard idea feels inevitable instead of magical. This ground-up climb is the heart of a good module; make it the plan:
+
+1. **Name the headline concept** (e.g. "why a bike stays up").
+2. **List its prerequisites** — the ideas it's built from (force → torque → friction → angular momentum → steering geometry). Keep asking *"what must the reader already understand for the next step to land?"* until you bottom out at something obvious.
+3. **Order them by dependency**, simplest first. That ordered list *is* your figure arc.
+4. **Give each rung its own interactive** taught from first principles — a box you push (force), a wrench you turn (torque) — discovered by manipulation, not asserted in prose.
+5. **Compose upward.** Each figure reuses the idea below it; the final figure is the headline concept with every piece working at once.
+
+The test: a reader should never meet a figure that assumes something you didn't let them play with first. When in doubt, add a lower rung. This is what makes a long lesson feel *earned* — every figure is a prerequisite for the next, not padding. Single-page sims skip the ladder (their one idea is already at ground level); modules live or die by it.
+
 ## Ciechanowski's engineering (from his shared base.js)
 
 His whole site runs on one shared engine (`/js/base.js`, ~1,400 lines) plus a small per-article file — the same split as our `/sims/lib/simkit.js`. Worth copying:
@@ -218,7 +243,7 @@ Copy-paste usage for each is in **`/sims/lib/README.md`**. Add new primitives th
 
 ```
 Build Progress:
-- [ ] 1. Name the phenomenon and the ONE thing to grasp; choose single-page vs module and **plan the full figure arc** (list the sections — don't cap at ~6 steps)
+- [ ] 1. Name the phenomenon and the ONE thing to grasp; choose single-page vs module. For a module, **map the prerequisite ladder** (what must the reader understand first?) — each rung is a figure taught from the ground up — and plan the full arc (don't cap at ~6 steps)
 - [ ] 2. Do the research pass when needed: course source, existing explorable, or local reference → extract the mechanism to simulate
 - [ ] 3. Evaluate the request → pick the rendering + interaction method (decision table above)
 - [ ] 4. Render one static frame of the system (no motion yet)
