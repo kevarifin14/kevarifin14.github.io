@@ -201,7 +201,15 @@ His whole site runs on one shared engine (`/js/base.js`, ~1,400 lines) plus a sm
 - **Color-code magnitude** (bright = high stress/force), size arrows proportionally, use slow-motion and transparent cutaways to reveal hidden mechanism.
 - **Prose rhythm:** state the principle → isolated figure to manipulate → "Notice that…" → add one variable → real-world tie-in. Never a figure without a sentence framing what to look for.
 
-Grow `/sims/lib/simkit.js` with these primitives as you need them (e.g. `Sim.arrow`) instead of re-drawing arrowheads in every sim.
+These patterns are now **built into `/sims/lib/simkit.js` as core components** — use them in every sim instead of re-deriving them:
+
+- **Scalar:** `Sim.clamp`, `Sim.lerp`, `Sim.smoothstep(e0,e1,x)` (the workhorse easer), `Sim.map`.
+- **Vectors (`{x,y}`):** `Sim.v.add/sub/scale/dot/len/dist/norm/lerp/perp/angle/fromAngle`.
+- **Context draw primitives:** `ctx.arrow(x0,y0,x1,y1,head)`, `ctx.strokeLine`, `ctx.disc`, `ctx.ring`, `ctx.panel(x,y,w,h,r)`, `ctx.label(x,y,text,opts)`.
+- **Color by magnitude:** `Sim.heat(t)` (0→dark, mid→gold, 1→white), `Sim.mix(rgbA,rgbB,t)`.
+- **Light 3D:** `Sim.orbit(el)` (drag-to-orbit), `Sim.rot3(p,yaw,pitch)`, `Sim.project(p,opts)`.
+
+Copy-paste usage for each is in **`/sims/lib/README.md`**. Add new primitives there when a second sim needs them — never re-draw an arrowhead by hand again.
 
 ## Workflow
 
@@ -244,3 +252,4 @@ Build Progress:
 - **General design patterns** (PhET, GeoGebra, NASA Eyes, Nicky Case, TensorFlow Playground): [reference/design-patterns.md](reference/design-patterns.md)
 - **Broader stack and source notes** (outside this static-site repo): [reference/tech-stack.md](reference/tech-stack.md), [reference/source-map.md](reference/source-map.md)
 - **Live component library & examples** in this repo at `/sims/` — `lib/simkit.js`, `_template/`, `_explainer/`, and one example per method (see `/sims/README.md`).
+- **Core component cheatsheet** (copy-paste usage for `Sim.v`, `smoothstep`, `ctx.arrow`/`disc`/`panel`/`label`, `Sim.heat`, `Sim.orbit`): [`/sims/lib/README.md`](../../../sims/lib/README.md).

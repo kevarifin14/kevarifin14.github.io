@@ -73,11 +73,9 @@
           ro.innerHTML = "Separation <strong>r = " + r.toFixed(0) + "</strong> · force <strong>" + (Math.abs(F) * 1000).toFixed(1) + "</strong> (relative), <strong>" + (F >= 0 ? "repelling" : "attracting") + "</strong>. Halve r → 4× the force.";
         }
         function drawArrow(x, y, ux, uy, len, repel) {
-          const ex = x + ux * len, ey = y + uy * len;
-          ctx.strokeStyle = repel ? "#ff8a5a" : "#9ad0ff"; ctx.fillStyle = ctx.strokeStyle; ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(ex, ey); ctx.stroke();
-          const ang = Math.atan2(uy, ux);
-          ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex - 8 * Math.cos(ang - 0.4), ey - 8 * Math.sin(ang - 0.4)); ctx.lineTo(ex - 8 * Math.cos(ang + 0.4), ey - 8 * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill();
+          // uses the shared simkit primitive: ctx.arrow(x0,y0,x1,y1,head)
+          ctx.strokeStyle = ctx.fillStyle = repel ? "#ff8a5a" : "#9ad0ff"; ctx.lineWidth = 2.5;
+          ctx.arrow(x, y, x + ux * len, y + uy * len, 8);
         }
 
         let drag = -1;
