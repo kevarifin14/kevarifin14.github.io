@@ -20,13 +20,17 @@ No build step: each folder is plain HTML/JS/CSS that runs as static files on Git
   - `bias-variance` — Canvas 2D (model selection and overfitting)
   - `gridworld` — Canvas 2D (MDP value iteration)
   - `pagerank` — Canvas 2D (random-surfer graph ranking)
+  - `astar` — Canvas 2D (heuristic shortest-path search)
   - `bayes-test` — Canvas 2D (Bayes theorem and base rates)
   - `sir` — Canvas 2D (differential-equation model)
   - `pid-control` — Canvas 2D (feedback control)
+  - `kalman` — Canvas 2D (state estimation under noise)
+  - `reaction-diffusion` — Canvas 2D (Turing-style pattern formation)
+  - `schelling` — Canvas 2D (agent-based local preference model)
 
 ## Research sources
 
-The gallery uses the shared skill research notes in `.skills/building-html-simulations/reference/`. Recent course-inspired sims draw from Stanford CS229 model selection and bias/variance notes, Stanford CS221 MDP/value-iteration notes, Stanford CS224W graph/PageRank material, and MIT OCW stochastic-processes material.
+The gallery uses the shared skill research notes in `.skills/building-html-simulations/reference/`. Recent course-inspired sims draw from Stanford CS229 model selection and bias/variance notes, Stanford CS221 MDP/value-iteration notes, Stanford CS224W graph/PageRank material, MIT OCW stochastic-processes material, Stanford CS106B Dijkstra/A* material, MIT OCW Kalman-filter notes, MIT OCW reaction-diffusion/pattern-formation notes, and Stanford Nifty/agent-based Schelling model material.
 
 ## Add a new sim
 1. `cp -r _template my-sim` (or copy the example closest to your method).

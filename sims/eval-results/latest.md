@@ -1,8 +1,8 @@
 # Simulation Eval Report
 
-Run: 2026-06-14T03:00:52.894Z
-Base URL: http://127.0.0.1:62058
-Overall: **100/100** (strong) across 22 sims.
+Run: 2026-06-14T03:10:54.041Z
+Base URL: http://127.0.0.1:62391
+Overall: **100/100** (strong) across 26 sims.
 
 ## Rubric
 
@@ -26,14 +26,18 @@ Overall: **100/100** (strong) across 22 sims.
 | [Bias-Variance](/sims/bias-variance/) | Canvas 2D | 100 | strong | None |
 | [MDP Gridworld](/sims/gridworld/) | Canvas 2D | 100 | strong | None |
 | [PageRank Surfer](/sims/pagerank/) | Canvas 2D | 100 | strong | None |
+| [A* Pathfinding](/sims/astar/) | Canvas 2D | 100 | strong | None |
 | [SIR Epidemic](/sims/sir/) | Canvas 2D | 100 | strong | None |
 | [PID Control](/sims/pid-control/) | Canvas 2D | 100 | strong | None |
+| [Kalman Filter](/sims/kalman/) | Canvas 2D | 100 | strong | None |
+| [Reaction-Diffusion](/sims/reaction-diffusion/) | Canvas 2D | 100 | strong | None |
 | [Bayes Test](/sims/bayes-test/) | Canvas 2D | 100 | strong | None |
 | [Galton Board](/sims/galton/) | Canvas 2D | 100 | strong | None |
 | [Central Limit Theorem](/sims/clt/) | Canvas 2D | 100 | strong | None |
 | [Interactive Bars](/sims/bars/) | D3 | 100 | strong | None |
 | [Supply & Demand](/sims/supply-demand/) | Canvas 2D | 100 | strong | None |
 | [Options Payoffs](/sims/options/) | Canvas 2D | 100 | strong | None |
+| [Schelling Model](/sims/schelling/) | Canvas 2D | 100 | strong | None |
 | [Phonics Blender](/sims/phonics/) | Web Speech | 100 | strong | None |
 | [The Road to Serfdom](/sims/road-to-serfdom/) | Explorable | 100 | strong | None |
 | [3D Orbit](/sims/orbit/) | three.js | 100 | strong | None |

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-14T03:00:52.894Z",
-  "baseUrl": "http://127.0.0.1:62058",
+  "generatedAt": "2026-06-14T03:10:54.041Z",
+  "baseUrl": "http://127.0.0.1:62391",
   "root": "/Users/kevin/projects/kevarifin14.github.io",
   "screenshots": null,
   "rubric": [
@@ -36,7 +36,7 @@
     }
   ],
   "summary": {
-    "count": 22,
+    "count": 26,
     "average": 100,
     "status": "strong",
     "categoryAverages": {
@@ -93,7 +93,7 @@
       "group": "Physics & motion",
       "tech": "Canvas 2D",
       "description": "Two-source wave interference; drag a source.",
-      "url": "http://127.0.0.1:62058/sims/ripple/",
+      "url": "http://127.0.0.1:62391/sims/ripple/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -225,7 +225,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.1725, readoutChanged=false"
+          "notes": "visual distance=0.1726, readoutChanged=false"
         },
         {
           "category": "interaction",
@@ -434,7 +434,7 @@
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.1725,
+          "visualDistance": 0.1726,
           "readoutChanged": false
         },
         "source": {
@@ -465,7 +465,7 @@
       "group": "Physics & motion",
       "tech": "SVG",
       "description": "Damped pendulum; drag the bob to set the angle.",
-      "url": "http://127.0.0.1:62058/sims/pendulum/",
+      "url": "http://127.0.0.1:62391/sims/pendulum/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -557,7 +557,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=357.8, colors=15"
+          "notes": "variance=361.92, colors=13"
         },
         {
           "category": "visual",
@@ -597,7 +597,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0116, readoutChanged=true"
+          "notes": "visual distance=0.0112, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -737,7 +737,7 @@
           "title": "Pendulum — Kevin Arifin",
           "h1": "Pendulum",
           "lead": "A damped pendulum. Drag the bob to set its angle, then let go. SVG — crisp vector geometry and a live label.",
-          "readout": "Angle -77° · angular velocity -1.98",
+          "readout": "Angle -78° · angular velocity -1.88",
           "stageExists": true,
           "stageAria": "Damped pendulum with draggable bob",
           "stageRole": "",
@@ -768,7 +768,7 @@
           "title": "Pendulum — Kevin Arifin",
           "h1": "Pendulum",
           "lead": "A damped pendulum. Drag the bob to set its angle, then let go. SVG — crisp vector geometry and a live label.",
-          "readout": "Angle -29° · angular velocity -4.60",
+          "readout": "Angle -36° · angular velocity -4.42",
           "stageExists": true,
           "stageAria": "Damped pendulum with draggable bob",
           "stageRole": "",
@@ -799,14 +799,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 16.47,
-          "variance": 357.8,
-          "colorBuckets": 15,
+          "mean": 16.5,
+          "variance": 361.92,
+          "colorBuckets": 13,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0116,
+          "visualDistance": 0.0112,
           "readoutChanged": true
         },
         "source": {
@@ -837,7 +837,7 @@
       "group": "Physics & motion",
       "tech": "Matter.js",
       "description": "Drop and drag rigid bodies.",
-      "url": "http://127.0.0.1:62058/sims/stack/",
+      "url": "http://127.0.0.1:62391/sims/stack/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -929,7 +929,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=385.76, colors=12"
+          "notes": "variance=323.59, colors=13"
         },
         {
           "category": "visual",
@@ -969,7 +969,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0005, readoutChanged=true"
+          "notes": "visual distance=0.0016, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -1171,14 +1171,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 16.54,
-          "variance": 385.76,
-          "colorBuckets": 12,
+          "mean": 16.2,
+          "variance": 323.59,
+          "colorBuckets": 13,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0005,
+          "visualDistance": 0.0016,
           "readoutChanged": true
         },
         "source": {
@@ -1209,7 +1209,7 @@
       "group": "Math",
       "tech": "Canvas 2D",
       "description": "Rotating circles sum into a square wave.",
-      "url": "http://127.0.0.1:62058/sims/fourier/",
+      "url": "http://127.0.0.1:62391/sims/fourier/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -1301,7 +1301,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=26.44, colors=16"
+          "notes": "variance=19.98, colors=13"
         },
         {
           "category": "visual",
@@ -1543,9 +1543,9 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 14.53,
-          "variance": 26.44,
-          "colorBuckets": 16,
+          "mean": 14.5,
+          "variance": 19.98,
+          "colorBuckets": 13,
           "visibleRatio": 1,
           "nonBlank": true
         },
@@ -1582,7 +1582,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Local rules create gliders, still lifes, and chaos.",
-      "url": "http://127.0.0.1:62058/sims/game-of-life/",
+      "url": "http://127.0.0.1:62391/sims/game-of-life/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -1968,7 +1968,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Tune learning rate and momentum on a loss surface.",
-      "url": "http://127.0.0.1:62058/sims/gradient-descent/",
+      "url": "http://127.0.0.1:62391/sims/gradient-descent/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -2342,7 +2342,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Polynomial degree trades underfit for overfit.",
-      "url": "http://127.0.0.1:62058/sims/bias-variance/",
+      "url": "http://127.0.0.1:62391/sims/bias-variance/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -2714,7 +2714,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Value iteration diffuses rewards into a policy.",
-      "url": "http://127.0.0.1:62058/sims/gridworld/",
+      "url": "http://127.0.0.1:62391/sims/gridworld/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -3088,7 +3088,7 @@
       "group": "Computer science & AI",
       "tech": "Canvas 2D",
       "description": "Random-surfer rank mass settles on a graph.",
-      "url": "http://127.0.0.1:62058/sims/pagerank/",
+      "url": "http://127.0.0.1:62391/sims/pagerank/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -3457,12 +3457,386 @@
       }
     },
     {
+      "href": "/sims/astar/",
+      "title": "A* Pathfinding",
+      "group": "Computer science & AI",
+      "tech": "Canvas 2D",
+      "description": "Heuristics steer a shortest-path search frontier.",
+      "url": "http://127.0.0.1:62391/sims/astar/",
+      "status": "strong",
+      "score": {
+        "earned": 100,
+        "total": 100,
+        "percent": 100,
+        "byCategory": {
+          "runtime": {
+            "label": "Runtime health",
+            "earned": 20,
+            "points": 20,
+            "percent": 100
+          },
+          "visual": {
+            "label": "Visual frame",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "interaction": {
+            "label": "Interaction",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "learning": {
+            "label": "Learning layer",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "accessibility": {
+            "label": "Accessibility/mobile",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "implementation": {
+            "label": "Implementation",
+            "earned": 12,
+            "points": 12,
+            "percent": 100
+          }
+        }
+      },
+      "checks": [
+        {
+          "category": "runtime",
+          "id": "page-loads",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "Page returns OK"
+        },
+        {
+          "category": "runtime",
+          "id": "no-page-errors",
+          "points": 6,
+          "earned": 6,
+          "pass": true,
+          "notes": "No uncaught page errors"
+        },
+        {
+          "category": "runtime",
+          "id": "critical-resources",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "No critical resource failures"
+        },
+        {
+          "category": "runtime",
+          "id": "document-title",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "A* Pathfinding - Kevin Arifin"
+        },
+        {
+          "category": "visual",
+          "id": "stage-sized",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "912x608"
+        },
+        {
+          "category": "visual",
+          "id": "stage-nonblank",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "variance=525.45, colors=19"
+        },
+        {
+          "category": "visual",
+          "id": "screenshot-captures",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Stage screenshot captured"
+        },
+        {
+          "category": "visual",
+          "id": "mobile-no-horizontal-overflow",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No horizontal overflow"
+        },
+        {
+          "category": "interaction",
+          "id": "affordances",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "6 controls / no steps"
+        },
+        {
+          "category": "interaction",
+          "id": "controls-labeled",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs are labeled"
+        },
+        {
+          "category": "interaction",
+          "id": "poke-changes-state",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "visual distance=0.0424, readoutChanged=true"
+        },
+        {
+          "category": "interaction",
+          "id": "reset",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reset exists"
+        },
+        {
+          "category": "interaction",
+          "id": "pause-step-speed",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pause/step/speed affordance present or static"
+        },
+        {
+          "category": "learning",
+          "id": "headline-and-lead",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Headline and setup copy present"
+        },
+        {
+          "category": "learning",
+          "id": "readout-or-caption",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Readout/caption/steps present"
+        },
+        {
+          "category": "learning",
+          "id": "values-visible",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Parameter values are visible"
+        },
+        {
+          "category": "learning",
+          "id": "gallery-card",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Computer science & AI: Canvas 2D"
+        },
+        {
+          "category": "accessibility",
+          "id": "stage-aria",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "A star pathfinding grid showing frontier, explored cells, walls, terrain, and shortest path"
+        },
+        {
+          "category": "accessibility",
+          "id": "form-labels",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs have labels"
+        },
+        {
+          "category": "accessibility",
+          "id": "keyboard-controls",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Native controls are keyboard reachable"
+        },
+        {
+          "category": "accessibility",
+          "id": "reduced-motion",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reduced motion or Sim.loop support"
+        },
+        {
+          "category": "accessibility",
+          "id": "mobile-stage",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "342x228"
+        },
+        {
+          "category": "implementation",
+          "id": "no-setinterval",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No setInterval loop"
+        },
+        {
+          "category": "implementation",
+          "id": "loop-pattern",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Animation loop/library detected"
+        },
+        {
+          "category": "implementation",
+          "id": "shared-css",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Uses shared sim.css"
+        },
+        {
+          "category": "implementation",
+          "id": "known-pattern",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pattern: simkit"
+        },
+        {
+          "category": "implementation",
+          "id": "static-page",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Static page source found"
+        }
+      ],
+      "topFailures": [],
+      "diagnostics": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailures": [],
+        "layout": {
+          "title": "A* Pathfinding - Kevin Arifin",
+          "h1": "A* Pathfinding",
+          "lead": "A priority queue expands the cheapest-looking frontier first: cost so far plus a heuristic guess to the goal. Drag to edit terrain and watch the search change. Canvas 2D · graph algorithms.",
+          "readout": "status searching · expanded 45 · path cost - · frontier 24",
+          "stageExists": true,
+          "stageAria": "A star pathfinding grid showing frontier, explored cells, walls, terrain, and shortest path",
+          "stageRole": "",
+          "stageRect": {
+            "width": 912,
+            "height": 608,
+            "top": 180,
+            "bottom": 788
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 6,
+          "rangeCount": 2,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Step",
+            "Run",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 1280,
+          "viewportWidth": 1280,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "mobileLayout": {
+          "title": "A* Pathfinding - Kevin Arifin",
+          "h1": "A* Pathfinding",
+          "lead": "A priority queue expands the cheapest-looking frontier first: cost so far plus a heuristic guess to the goal. Drag to edit terrain and watch the search change. Canvas 2D · graph algorithms.",
+          "readout": "status searching · expanded 45 · path cost - · frontier 24",
+          "stageExists": true,
+          "stageAria": "A star pathfinding grid showing frontier, explored cells, walls, terrain, and shortest path",
+          "stageRole": "",
+          "stageRect": {
+            "width": 342,
+            "height": 228,
+            "top": 228,
+            "bottom": 456
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 6,
+          "rangeCount": 2,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Step",
+            "Run",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "visualStats": {
+          "width": 912,
+          "height": 609,
+          "samples": 7031,
+          "mean": 35.65,
+          "variance": 525.45,
+          "colorBuckets": 19,
+          "visibleRatio": 1,
+          "nonBlank": true
+        },
+        "exercise": {
+          "visualDistance": 0.0424,
+          "readoutChanged": true
+        },
+        "source": {
+          "path": "/sims/astar/",
+          "hasSetInterval": false,
+          "hasRequestAnimationFrame": false,
+          "hasSimLoop": true,
+          "hasSimKit": true,
+          "hasSimCss": true,
+          "hasReducedMotion": true,
+          "hasVisibilityPause": true,
+          "hasReset": true,
+          "hasPause": true,
+          "hasSpeed": false,
+          "hasInlineHandlers": false,
+          "recognizedLibraries": [
+            "simkit"
+          ],
+          "hasAnimation": true,
+          "isTemplate": false
+        },
+        "screenshot": null
+      }
+    },
+    {
       "href": "/sims/sir/",
       "title": "SIR Epidemic",
       "group": "Systems & control",
       "tech": "Canvas 2D",
       "description": "Transmission and recovery shape an epidemic curve.",
-      "url": "http://127.0.0.1:62058/sims/sir/",
+      "url": "http://127.0.0.1:62391/sims/sir/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -3554,7 +3928,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=18.09, colors=11"
+          "notes": "variance=18.2, colors=11"
         },
         {
           "category": "visual",
@@ -3594,7 +3968,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0004, readoutChanged=true"
+          "notes": "visual distance=0.0005, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -3734,7 +4108,7 @@
           "title": "SIR Epidemic — Kevin Arifin",
           "h1": "SIR Epidemic",
           "lead": "A compartment model from differential equations: susceptible people become infected, then recover. Tune transmission, recovery, and vaccination to flatten the curve. Canvas 2D · systems biology.",
-          "readout": "day 7.1 · infected 8.1% · peak 8.1% on day 7 · R0 3.71, Re 2.84",
+          "readout": "day 7.2 · infected 8.2% · peak 8.2% on day 7 · R0 3.71, Re 2.83",
           "stageExists": true,
           "stageAria": "SIR epidemic curves",
           "stageRole": "",
@@ -3766,7 +4140,7 @@
           "title": "SIR Epidemic — Kevin Arifin",
           "h1": "SIR Epidemic",
           "lead": "A compartment model from differential equations: susceptible people become infected, then recover. Tune transmission, recovery, and vaccination to flatten the curve. Canvas 2D · systems biology.",
-          "readout": "day 5.2 · infected 4.8% · peak 4.8% on day 5 · R0 3.71, Re 3.03",
+          "readout": "day 5.1 · infected 4.6% · peak 4.6% on day 5 · R0 3.71, Re 3.03",
           "stageExists": true,
           "stageAria": "SIR epidemic curves",
           "stageRole": "",
@@ -3799,13 +4173,13 @@
           "height": 609,
           "samples": 7031,
           "mean": 14.44,
-          "variance": 18.09,
+          "variance": 18.2,
           "colorBuckets": 11,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0004,
+          "visualDistance": 0.0005,
           "readoutChanged": true
         },
         "source": {
@@ -3836,7 +4210,7 @@
       "group": "Systems & control",
       "tech": "Canvas 2D",
       "description": "Tune feedback gains to reach a moving target.",
-      "url": "http://127.0.0.1:62058/sims/pid-control/",
+      "url": "http://127.0.0.1:62391/sims/pid-control/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -3928,7 +4302,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=87.29, colors=17"
+          "notes": "variance=84.85, colors=16"
         },
         {
           "category": "visual",
@@ -3968,7 +4342,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0016, readoutChanged=true"
+          "notes": "visual distance=0.0012, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -4140,7 +4514,7 @@
           "title": "PID Control — Kevin Arifin",
           "h1": "PID Control",
           "lead": "Tune proportional, integral, and derivative feedback on a cart trying to reach a target. Too little gain is sluggish; too much can ring or blow up. Canvas 2D · control systems.",
-          "readout": "error 0.540 · velocity 1.03 · integral 0.60",
+          "readout": "error 0.523 · velocity 1.01 · integral 0.61",
           "stageExists": true,
           "stageAria": "PID control cart and error plot",
           "stageRole": "",
@@ -4172,14 +4546,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 15.06,
-          "variance": 87.29,
-          "colorBuckets": 17,
+          "mean": 15.04,
+          "variance": 84.85,
+          "colorBuckets": 16,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0016,
+          "visualDistance": 0.0012,
           "readoutChanged": true
         },
         "source": {
@@ -4205,12 +4579,760 @@
       }
     },
     {
+      "href": "/sims/kalman/",
+      "title": "Kalman Filter",
+      "group": "Systems & control",
+      "tech": "Canvas 2D",
+      "description": "Estimate a hidden signal from noisy measurements.",
+      "url": "http://127.0.0.1:62391/sims/kalman/",
+      "status": "strong",
+      "score": {
+        "earned": 100,
+        "total": 100,
+        "percent": 100,
+        "byCategory": {
+          "runtime": {
+            "label": "Runtime health",
+            "earned": 20,
+            "points": 20,
+            "percent": 100
+          },
+          "visual": {
+            "label": "Visual frame",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "interaction": {
+            "label": "Interaction",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "learning": {
+            "label": "Learning layer",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "accessibility": {
+            "label": "Accessibility/mobile",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "implementation": {
+            "label": "Implementation",
+            "earned": 12,
+            "points": 12,
+            "percent": 100
+          }
+        }
+      },
+      "checks": [
+        {
+          "category": "runtime",
+          "id": "page-loads",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "Page returns OK"
+        },
+        {
+          "category": "runtime",
+          "id": "no-page-errors",
+          "points": 6,
+          "earned": 6,
+          "pass": true,
+          "notes": "No uncaught page errors"
+        },
+        {
+          "category": "runtime",
+          "id": "critical-resources",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "No critical resource failures"
+        },
+        {
+          "category": "runtime",
+          "id": "document-title",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Kalman Filter - Kevin Arifin"
+        },
+        {
+          "category": "visual",
+          "id": "stage-sized",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "912x608"
+        },
+        {
+          "category": "visual",
+          "id": "stage-nonblank",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "variance=251.1, colors=36"
+        },
+        {
+          "category": "visual",
+          "id": "screenshot-captures",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Stage screenshot captured"
+        },
+        {
+          "category": "visual",
+          "id": "mobile-no-horizontal-overflow",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No horizontal overflow"
+        },
+        {
+          "category": "interaction",
+          "id": "affordances",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "6 controls / no steps"
+        },
+        {
+          "category": "interaction",
+          "id": "controls-labeled",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs are labeled"
+        },
+        {
+          "category": "interaction",
+          "id": "poke-changes-state",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "visual distance=0.0001, readoutChanged=true"
+        },
+        {
+          "category": "interaction",
+          "id": "reset",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reset exists"
+        },
+        {
+          "category": "interaction",
+          "id": "pause-step-speed",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pause/step/speed affordance present or static"
+        },
+        {
+          "category": "learning",
+          "id": "headline-and-lead",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Headline and setup copy present"
+        },
+        {
+          "category": "learning",
+          "id": "readout-or-caption",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Readout/caption/steps present"
+        },
+        {
+          "category": "learning",
+          "id": "values-visible",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Parameter values are visible"
+        },
+        {
+          "category": "learning",
+          "id": "gallery-card",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Systems & control: Canvas 2D"
+        },
+        {
+          "category": "accessibility",
+          "id": "stage-aria",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Kalman filter tracking a hidden one-dimensional signal with noisy measurements"
+        },
+        {
+          "category": "accessibility",
+          "id": "form-labels",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs have labels"
+        },
+        {
+          "category": "accessibility",
+          "id": "keyboard-controls",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Native controls are keyboard reachable"
+        },
+        {
+          "category": "accessibility",
+          "id": "reduced-motion",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reduced motion or Sim.loop support"
+        },
+        {
+          "category": "accessibility",
+          "id": "mobile-stage",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "342x228"
+        },
+        {
+          "category": "implementation",
+          "id": "no-setinterval",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No setInterval loop"
+        },
+        {
+          "category": "implementation",
+          "id": "loop-pattern",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Animation loop/library detected"
+        },
+        {
+          "category": "implementation",
+          "id": "shared-css",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Uses shared sim.css"
+        },
+        {
+          "category": "implementation",
+          "id": "known-pattern",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pattern: simkit"
+        },
+        {
+          "category": "implementation",
+          "id": "static-page",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Static page source found"
+        }
+      ],
+      "topFailures": [],
+      "diagnostics": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailures": [],
+        "layout": {
+          "title": "Kalman Filter - Kevin Arifin",
+          "h1": "Kalman Filter",
+          "lead": "A hidden signal moves smoothly, the sensor lies noisily, and the filter balances model trust against measurement trust. Canvas 2D · estimation.",
+          "readout": "gain 0.46 · uncertainty 0.026 · absolute error 0.011",
+          "stageExists": true,
+          "stageAria": "Kalman filter tracking a hidden one-dimensional signal with noisy measurements",
+          "stageRole": "",
+          "stageRect": {
+            "width": 912,
+            "height": 608,
+            "top": 180,
+            "bottom": 788
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 6,
+          "rangeCount": 3,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Pause",
+            "Jump",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 1280,
+          "viewportWidth": 1280,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "mobileLayout": {
+          "title": "Kalman Filter - Kevin Arifin",
+          "h1": "Kalman Filter",
+          "lead": "A hidden signal moves smoothly, the sensor lies noisily, and the filter balances model trust against measurement trust. Canvas 2D · estimation.",
+          "readout": "gain 0.46 · uncertainty 0.026 · absolute error 0.268",
+          "stageExists": true,
+          "stageAria": "Kalman filter tracking a hidden one-dimensional signal with noisy measurements",
+          "stageRole": "",
+          "stageRect": {
+            "width": 342,
+            "height": 228,
+            "top": 228,
+            "bottom": 456
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 6,
+          "rangeCount": 3,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Pause",
+            "Jump",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "visualStats": {
+          "width": 912,
+          "height": 609,
+          "samples": 7031,
+          "mean": 16.45,
+          "variance": 251.1,
+          "colorBuckets": 36,
+          "visibleRatio": 1,
+          "nonBlank": true
+        },
+        "exercise": {
+          "visualDistance": 0.0001,
+          "readoutChanged": true
+        },
+        "source": {
+          "path": "/sims/kalman/",
+          "hasSetInterval": false,
+          "hasRequestAnimationFrame": false,
+          "hasSimLoop": true,
+          "hasSimKit": true,
+          "hasSimCss": true,
+          "hasReducedMotion": true,
+          "hasVisibilityPause": true,
+          "hasReset": true,
+          "hasPause": true,
+          "hasSpeed": true,
+          "hasInlineHandlers": false,
+          "recognizedLibraries": [
+            "simkit"
+          ],
+          "hasAnimation": true,
+          "isTemplate": false
+        },
+        "screenshot": null
+      }
+    },
+    {
+      "href": "/sims/reaction-diffusion/",
+      "title": "Reaction-Diffusion",
+      "group": "Systems & control",
+      "tech": "Canvas 2D",
+      "description": "Local reactions and diffusion grow spots and stripes.",
+      "url": "http://127.0.0.1:62391/sims/reaction-diffusion/",
+      "status": "strong",
+      "score": {
+        "earned": 100,
+        "total": 100,
+        "percent": 100,
+        "byCategory": {
+          "runtime": {
+            "label": "Runtime health",
+            "earned": 20,
+            "points": 20,
+            "percent": 100
+          },
+          "visual": {
+            "label": "Visual frame",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "interaction": {
+            "label": "Interaction",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "learning": {
+            "label": "Learning layer",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "accessibility": {
+            "label": "Accessibility/mobile",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "implementation": {
+            "label": "Implementation",
+            "earned": 12,
+            "points": 12,
+            "percent": 100
+          }
+        }
+      },
+      "checks": [
+        {
+          "category": "runtime",
+          "id": "page-loads",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "Page returns OK"
+        },
+        {
+          "category": "runtime",
+          "id": "no-page-errors",
+          "points": 6,
+          "earned": 6,
+          "pass": true,
+          "notes": "No uncaught page errors"
+        },
+        {
+          "category": "runtime",
+          "id": "critical-resources",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "No critical resource failures"
+        },
+        {
+          "category": "runtime",
+          "id": "document-title",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Reaction-Diffusion - Kevin Arifin"
+        },
+        {
+          "category": "visual",
+          "id": "stage-sized",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "912x608"
+        },
+        {
+          "category": "visual",
+          "id": "stage-nonblank",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "variance=123.79, colors=38"
+        },
+        {
+          "category": "visual",
+          "id": "screenshot-captures",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Stage screenshot captured"
+        },
+        {
+          "category": "visual",
+          "id": "mobile-no-horizontal-overflow",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No horizontal overflow"
+        },
+        {
+          "category": "interaction",
+          "id": "affordances",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "6 controls / no steps"
+        },
+        {
+          "category": "interaction",
+          "id": "controls-labeled",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs are labeled"
+        },
+        {
+          "category": "interaction",
+          "id": "poke-changes-state",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "visual distance=0.0263, readoutChanged=true"
+        },
+        {
+          "category": "interaction",
+          "id": "reset",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reset exists"
+        },
+        {
+          "category": "interaction",
+          "id": "pause-step-speed",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pause/step/speed affordance present or static"
+        },
+        {
+          "category": "learning",
+          "id": "headline-and-lead",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Headline and setup copy present"
+        },
+        {
+          "category": "learning",
+          "id": "readout-or-caption",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Readout/caption/steps present"
+        },
+        {
+          "category": "learning",
+          "id": "values-visible",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Parameter values are visible"
+        },
+        {
+          "category": "learning",
+          "id": "gallery-card",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Systems & control: Canvas 2D"
+        },
+        {
+          "category": "accessibility",
+          "id": "stage-aria",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Reaction diffusion field with emerging spots and stripes"
+        },
+        {
+          "category": "accessibility",
+          "id": "form-labels",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs have labels"
+        },
+        {
+          "category": "accessibility",
+          "id": "keyboard-controls",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Native controls are keyboard reachable"
+        },
+        {
+          "category": "accessibility",
+          "id": "reduced-motion",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reduced motion or Sim.loop support"
+        },
+        {
+          "category": "accessibility",
+          "id": "mobile-stage",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "342x228"
+        },
+        {
+          "category": "implementation",
+          "id": "no-setinterval",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No setInterval loop"
+        },
+        {
+          "category": "implementation",
+          "id": "loop-pattern",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Animation loop/library detected"
+        },
+        {
+          "category": "implementation",
+          "id": "shared-css",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Uses shared sim.css"
+        },
+        {
+          "category": "implementation",
+          "id": "known-pattern",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pattern: simkit"
+        },
+        {
+          "category": "implementation",
+          "id": "static-page",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Static page source found"
+        }
+      ],
+      "topFailures": [],
+      "diagnostics": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailures": [],
+        "layout": {
+          "title": "Reaction-Diffusion - Kevin Arifin",
+          "h1": "Reaction-Diffusion",
+          "lead": "Two chemicals diffuse and react; the inhibitor spreads faster, so local growth turns into spots, stripes, and fronts. Paint the catalyst to seed a pattern. Canvas 2D · nonlinear systems.",
+          "readout": "step 883 · catalyst mass 0.032 · feed/kill tunes spots versus stripes.",
+          "stageExists": true,
+          "stageAria": "Reaction diffusion field with emerging spots and stripes",
+          "stageRole": "",
+          "stageRect": {
+            "width": 912,
+            "height": 608,
+            "top": 180,
+            "bottom": 788
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 6,
+          "rangeCount": 3,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Pause",
+            "Seed",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 1280,
+          "viewportWidth": 1280,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "mobileLayout": {
+          "title": "Reaction-Diffusion - Kevin Arifin",
+          "h1": "Reaction-Diffusion",
+          "lead": "Two chemicals diffuse and react; the inhibitor spreads faster, so local growth turns into spots, stripes, and fronts. Paint the catalyst to seed a pattern. Canvas 2D · nonlinear systems.",
+          "readout": "step 652 · catalyst mass 0.027 · feed/kill tunes spots versus stripes.",
+          "stageExists": true,
+          "stageAria": "Reaction diffusion field with emerging spots and stripes",
+          "stageRole": "",
+          "stageRect": {
+            "width": 342,
+            "height": 228,
+            "top": 228,
+            "bottom": 456
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 6,
+          "rangeCount": 3,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Pause",
+            "Seed",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "visualStats": {
+          "width": 912,
+          "height": 609,
+          "samples": 7031,
+          "mean": 94.87,
+          "variance": 123.79,
+          "colorBuckets": 38,
+          "visibleRatio": 1,
+          "nonBlank": true
+        },
+        "exercise": {
+          "visualDistance": 0.0263,
+          "readoutChanged": true
+        },
+        "source": {
+          "path": "/sims/reaction-diffusion/",
+          "hasSetInterval": false,
+          "hasRequestAnimationFrame": false,
+          "hasSimLoop": true,
+          "hasSimKit": true,
+          "hasSimCss": true,
+          "hasReducedMotion": true,
+          "hasVisibilityPause": true,
+          "hasReset": true,
+          "hasPause": true,
+          "hasSpeed": true,
+          "hasInlineHandlers": false,
+          "recognizedLibraries": [
+            "simkit"
+          ],
+          "hasAnimation": true,
+          "isTemplate": false
+        },
+        "screenshot": null
+      }
+    },
+    {
       "href": "/sims/bayes-test/",
       "title": "Bayes Test",
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Base rates explain why false positives dominate.",
-      "url": "http://127.0.0.1:62058/sims/bayes-test/",
+      "url": "http://127.0.0.1:62391/sims/bayes-test/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -4585,7 +5707,7 @@
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Coin flips pile up into a bell curve.",
-      "url": "http://127.0.0.1:62058/sims/galton/",
+      "url": "http://127.0.0.1:62391/sims/galton/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -4962,7 +6084,7 @@
       "group": "Statistics",
       "tech": "Canvas 2D",
       "description": "Averages of any shape become a bell curve.",
-      "url": "http://127.0.0.1:62058/sims/clt/",
+      "url": "http://127.0.0.1:62391/sims/clt/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -5234,7 +6356,7 @@
           "title": "Central Limit Theorem — Kevin Arifin",
           "h1": "Central Limit Theorem",
           "lead": "Average enough samples from any shape and the averages form a bell curve. Pick a weird population, set the sample size, and run the experiment. Canvas 2D · statistics.",
-          "readout": "Samples: 0 · mean of means 0.000 (pop 0.501) · sd of means 0.000 (predicted σ/√n = 0.129)",
+          "readout": "Samples: 0 · mean of means 0.000 (pop 0.498) · sd of means 0.000 (predicted σ/√n = 0.129)",
           "stageExists": true,
           "stageAria": "Central Limit Theorem sampling histogram",
           "stageRole": "",
@@ -5269,7 +6391,7 @@
           "title": "Central Limit Theorem — Kevin Arifin",
           "h1": "Central Limit Theorem",
           "lead": "Average enough samples from any shape and the averages form a bell curve. Pick a weird population, set the sample size, and run the experiment. Canvas 2D · statistics.",
-          "readout": "Samples: 0 · mean of means 0.000 (pop 0.499) · sd of means 0.000 (predicted σ/√n = 0.128)",
+          "readout": "Samples: 0 · mean of means 0.000 (pop 0.499) · sd of means 0.000 (predicted σ/√n = 0.129)",
           "stageExists": true,
           "stageAria": "Central Limit Theorem sampling histogram",
           "stageRole": "",
@@ -5342,7 +6464,7 @@
       "group": "Statistics",
       "tech": "D3",
       "description": "Data-driven chart with hover + regen.",
-      "url": "http://127.0.0.1:62058/sims/bars/",
+      "url": "http://127.0.0.1:62391/sims/bars/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -5434,7 +6556,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=7830.85, colors=18"
+          "notes": "variance=7028.66, colors=17"
         },
         {
           "category": "visual",
@@ -5474,7 +6596,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.1823, readoutChanged=false"
+          "notes": "visual distance=0.2111, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -5676,15 +6798,15 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 88.25,
-          "variance": 7830.85,
-          "colorBuckets": 18,
+          "mean": 71.72,
+          "variance": 7028.66,
+          "colorBuckets": 17,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.1823,
-          "readoutChanged": false
+          "visualDistance": 0.2111,
+          "readoutChanged": true
         },
         "source": {
           "path": "/sims/bars/",
@@ -5714,7 +6836,7 @@
       "group": "Economics & finance",
       "tech": "Canvas 2D",
       "description": "Shift curves; find the new equilibrium.",
-      "url": "http://127.0.0.1:62058/sims/supply-demand/",
+      "url": "http://127.0.0.1:62391/sims/supply-demand/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -6084,7 +7206,7 @@
       "group": "Economics & finance",
       "tech": "Canvas 2D",
       "description": "P/L diagrams for calls, puts, spreads.",
-      "url": "http://127.0.0.1:62058/sims/options/",
+      "url": "http://127.0.0.1:62391/sims/options/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -6459,12 +7581,386 @@
       }
     },
     {
+      "href": "/sims/schelling/",
+      "title": "Schelling Model",
+      "group": "Economics & finance",
+      "tech": "Canvas 2D",
+      "description": "Local preferences produce global clustering.",
+      "url": "http://127.0.0.1:62391/sims/schelling/",
+      "status": "strong",
+      "score": {
+        "earned": 100,
+        "total": 100,
+        "percent": 100,
+        "byCategory": {
+          "runtime": {
+            "label": "Runtime health",
+            "earned": 20,
+            "points": 20,
+            "percent": 100
+          },
+          "visual": {
+            "label": "Visual frame",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "interaction": {
+            "label": "Interaction",
+            "earned": 18,
+            "points": 18,
+            "percent": 100
+          },
+          "learning": {
+            "label": "Learning layer",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "accessibility": {
+            "label": "Accessibility/mobile",
+            "earned": 16,
+            "points": 16,
+            "percent": 100
+          },
+          "implementation": {
+            "label": "Implementation",
+            "earned": 12,
+            "points": 12,
+            "percent": 100
+          }
+        }
+      },
+      "checks": [
+        {
+          "category": "runtime",
+          "id": "page-loads",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "Page returns OK"
+        },
+        {
+          "category": "runtime",
+          "id": "no-page-errors",
+          "points": 6,
+          "earned": 6,
+          "pass": true,
+          "notes": "No uncaught page errors"
+        },
+        {
+          "category": "runtime",
+          "id": "critical-resources",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "No critical resource failures"
+        },
+        {
+          "category": "runtime",
+          "id": "document-title",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Schelling Model - Kevin Arifin"
+        },
+        {
+          "category": "visual",
+          "id": "stage-sized",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "912x608"
+        },
+        {
+          "category": "visual",
+          "id": "stage-nonblank",
+          "points": 8,
+          "earned": 8,
+          "pass": true,
+          "notes": "variance=5221.73, colors=44"
+        },
+        {
+          "category": "visual",
+          "id": "screenshot-captures",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Stage screenshot captured"
+        },
+        {
+          "category": "visual",
+          "id": "mobile-no-horizontal-overflow",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No horizontal overflow"
+        },
+        {
+          "category": "interaction",
+          "id": "affordances",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "6 controls / no steps"
+        },
+        {
+          "category": "interaction",
+          "id": "controls-labeled",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs are labeled"
+        },
+        {
+          "category": "interaction",
+          "id": "poke-changes-state",
+          "points": 5,
+          "earned": 5,
+          "pass": true,
+          "notes": "visual distance=0.0259, readoutChanged=true"
+        },
+        {
+          "category": "interaction",
+          "id": "reset",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reset exists"
+        },
+        {
+          "category": "interaction",
+          "id": "pause-step-speed",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pause/step/speed affordance present or static"
+        },
+        {
+          "category": "learning",
+          "id": "headline-and-lead",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Headline and setup copy present"
+        },
+        {
+          "category": "learning",
+          "id": "readout-or-caption",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Readout/caption/steps present"
+        },
+        {
+          "category": "learning",
+          "id": "values-visible",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Parameter values are visible"
+        },
+        {
+          "category": "learning",
+          "id": "gallery-card",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Economics & finance: Canvas 2D"
+        },
+        {
+          "category": "accessibility",
+          "id": "stage-aria",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Schelling segregation model grid with two agent groups and empty homes"
+        },
+        {
+          "category": "accessibility",
+          "id": "form-labels",
+          "points": 4,
+          "earned": 4,
+          "pass": true,
+          "notes": "Inputs have labels"
+        },
+        {
+          "category": "accessibility",
+          "id": "keyboard-controls",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Native controls are keyboard reachable"
+        },
+        {
+          "category": "accessibility",
+          "id": "reduced-motion",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Reduced motion or Sim.loop support"
+        },
+        {
+          "category": "accessibility",
+          "id": "mobile-stage",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "342x228"
+        },
+        {
+          "category": "implementation",
+          "id": "no-setinterval",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "No setInterval loop"
+        },
+        {
+          "category": "implementation",
+          "id": "loop-pattern",
+          "points": 3,
+          "earned": 3,
+          "pass": true,
+          "notes": "Animation loop/library detected"
+        },
+        {
+          "category": "implementation",
+          "id": "shared-css",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Uses shared sim.css"
+        },
+        {
+          "category": "implementation",
+          "id": "known-pattern",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Pattern: simkit"
+        },
+        {
+          "category": "implementation",
+          "id": "static-page",
+          "points": 2,
+          "earned": 2,
+          "pass": true,
+          "notes": "Static page source found"
+        }
+      ],
+      "topFailures": [],
+      "diagnostics": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailures": [],
+        "layout": {
+          "title": "Schelling Model - Kevin Arifin",
+          "h1": "Schelling Model",
+          "lead": "Tiny local preferences can create strong global clustering. Lower the tolerance, reset, and compare the final pattern to the rule each agent follows. Canvas 2D · agent-based systems.",
+          "readout": "moves 611 · unhappy agents 0.0% · same-neighbor share 83.0%",
+          "stageExists": true,
+          "stageAria": "Schelling segregation model grid with two agent groups and empty homes",
+          "stageRole": "",
+          "stageRect": {
+            "width": 912,
+            "height": 608,
+            "top": 180,
+            "bottom": 788
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 6,
+          "rangeCount": 3,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Pause",
+            "Step",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 1280,
+          "viewportWidth": 1280,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "mobileLayout": {
+          "title": "Schelling Model - Kevin Arifin",
+          "h1": "Schelling Model",
+          "lead": "Tiny local preferences can create strong global clustering. Lower the tolerance, reset, and compare the final pattern to the rule each agent follows. Canvas 2D · agent-based systems.",
+          "readout": "moves 611 · unhappy agents 0.0% · same-neighbor share 83.0%",
+          "stageExists": true,
+          "stageAria": "Schelling segregation model grid with two agent groups and empty homes",
+          "stageRole": "",
+          "stageRect": {
+            "width": 342,
+            "height": 228,
+            "top": 228,
+            "bottom": 456
+          },
+          "canvasCount": 1,
+          "svgCount": 0,
+          "controlsCount": 6,
+          "rangeCount": 3,
+          "checkboxCount": 0,
+          "buttonLabels": [
+            "Pause",
+            "Step",
+            "Reset"
+          ],
+          "inputLabelsOk": true,
+          "unlabeledInputs": [],
+          "hasSteps": false,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "horizontalOverflow": false,
+          "overflowEls": []
+        },
+        "visualStats": {
+          "width": 912,
+          "height": 609,
+          "samples": 7031,
+          "mean": 117.48,
+          "variance": 5221.73,
+          "colorBuckets": 44,
+          "visibleRatio": 1,
+          "nonBlank": true
+        },
+        "exercise": {
+          "visualDistance": 0.0259,
+          "readoutChanged": true
+        },
+        "source": {
+          "path": "/sims/schelling/",
+          "hasSetInterval": false,
+          "hasRequestAnimationFrame": false,
+          "hasSimLoop": true,
+          "hasSimKit": true,
+          "hasSimCss": true,
+          "hasReducedMotion": true,
+          "hasVisibilityPause": true,
+          "hasReset": true,
+          "hasPause": true,
+          "hasSpeed": true,
+          "hasInlineHandlers": false,
+          "recognizedLibraries": [
+            "simkit"
+          ],
+          "hasAnimation": true,
+          "isTemplate": false
+        },
+        "screenshot": null
+      }
+    },
+    {
       "href": "/sims/phonics/",
       "title": "Phonics Blender",
       "group": "Early literacy",
       "tech": "Web Speech",
       "description": "Tap letters, hear sounds, blend a word.",
-      "url": "http://127.0.0.1:62058/sims/phonics/",
+      "url": "http://127.0.0.1:62391/sims/phonics/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -6849,7 +8345,7 @@
       "group": "Ideas & literature",
       "tech": "Explorable",
       "description": "Hayek's argument as an interactive book.",
-      "url": "http://127.0.0.1:62058/sims/road-to-serfdom/",
+      "url": "http://127.0.0.1:62391/sims/road-to-serfdom/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -6941,7 +8437,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=525.53, colors=142"
+          "notes": "variance=531.3, colors=147"
         },
         {
           "category": "visual",
@@ -6981,7 +8477,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0296, readoutChanged=false"
+          "notes": "visual distance=0.03, readoutChanged=false"
         },
         {
           "category": "interaction",
@@ -7183,14 +8679,14 @@
           "width": 438,
           "height": 439,
           "samples": 7122,
-          "mean": 18.73,
-          "variance": 525.53,
-          "colorBuckets": 142,
+          "mean": 18.78,
+          "variance": 531.3,
+          "colorBuckets": 147,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0296,
+          "visualDistance": 0.03,
           "readoutChanged": false
         },
         "source": {
@@ -7221,7 +8717,7 @@
       "group": "Graphics & generative",
       "tech": "three.js",
       "description": "Orbit and zoom a 3D mesh.",
-      "url": "http://127.0.0.1:62058/sims/orbit/",
+      "url": "http://127.0.0.1:62391/sims/orbit/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -7313,7 +8809,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=1811.74, colors=43"
+          "notes": "variance=1841.65, colors=44"
         },
         {
           "category": "visual",
@@ -7353,7 +8849,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0209, readoutChanged=false"
+          "notes": "visual distance=0.0231, readoutChanged=false"
         },
         {
           "category": "interaction",
@@ -7558,14 +9054,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 36.25,
-          "variance": 1811.74,
-          "colorBuckets": 43,
+          "mean": 36.3,
+          "variance": 1841.65,
+          "colorBuckets": 44,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0209,
+          "visualDistance": 0.0231,
           "readoutChanged": false
         },
         "source": {
@@ -7596,7 +9092,7 @@
       "group": "Graphics & generative",
       "tech": "p5.js",
       "description": "Particles drifting along Perlin noise.",
-      "url": "http://127.0.0.1:62058/sims/flow-field/",
+      "url": "http://127.0.0.1:62391/sims/flow-field/",
       "status": "strong",
       "score": {
         "earned": 100,
@@ -7688,7 +9184,7 @@
           "points": 8,
           "earned": 8,
           "pass": true,
-          "notes": "variance=169.4, colors=24"
+          "notes": "variance=175.33, colors=23"
         },
         {
           "category": "visual",
@@ -7728,7 +9224,7 @@
           "points": 5,
           "earned": 5,
           "pass": true,
-          "notes": "visual distance=0.0076, readoutChanged=true"
+          "notes": "visual distance=0.0072, readoutChanged=true"
         },
         {
           "category": "interaction",
@@ -7930,14 +9426,14 @@
           "width": 912,
           "height": 609,
           "samples": 7031,
-          "mean": 18.36,
-          "variance": 169.4,
-          "colorBuckets": 24,
+          "mean": 18.4,
+          "variance": 175.33,
+          "colorBuckets": 23,
           "visibleRatio": 1,
           "nonBlank": true
         },
         "exercise": {
-          "visualDistance": 0.0076,
+          "visualDistance": 0.0072,
           "readoutChanged": true
         },
         "source": {
@@ -7968,7 +9464,7 @@
       "group": "Format",
       "tech": "Explorable",
       "description": "Scrollytelling — narrative paired with a sim.",
-      "url": "http://127.0.0.1:62058/sims/_explainer/",
+      "url": "http://127.0.0.1:62391/sims/_explainer/",
       "status": "strong",
       "score": {
         "earned": 100,

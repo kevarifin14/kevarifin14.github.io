@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reaction-Diffusion - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Reaction-Diffusion</h1>
+      <p class="sub">Two chemicals diffuse and react; the inhibitor spreads faster, so local growth turns into spots, stripes, and fronts. Paint the catalyst to seed a pattern. <strong>Canvas 2D</strong> · nonlinear systems.</p>
+
+      <div class="stage" aria-label="Reaction diffusion field with emerging spots and stripes"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Feed <strong id="feedValue"></strong></span>
+          <input id="feed" type="range" min="0.012" max="0.075" step="0.001" value="0.037" /></label>
+        <label class="row"><span>Kill <strong id="killValue"></strong></span>
+          <input id="kill" type="range" min="0.040" max="0.076" step="0.001" value="0.060" /></label>
+        <label class="row"><span>Speed <strong id="speedValue"></strong></span>
+          <input id="speed" type="range" min="0.4" max="3.0" step="0.1" value="1.4" /></label>
+        <button id="toggle">Pause</button>
+        <button id="seed">Seed</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { feed: 0.037, kill: 0.06, speed: 1.4 };
+        const cols = 116, rows = 76, du = 0.16, dv = 0.08;
+        const off = document.createElement("canvas"), offCtx = off.getContext("2d", { willReadFrequently: false });
+        off.width = cols; off.height = rows;
+        let view = { w: 0, h: 0 }, u, v, nu, nv, image = offCtx.createImageData(cols, rows), tick = 0, sim;
+
+        function id(x, y) { return ((y + rows) % rows) * cols + ((x + cols) % cols); }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        function reset() {
+          u = new Float32Array(cols * rows);
+          v = new Float32Array(cols * rows);
+          nu = new Float32Array(cols * rows);
+          nv = new Float32Array(cols * rows);
+          u.fill(1);
+          tick = 0;
+          seedPatch(cols * 0.5, rows * 0.5, 9);
+          seedPatch(cols * 0.32, rows * 0.42, 5);
+          seedPatch(cols * 0.68, rows * 0.57, 6);
+          for (let i = 0; i < 120; i++) stepRD();
+          sim && sim.renderOnce();
+        }
+        function seedPatch(cx, cy, r) {
+          for (let y = Math.floor(cy - r); y <= cy + r; y++) for (let x = Math.floor(cx - r); x <= cx + r; x++) {
+            const dx = x - cx, dy = y - cy;
+            if (dx * dx + dy * dy <= r * r) {
+              const k = id(x, y);
+              u[k] = 0.45; v[k] = 0.72;
+            }
+          }
+        }
+        function lap(arr, x, y) {
+          return -arr[id(x, y)]
+            + 0.2 * (arr[id(x - 1, y)] + arr[id(x + 1, y)] + arr[id(x, y - 1)] + arr[id(x, y + 1)])
+            + 0.05 * (arr[id(x - 1, y - 1)] + arr[id(x + 1, y - 1)] + arr[id(x - 1, y + 1)] + arr[id(x + 1, y + 1)]);
+        }
+        function stepRD() {
+          for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+            const i = id(x, y), a = u[i], b = v[i], reaction = a * b * b;
+            nu[i] = Math.max(0, Math.min(1, a + du * lap(u, x, y) - reaction + params.feed * (1 - a)));
+            nv[i] = Math.max(0, Math.min(1, b + dv * lap(v, x, y) + reaction - (params.kill + params.feed) * b));
+          }
+          [u, nu] = [nu, u]; [v, nv] = [nv, v];
+          tick++;
+        }
+        function update() {
+          const n = Math.max(1, Math.round(params.speed * 5));
+          for (let i = 0; i < n; i++) stepRD();
+        }
+        function render() {
+          if (!u) return;
+          const data = image.data;
+          let sum = 0;
+          for (let i = 0; i < cols * rows; i++) {
+            const b = v[i], a = u[i], shade = Math.max(0, Math.min(255, Math.round((a - b) * 255)));
+            const j = i * 4;
+            data[j] = Math.round(18 + shade * 0.10 + b * 230);
+            data[j + 1] = Math.round(20 + shade * 0.35 + b * 170);
+            data[j + 2] = Math.round(26 + shade * 0.55 + b * 80);
+            data[j + 3] = 255;
+            sum += b;
+          }
+          offCtx.putImageData(image, 0, 0);
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(off, 0, 0, view.w, view.h);
+          ctx.fillStyle = "rgba(11,11,12,0.58)";
+          ctx.fillRect(12, 12, 210, 30);
+          ctx.fillStyle = "#ededed";
+          ctx.font = "12px ui-monospace, monospace";
+          ctx.fillText("V concentration field", 22, 32);
+          ro.innerHTML = "step <strong>" + tick + "</strong> · catalyst mass <strong>" + (sum / (cols * rows)).toFixed(3) + "</strong> · feed/kill tunes spots versus stripes.";
+        }
+        function paint(p) {
+          const x = p.x / Math.max(1, view.w) * cols, y = p.y / Math.max(1, view.h) * rows;
+          seedPatch(x, y, 5);
+          sim.renderOnce();
+        }
+
+        resize();
+        reset();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.bind("feed", params, "feed", (val) => (+val).toFixed(3));
+        Sim.bind("kill", params, "kill", (val) => (+val).toFixed(3));
+        Sim.bind("speed", params, "speed", (val) => (+val).toFixed(1));
+        Sim.pointer(canvas, { down: paint, move(p) { if (p.down) paint(p); } });
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("seed").addEventListener("click", () => { seedPatch(cols * (0.2 + Math.random() * 0.6), rows * (0.2 + Math.random() * 0.6), 6); sim.renderOnce(); });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>

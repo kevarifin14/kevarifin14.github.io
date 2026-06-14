@@ -21,3 +21,11 @@ This log records evaluation runs that produced durable lessons for the skill. Ke
 - Lessons: Research is part of simulation building: course sources and existing explorables should be distilled into an original mechanism before implementation; Strong first frames matter for algorithm sims; warmed-start values/ranks teach better than blank initialization
 - Decisions: Added an explicit research-pass step to the building-html-simulations workflow; Updated README source trail for course-inspired sims
 - Run file: evals/runs/2026-06-14-course-inspired-simulation-batch.md
+## 2026-06-14T03:11:22.767Z - Additional course-inspired simulation batch
+
+- Status: strong
+- Result: 26/26 gallery sims scored 100/100 after adding A*, Kalman filter, reaction-diffusion, and Schelling model
+- Artifacts: sims/eval-results/latest.md, sims/astar/index.html, sims/kalman/index.html, sims/reaction-diffusion/index.html, sims/schelling/index.html
+- Lessons: The strongest next topics had visible frontier, uncertainty, pattern-formation, or clustering dynamics, plus a direct parameter to manipulate.
+- Decisions: No skill instruction change needed; the existing research pass, Canvas starter pattern, and evaluator covered this batch.
+- Run file: evals/runs/2026-06-14-additional-course-inspired-simulation-batch.md

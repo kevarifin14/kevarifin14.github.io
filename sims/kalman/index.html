@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kalman Filter - Kevin Arifin</title>
+    <link rel="stylesheet" href="../lib/sim.css" />
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">&larr; Sims</a>
+      <h1>Kalman Filter</h1>
+      <p class="sub">A hidden signal moves smoothly, the sensor lies noisily, and the filter balances model trust against measurement trust. <strong>Canvas 2D</strong> · estimation.</p>
+
+      <div class="stage" aria-label="Kalman filter tracking a hidden one-dimensional signal with noisy measurements"><canvas id="c"></canvas></div>
+      <div class="controls">
+        <label class="row"><span>Measurement noise <strong id="measurementNoiseValue"></strong></span>
+          <input id="measurementNoise" type="range" min="0.03" max="0.55" step="0.01" value="0.24" /></label>
+        <label class="row"><span>Process noise <strong id="processNoiseValue"></strong></span>
+          <input id="processNoise" type="range" min="0.001" max="0.12" step="0.001" value="0.022" /></label>
+        <label class="row"><span>Speed <strong id="speedValue"></strong></span>
+          <input id="speed" type="range" min="0.2" max="2.5" step="0.05" value="1.0" /></label>
+        <button id="toggle">Pause</button>
+        <button id="jump">Jump</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div class="readout" id="ro" aria-live="polite"></div>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        const canvas = document.getElementById("c"), ctx = canvas.getContext("2d"), ro = document.getElementById("ro");
+        const params = { measurementNoise: 0.24, processNoise: 0.022, speed: 1 };
+        let view = { w: 0, h: 0 }, rng = Sim.rng(93), state, history = [], sim;
+
+        function normal(scale) {
+          const u = Math.max(1e-6, rng()), v = Math.max(1e-6, rng());
+          return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v) * scale;
+        }
+        function reset() {
+          rng = Sim.rng(93);
+          state = { t: 0, truth: 0, estimate: -0.25, p: 0.35, v: 0.55, lastZ: 0, gain: 0 };
+          history = [];
+          for (let i = 0; i < 75; i++) update(1 / 60);
+          sim && sim.renderOnce();
+        }
+        function resize() { view = Sim.fitCanvas(canvas, ctx); sim && sim.renderOnce(); }
+        window.addEventListener("resize", resize);
+        function trueMotion(t) {
+          return 0.58 * Math.sin(t * 0.72) + 0.22 * Math.sin(t * 1.7 + 1.1);
+        }
+        function update(dt) {
+          const scaled = dt * params.speed;
+          state.t += scaled;
+          const prevTruth = state.truth;
+          state.truth = trueMotion(state.t);
+          state.v = (state.truth - prevTruth) / Math.max(scaled, 1e-4);
+          const z = state.truth + normal(params.measurementNoise);
+
+          const predicted = state.estimate + state.v * scaled;
+          state.p = state.p + params.processNoise;
+          const r = params.measurementNoise * params.measurementNoise;
+          state.gain = state.p / (state.p + r);
+          state.estimate = predicted + state.gain * (z - predicted);
+          state.p = (1 - state.gain) * state.p;
+          state.lastZ = z;
+
+          if (!history.length || state.t - history[history.length - 1].t > 0.035) {
+            history.push({ t: state.t, truth: state.truth, z, estimate: state.estimate, p: state.p });
+          }
+          if (history.length > 260) history.shift();
+        }
+        function toY(value, top, h) { return top + h * 0.5 - value * h * 0.42; }
+        function drawSeries(top, h, key, color, width, dots) {
+          ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width; ctx.beginPath();
+          history.forEach((p, i) => {
+            const x = 42 + i / Math.max(1, 259) * (view.w - 84);
+            const y = toY(p[key], top, h);
+            if (dots) { ctx.moveTo(x + 2, y); ctx.arc(x, y, 2, 0, Math.PI * 2); }
+            else i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+          });
+          dots ? ctx.fill() : ctx.stroke();
+        }
+        function render() {
+          if (!state) return;
+          ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, view.w, view.h);
+          const top = 34, h = view.h - 105, left = 42, w = view.w - 84;
+          ctx.strokeStyle = "#232326"; ctx.strokeRect(left, top, w, h);
+          ctx.strokeStyle = "rgba(255,255,255,0.16)";
+          ctx.beginPath(); ctx.moveTo(left, top + h / 2); ctx.lineTo(left + w, top + h / 2); ctx.stroke();
+
+          ctx.fillStyle = "rgba(232,197,71,0.08)";
+          history.forEach((p, i) => {
+            const x = left + i / Math.max(1, 259) * w;
+            const band = Math.sqrt(Math.max(0, p.p)) * h * 0.42 * 2;
+            const y = toY(p.estimate, top, h);
+            ctx.fillRect(x - 1, y - band, 2, band * 2);
+          });
+          drawSeries(top, h, "z", "rgba(255,255,255,0.32)", 1, true);
+          drawSeries(top, h, "truth", "#4fa3ff", 2.5, false);
+          drawSeries(top, h, "estimate", "#e8c547", 2.5, false);
+
+          ctx.font = "12px ui-monospace, monospace";
+          ctx.fillStyle = "#4fa3ff"; ctx.fillText("hidden truth", left, view.h - 54);
+          ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.fillText("measurements", left + 130, view.h - 54);
+          ctx.fillStyle = "#e8c547"; ctx.fillText("filter estimate", left + 270, view.h - 54);
+          const err = Math.abs(state.truth - state.estimate);
+          ro.innerHTML = "gain <strong>" + state.gain.toFixed(2) + "</strong> · uncertainty <strong>" + state.p.toFixed(3) + "</strong> · absolute error <strong>" + err.toFixed(3) + "</strong>";
+        }
+
+        resize();
+        reset();
+        sim = Sim.loop({ update, render, stage: canvas.parentElement });
+        Sim.bind("measurementNoise", params, "measurementNoise", (v) => (+v).toFixed(2));
+        Sim.bind("processNoise", params, "processNoise", (v) => (+v).toFixed(3));
+        Sim.bind("speed", params, "speed", (v) => (+v).toFixed(2));
+        document.getElementById("toggle").addEventListener("click", function () { sim.toggle(); this.textContent = sim.running ? "Pause" : "Play"; });
+        document.getElementById("jump").addEventListener("click", () => { state.estimate += state.estimate > 0 ? -0.65 : 0.65; state.p += 0.2; sim.renderOnce(); });
+        document.getElementById("reset").addEventListener("click", reset);
+      </script>
+    </main>
+  </body>
+</html>
