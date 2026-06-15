@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Attention Is All You Need — an interactive walkthrough — Kevin Arifin</title>
+    <meta name="description" content="A ground-up, interactive walkthrough of the Transformer paper: embeddings, Q/K/V, scaled dot-product attention, multi-head, and positional encoding." />
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <style>
+      .sim { max-width: 740px; }
+      .lede { color: var(--muted); font-size: 1.06rem; }
+      .sim h2 { font-size: 1.2rem; margin: 40px 0 10px; }
+      .sim p { line-height: 1.72; }
+      .rung { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 42px 0 -4px; }
+      .fig { margin: 20px 0 6px; }
+      .fig .stage { aspect-ratio: 16 / 10; }
+      .fig .controls { margin-top: 10px; }
+      .fig .cap { font-size: 0.8rem; color: var(--muted); margin-top: 7px; text-align: center; }
+      .eqn { margin: 14px 0; text-align: center; color: var(--fg); }
+      .tokbtns button.on { border-color: var(--accent); color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>Attention Is All You Need</h1>
+      <p class="lede">The 2017 paper that replaced recurrence with pure attention and gave us GPT, BERT, and the rest. If you did an ML class years ago — you know dot products, softmax, and gradient descent — this rebuilds the Transformer from those parts, one interactive figure at a time. The running example is the sentence <strong>"the cat sat because it was sleepy."</strong></p>
+      <div class="eqn" id="headeqn"></div>
+
+      <p class="rung">Rung 1 · Tokens become vectors</p>
+      <h2>A word is a point in space</h2>
+      <p>Before anything else, each token is mapped to a vector — an <em>embedding</em>. Geometry encodes meaning: related words land near each other, and direction carries relationships. Real embeddings live in hundreds of dimensions; here we use 2D so you can see it. Notice <strong>"it"</strong> sits near <strong>"cat"</strong> — that proximity is what will let attention resolve what "it" refers to.</p>
+      <div class="fig"><div class="stage" aria-label="Word embeddings plotted as 2D points"><canvas id="emb"></canvas></div></div>
+
+      <p class="rung">Rung 2 · Three roles per token</p>
+      <h2>Query, Key, Value</h2>
+      <p>Self-attention gives every token three projections of its embedding, via learned matrices W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub>: a <strong style="color:#e8c547">Query</strong> ("what am I looking for?"), a <strong style="color:#4fa3ff">Key</strong> ("what do I offer?"), and a <strong style="color:#5fcf80">Value</strong> ("what I'll hand over if you pick me"). Pick a token and see its three vectors.</p>
+      <div class="fig"><div class="stage" aria-label="A token's query, key, and value vectors"><canvas id="qkv"></canvas></div>
+        <div class="controls tokbtns" id="qkvBtns"></div></div>
+
+      <p class="rung">Rung 3 · How relevant is each token?</p>
+      <h2>Attention score = query · key</h2>
+      <p>To decide how much one token should pay attention to another, take the <strong>dot product</strong> of the first's Query with the second's Key. Big dot product = aligned = relevant. Choose the querying token; the bars are its raw scores against every key. With "it" as the query, "cat" scores highest — exactly the link we want.</p>
+      <div class="fig"><div class="stage" aria-label="Dot-product attention scores for the chosen query token"><canvas id="scores"></canvas></div>
+        <div class="controls tokbtns" id="scoreBtns"></div></div>
+
+      <p class="rung">Rung 4 · Turn scores into weights</p>
+      <h2>Scale by √dₖ, then softmax</h2>
+      <p>Raw scores aren't a distribution. Divide by √d<sub>k</sub> (the key dimension) so the numbers don't blow up as dimensions grow — that keeps softmax out of its flat, vanishing-gradient regime — then softmax to get <strong>attention weights</strong> that are positive and sum to 1. Drag d<sub>k</sub>: small scaling sharpens to a near one-hot pick; large scaling flattens toward "attend to everything equally."</p>
+      <div class="eqn" id="smeqn"></div>
+      <div class="fig"><div class="stage" aria-label="Scores transformed by scaling and softmax into weights"><canvas id="softmax"></canvas></div>
+        <div class="controls"><label class="row"><span>√dₖ scaling <strong id="dkValue"></strong></span><input id="dk" type="range" min="0.3" max="6" step="0.1" value="1.4" /></label></div></div>
+
+      <p class="rung">Rung 5 · Build the new representation</p>
+      <h2>Output = weighted sum of Values</h2>
+      <p>The token's updated vector is the attention-weighted average of everyone's <strong style="color:#5fcf80">Value</strong> vectors. Relevant tokens contribute more. So "it" literally absorbs a large slice of "cat"'s value — its representation now <em>carries</em> the thing it refers to. That blended vector (gold) is the output of attention for this token.</p>
+      <div class="fig"><div class="stage" aria-label="Output vector forming as a weighted blend of value vectors"><canvas id="wsum"></canvas></div></div>
+
+      <p class="rung">Rung 6 · Do it for everyone at once</p>
+      <h2>The attention matrix</h2>
+      <p>Run that for every token in parallel and you get an N×N matrix: row <em>i</em> is how token <em>i</em> distributes its attention across all tokens (each row sums to 1). This single picture — who attends to whom — is the heart of the Transformer. Hover a row to read it. The "it" row lights up on "cat."</p>
+      <div class="fig"><div class="stage" aria-label="N by N attention weight heatmap over the sentence"><canvas id="matrix"></canvas></div>
+        <div class="cap" id="matrixCap">Hover a row to see what that token attends to.</div></div>
+
+      <p class="rung">Rung 7 · Many relationships at once</p>
+      <h2>Multi-head attention</h2>
+      <p>One attention pattern can only capture one kind of relationship. So the Transformer runs several <strong>heads</strong> in parallel, each with its own W<sub>Q</sub>/W<sub>K</sub>/W<sub>V</sub>, then concatenates and projects their outputs. One head learns to track meaning/coreference, another local adjacency, another links to the main verb. Flip between heads:</p>
+      <div class="fig"><div class="stage" aria-label="Attention matrices for different heads"><canvas id="heads"></canvas></div>
+        <div class="controls tokbtns" id="headBtns"></div></div>
+
+      <p class="rung">Rung 8 · Where did word order go?</p>
+      <h2>Positional encoding</h2>
+      <p>Attention treats the input as a <em>set</em> — shuffle the tokens and the math is identical. That's a problem: "cat sat" ≠ "sat cat". The fix is to add a <strong>positional encoding</strong> to each embedding — a vector built from sines and cosines of many frequencies, so every position gets a unique, smoothly-varying fingerprint the model can read. Each row below is one position's encoding across dimensions.</p>
+      <div class="fig"><div class="stage" aria-label="Sinusoidal positional encoding heatmap, position by dimension"><canvas id="pos"></canvas></div>
+        <div class="cap">Rows = positions, columns = embedding dimensions. Low dims wiggle fast, high dims slow — together they pin down position.</div></div>
+
+      <p class="rung">Rung 9 · The whole block</p>
+      <h2>Putting it together</h2>
+      <p>Stack it up: embed the tokens, add positional encodings, then repeat a block — multi-head self-attention, a residual add &amp; layer-norm, a position-wise feed-forward network, another add &amp; norm — N times. No recurrence, so every position is computed in parallel and any token can reach any other in one step. That parallelism + one-hop reach is why it scaled to today's models.</p>
+      <div class="fig"><div class="stage" aria-label="Diagram of a Transformer block"><canvas id="block"></canvas></div></div>
+      <p>That's the paper, ground up: tokens → vectors, three roles, dot-product relevance, scale + softmax, a weighted blend of values, an N×N matrix of it, many heads, plus positions — stacked into a block. Everything since is mostly <em>more of this</em>.</p>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        function fig(id, opts) {
+          const cv = document.getElementById(id); if (!cv) return null;
+          const ctx = cv.getContext("2d"); let view = { w: 0, h: 0 };
+          function resize() { view = Sim.fitCanvas(cv, ctx); }
+          const g = { cv, ctx, get w() { return view.w; }, get h() { return view.h; }, render: () => opts.render(g) };
+          window.addEventListener("resize", () => { resize(); g.render(); });
+          resize(); if (opts.autoplay === false) g.render();
+          else g.sim = Sim.loop({ update: opts.update && (dt => opts.update(g, dt)), render: () => opts.render(g), stage: cv.parentElement });
+          return g;
+        }
+        // ---- shared toy model (2D embeddings; real ones are high-dim) ----
+        const TOK = ["the", "cat", "sat", "because", "it", "was", "sleepy"];
+        const EMB = [[0.2, 0.15], [0.9, 0.3], [-0.25, 0.85], [-0.8, -0.15], [0.82, 0.42], [-0.35, 0.72], [0.15, -0.9]];
+        const COL = "#cfcfd4";
+        function dot(a, b) { return a[0] * b[0] + a[1] * b[1]; }
+        function matvec(M, v) { return [M[0] * v[0] + M[1] * v[1], M[2] * v[0] + M[3] * v[1]]; }
+        function softmax(xs) { const m = Math.max(...xs); const e = xs.map(x => Math.exp(x - m)); const s = e.reduce((a, b) => a + b, 0); return e.map(x => x / s); }
+        const WQ = [1, 0, 0, 1], WK = [1, 0, 0, 1], WV = [0.9, 0.1, -0.1, 0.9];
+        const Q = EMB.map(e => matvec(WQ, e)), K = EMB.map(e => matvec(WK, e)), V = EMB.map(e => matvec(WV, e));
+        function rawScores(i, scale) { return EMB.map((_, j) => dot(Q[i], K[j]) / scale); }
+        function weights(i, scale) { return softmax(rawScores(i, scale)); }
+        const ITX = TOK.indexOf("it");
+        function plot(g, p, pad) { // map embedding [-1,1] to canvas with padding
+          pad = pad || 40; return [pad + (p[0] + 1) / 2 * (g.w - 2 * pad), g.h - pad - (p[1] + 1) / 2 * (g.h - 2 * pad)];
+        }
+
+        // Rung 1: embeddings
+        fig("emb", { autoplay: false, render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          ctx.strokeStyle = "#26262c"; ctx.strokeLine(g.w / 2, 20, g.w / 2, g.h - 20); ctx.strokeLine(40, g.h / 2, g.w - 40, g.h / 2);
+          EMB.forEach((e, i) => { const p = plot(g, e); const hot = TOK[i] === "it" || TOK[i] === "cat";
+            ctx.fillStyle = hot ? "#e8c547" : COL; ctx.disc(p[0], p[1], hot ? 6 : 4.5);
+            ctx.label(p[0] + 9, p[1] + 4, TOK[i], { color: hot ? "#e8c547" : "#8a8a8f", size: 13 }); });
+          ctx.label(14, 20, "2D embedding space (toy)", { size: 12 });
+        } });
+
+        // Rung 2: Q/K/V for a chosen token
+        let qkvSel = ITX;
+        const qkvFig = fig("qkv", { autoplay: false, render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          const o = [g.w * 0.5, g.h * 0.5]; ctx.strokeStyle = "#26262c"; ctx.strokeLine(o[0], 16, o[0], g.h - 16); ctx.strokeLine(20, o[1], g.w - 20, o[1]);
+          const S = Math.min(g.w, g.h) * 0.32;
+          function vec(v, col, lab) { ctx.strokeStyle = ctx.fillStyle = col; ctx.lineWidth = 2.5; ctx.arrow(o[0], o[1], o[0] + v[0] * S, o[1] - v[1] * S, 9); ctx.label(o[0] + v[0] * S + 6, o[1] - v[1] * S, lab, { color: col, size: 12 }); }
+          ctx.strokeStyle = ctx.fillStyle = COL; ctx.lineWidth = 1.5; ctx.arrow(o[0], o[1], o[0] + EMB[qkvSel][0] * S, o[1] - EMB[qkvSel][1] * S, 7); ctx.label(o[0] + EMB[qkvSel][0] * S + 6, o[1] - EMB[qkvSel][1] * S + 12, "embedding", { color: "#8a8a8f", size: 11 });
+          vec(Q[qkvSel], "#e8c547", "Q"); vec(K[qkvSel], "#4fa3ff", "K"); vec(V[qkvSel], "#5fcf80", "V");
+          ctx.label(14, 22, '"' + TOK[qkvSel] + '" → Q (query), K (key), V (value)', { size: 12 });
+        } });
+        tokButtons("qkvBtns", (i) => { qkvSel = i; qkvFig.render(); }, () => qkvSel);
+
+        // Rung 3: scores
+        let scoreSel = ITX;
+        const scoreFig = fig("scores", { autoplay: false, render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          const s = rawScores(scoreSel, 1.0); barChart(g, s, scoreSel, (v) => v.toFixed(2), "#4fa3ff", true);
+          ctx.label(14, 22, 'query = "' + TOK[scoreSel] + '"   ·   bar = Q·K (dot product)', { size: 12 });
+        } });
+        tokButtons("scoreBtns", (i) => { scoreSel = i; scoreFig.render(); }, () => scoreSel);
+
+        // Rung 4: softmax + scaling
+        const sm = { dk: 1.4 };
+        const smFig = fig("softmax", { autoplay: false, render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          const w = weights(ITX, sm.dk); barChart(g, w, ITX, (v) => (v * 100).toFixed(0) + "%", "#e8c547", false, 1);
+          ctx.label(14, 22, 'attention weights for "it" (sum = 100%)', { size: 12 });
+        } });
+
+        // Rung 5: weighted sum of values
+        const wsFig = fig("wsum", { render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          const o = [g.w * 0.5, g.h * 0.56], S = Math.min(g.w, g.h) * 0.3; const w = weights(ITX, sm.dk);
+          ctx.strokeStyle = "#26262c"; ctx.strokeLine(o[0], 16, o[0], g.h - 16); ctx.strokeLine(20, o[1], g.w - 20, o[1]);
+          let out = [0, 0];
+          V.forEach((v, j) => { out[0] += w[j] * v[0]; out[1] += w[j] * v[1];
+            ctx.globalAlpha = 0.25 + 0.75 * w[j]; ctx.strokeStyle = ctx.fillStyle = "#5fcf80"; ctx.lineWidth = 1 + 4 * w[j];
+            ctx.arrow(o[0], o[1], o[0] + v[0] * S, o[1] - v[1] * S, 6); ctx.globalAlpha = 1; });
+          ctx.strokeStyle = ctx.fillStyle = "#e8c547"; ctx.lineWidth = 3.5; ctx.arrow(o[0], o[1], o[0] + out[0] * S, o[1] - out[1] * S, 10);
+          ctx.label(o[0] + out[0] * S + 6, o[1] - out[1] * S, "output", { color: "#e8c547", size: 12 });
+          ctx.label(14, 22, 'green = values (thicker = more weight) · gold = weighted blend for "it"', { size: 12 });
+        }, autoplay: false });
+
+        // Rung 6: attention matrix heatmap
+        let hoverRow = ITX;
+        const N = TOK.length;
+        function matCell(g, n) { const pad = 78, top = 30; const cw = (g.w - pad - 16) / n, ch = (g.h - top - 28) / n; return { pad, top, cw, ch }; }
+        const matFig = fig("matrix", { autoplay: false, render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          const { pad, top, cw, ch } = matCell(g, N);
+          for (let i = 0; i < N; i++) { const w = weights(i, 1.4);
+            for (let j = 0; j < N; j++) { ctx.fillStyle = Sim.heat(w[j] * 1.6); ctx.fillRect(pad + j * cw + 1, top + i * ch + 1, cw - 2, ch - 2); }
+            ctx.label(pad - 6, top + i * ch + ch / 2 + 4, TOK[i], { color: i === hoverRow ? "#e8c547" : "#8a8a8f", align: "right", size: 11 }); }
+          for (let j = 0; j < N; j++) { ctx.save(); ctx.translate(pad + j * cw + cw / 2, top - 4); ctx.rotate(-0.5); ctx.label(0, 0, TOK[j], { color: "#8a8a8f", size: 10 }); ctx.restore(); }
+          if (hoverRow >= 0) { ctx.strokeStyle = "#e8c547"; ctx.lineWidth = 1.5; ctx.strokeRect(pad, top + hoverRow * ch, cw * N, ch);
+            const w = weights(hoverRow, 1.4); const best = w.indexOf(Math.max(...w));
+            document.getElementById("matrixCap").textContent = '"' + TOK[hoverRow] + '" attends most to "' + TOK[best] + '" (' + (w[best] * 100).toFixed(0) + '%)'; }
+        } });
+        if (matFig) matFig.cv.addEventListener("pointermove", (e) => { const r = matFig.cv.getBoundingClientRect(); const { top, ch } = matCell(matFig, N); const i = Math.floor((e.clientY - r.top - top) / ch); if (i >= 0 && i < N && i !== hoverRow) { hoverRow = i; matFig.render(); } });
+
+        // Rung 7: multi-head (illustrative patterns)
+        const HEADS = [
+          { name: "meaning / coreference", m: () => EMB.map((_, i) => weights(i, 1.4)) },
+          { name: "local adjacency", m: () => EMB.map((_, i) => softmax(EMB.map((__, j) => -Math.abs(i - j) * 1.3))) },
+          { name: "link to the verb (sat)", m: () => EMB.map(() => softmax(EMB.map((__, j) => (j === 2 ? 2.4 : -0.3)))) },
+        ];
+        let headSel = 0;
+        const headFig = fig("heads", { autoplay: false, render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          const M = HEADS[headSel].m(); const { pad, top, cw, ch } = matCell(g, N);
+          for (let i = 0; i < N; i++) { for (let j = 0; j < N; j++) { ctx.fillStyle = Sim.heat(M[i][j] * 1.6); ctx.fillRect(pad + j * cw + 1, top + i * ch + 1, cw - 2, ch - 2); }
+            ctx.label(pad - 6, top + i * ch + ch / 2 + 4, TOK[i], { color: "#8a8a8f", align: "right", size: 11 }); }
+          ctx.label(14, 22, "Head " + (headSel + 1) + ": " + HEADS[headSel].name, { size: 12, color: "#e8c547" });
+        } });
+        tokButtons("headBtns", (i) => { headSel = i; headFig.render(); }, () => headSel, ["Head 1", "Head 2", "Head 3"]);
+
+        // Rung 8: positional encoding
+        fig("pos", { autoplay: false, render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          const P = 16, D = 32, pad = 30, top = 20, cw = (g.w - pad - 14) / D, ch = (g.h - top - 14) / P;
+          for (let pos = 0; pos < P; pos++) for (let d = 0; d < D; d++) {
+            const div = Math.pow(10000, 2 * Math.floor(d / 2) / D);
+            const val = (d % 2 === 0) ? Math.sin(pos / div) : Math.cos(pos / div);
+            ctx.fillStyle = Sim.heat((val + 1) / 2); ctx.fillRect(pad + d * cw, top + pos * ch, cw - 0.5, ch - 0.5);
+          }
+          ctx.label(14, 14, "positional encoding: sin/cos of many frequencies", { size: 11 });
+        } });
+
+        // Rung 9: the block diagram
+        fig("block", { autoplay: false, render(g) {
+          const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+          const cx = g.w / 2, bw = Math.min(280, g.w * 0.6); let y = 24; const gap = (g.h - 48) / 6;
+          function box(label, col) { ctx.fillStyle = "#15151a"; ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+            ctx.panel(cx - bw / 2, y, bw, gap * 0.62); ctx.strokeRect(cx - bw / 2, y, bw, gap * 0.62);
+            ctx.label(cx, y + gap * 0.62 / 2 + 4, label, { align: "center", color: "#ededed", size: 12.5 });
+            if (y > 30) { ctx.strokeStyle = "#3a3a40"; ctx.arrow(cx, y - gap * 0.38, cx, y - 2, 6); } y += gap; }
+          ctx.strokeStyle = ctx.fillStyle = "#3a3a40";
+          box("Input embeddings + positional encoding", "#5fcf80");
+          box("Multi-Head Self-Attention", "#e8c547");
+          box("Add & Norm (residual)", "#4fa3ff");
+          box("Feed-Forward network", "#e8c547");
+          box("Add & Norm (residual)", "#4fa3ff");
+          box("→ next layer  (× N)", "#8a8a8f");
+        } });
+
+        // ---- shared helpers ----
+        function barChart(g, vals, hi, fmt, col, signed, max) {
+          const ctx = g.ctx, pad = 34, base = g.h - 40, top = 44, n = vals.length, bw = (g.w - pad - 16) / n;
+          const lim = max != null ? max : Math.max(0.5, ...vals.map(Math.abs));
+          const zero = signed ? (top + base) / 2 : base;
+          ctx.strokeStyle = "#26262c"; ctx.strokeLine(pad, zero, g.w - 16, zero);
+          vals.forEach((v, j) => { const h = v / lim * (signed ? (base - top) / 2 : (base - top));
+            ctx.fillStyle = j === hi ? "#e8c547" : col; ctx.globalAlpha = j === hi ? 1 : 0.75;
+            ctx.fillRect(pad + j * bw + 3, zero - Math.max(0, h), bw - 6, Math.abs(h)); if (h < 0) ctx.fillRect(pad + j * bw + 3, zero, bw - 6, -h);
+            ctx.globalAlpha = 1; ctx.label(pad + j * bw + bw / 2, base + 14, TOK[j], { align: "center", size: 10, color: j === hi ? "#e8c547" : "#8a8a8f" });
+            ctx.label(pad + j * bw + bw / 2, zero - Math.max(0, h) - 4, fmt(v), { align: "center", size: 9.5, color: "#8a8a8f" }); });
+        }
+        function tokButtons(id, onSel, getSel, labels) {
+          const host = document.getElementById(id); if (!host) return;
+          (labels || TOK).forEach((t, i) => { const b = document.createElement("button"); b.textContent = t; if (i === getSel()) b.className = "on";
+            b.onclick = () => { onSel(i); [...host.children].forEach((c, k) => c.className = k === getSel() ? "on" : ""); }; host.appendChild(b); });
+        }
+        function eq(id, tex) { const el = document.getElementById(id); if (!el) return; if (typeof katex === "undefined") return setTimeout(() => eq(id, tex), 120); katex.render(tex, el, { throwOnError: false }); }
+        eq("headeqn", "\\mathrm{Attention}(Q,K,V)=\\mathrm{softmax}\\!\\left(\\frac{QK^{\\top}}{\\sqrt{d_k}}\\right)V");
+        eq("smeqn", "w_{ij}=\\frac{\\exp(q_i\\cdot k_j/\\sqrt{d_k})}{\\sum_{j'}\\exp(q_i\\cdot k_{j'}/\\sqrt{d_k})}");
+        Sim.bind("dk", sm, "dk", (v) => { smFig && smFig.render(); wsFig && wsFig.render(); return (+v).toFixed(1); });
+      </script>
+    </main>
+  </body>
+</html>
