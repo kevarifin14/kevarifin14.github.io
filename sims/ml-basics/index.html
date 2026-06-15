@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Math Behind the Models — a refresher — Kevin Arifin</title>
+    <meta name="description" content="An interactive refresher on the ML math you need: dot products, matrices as transformations, matrix multiplication, activation functions, a neuron, and softmax." />
+    <link rel="stylesheet" href="../lib/sim.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <style>
+      .sim { max-width: 740px; }
+      .lede { color: var(--muted); font-size: 1.06rem; }
+      .sim h2 { font-size: 1.2rem; margin: 40px 0 10px; }
+      .sim p { line-height: 1.72; }
+      .rung { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 42px 0 -4px; }
+      .fig { margin: 20px 0 6px; }
+      .fig .stage { aspect-ratio: 16 / 10; }
+      .fig .controls { margin-top: 10px; }
+      .fig .cap { font-size: 0.8rem; color: var(--muted); margin-top: 7px; text-align: center; }
+      .eqn { margin: 12px 0; text-align: center; }
+      .controls button.on { border-color: var(--accent); color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <main class="sim">
+      <a class="back" href="/sims/">← Sims</a>
+      <h1>The Math Behind the Models</h1>
+      <p class="lede">You learned this and then didn't think about it for years — dot products, matrix shapes, softmax, ReLU. This puts the <em>intuition</em> back, one draggable figure at a time, and ends right where the <a href="/sims/attention/">Attention</a> walkthrough begins. Nothing here is harder than a class you've already taken.</p>
+
+      <p class="rung">1 · The atom</p>
+      <h2>The dot product measures alignment</h2>
+      <p>A vector is just a list of numbers — here, an arrow. The <strong>dot product</strong> <span id="eqdot"></span> is the one operation everything else is built from. Drag the arrows: pointing the same way makes it large and positive, perpendicular makes it zero, opposite makes it negative. That's "how much do these two agree?" — and it's exactly the attention score from the other walkthrough.</p>
+      <div class="fig"><div class="stage" aria-label="Two draggable vectors and their dot product"><canvas id="dotp"></canvas></div></div>
+
+      <p class="rung">2 · A matrix is a verb, not a table</p>
+      <h2>A matrix transforms space</h2>
+      <p>The trick that makes matrices click: a matrix is a <em>function</em> that bends space in straight lines. Its columns say where the two basis arrows land. Drag the four numbers and watch the grid rotate, stretch, and shear. The determinant is how much area got scaled (negative = flipped).</p>
+      <div class="fig"><div class="stage" aria-label="A 2x2 matrix transforming a grid"><canvas id="mtx"></canvas></div>
+        <div class="controls">
+          <label class="row"><span>a <strong id="maValue"></strong></span><input id="ma" type="range" min="-2" max="2" step="0.1" value="1" /></label>
+          <label class="row"><span>b <strong id="mbValue"></strong></span><input id="mb" type="range" min="-2" max="2" step="0.1" value="0.4" /></label>
+          <label class="row"><span>c <strong id="mcValue"></strong></span><input id="mc" type="range" min="-2" max="2" step="0.1" value="0.2" /></label>
+          <label class="row"><span>d <strong id="mdValue"></strong></span><input id="md" type="range" min="-2" max="2" step="0.1" value="1" /></label>
+        </div></div>
+
+      <p class="rung">3 · Why the dimensions line up</p>
+      <h2>Matrix multiplication, decoded</h2>
+      <p>You remember the rule — (m×n)(n×p) = (m×p), inner dims must match — but here's <em>why</em>: every output cell is a <strong>dot product</strong> of a row from the left with a column from the right. They must be the same length (that shared n) for the dot product to exist. Step through the cells and watch each one get built.</p>
+      <div class="fig"><div class="stage" aria-label="Matrix multiplication as row-by-column dot products"><canvas id="mm"></canvas></div>
+        <div class="controls">
+          <label class="row"><span>m <strong id="mmM_Value"></strong></span><input id="mmM_" type="range" min="1" max="4" step="1" value="2" /></label>
+          <label class="row"><span>n <strong id="mmN_Value"></strong></span><input id="mmN_" type="range" min="1" max="4" step="1" value="3" /></label>
+          <label class="row"><span>p <strong id="mmP_Value"></strong></span><input id="mmP_" type="range" min="1" max="4" step="1" value="2" /></label>
+          <button id="mmStep">Step ▸</button>
+        </div></div>
+
+      <p class="rung">4 · The bend</p>
+      <h2>Activation functions add the curve</h2>
+      <p>Stack matrices and you still only get one big matrix — a flat, linear map. The <strong>activation function</strong> is the nonlinear squash between layers that lets a network learn curves. Drag the input and compare the classics: <strong style="color:#e8c547">ReLU</strong> = max(0, x) (cheap, the default), <strong style="color:#4fa3ff">sigmoid</strong> squashes to (0, 1), <strong style="color:#5fcf80">tanh</strong> to (−1, 1).</p>
+      <div class="fig"><div class="stage" aria-label="ReLU, sigmoid, and tanh activation curves with a draggable input"><canvas id="act"></canvas></div></div>
+
+      <p class="rung">5 · Put them together</p>
+      <h2>A neuron is a dot product + a squash</h2>
+      <p>One neuron computes <span id="eqneuron"></span>: take the dot product of the input with a weight vector, add a bias, run it through an activation. The weights define a line (the decision boundary); the activation colors which side is "on." Drag the weight arrow and the bias to move and tilt the boundary.</p>
+      <div class="fig"><div class="stage" aria-label="A neuron's decision field, with a draggable weight vector"><canvas id="neuron"></canvas></div>
+        <div class="controls">
+          <label class="row"><span>bias <strong id="nbValue"></strong></span><input id="nb" type="range" min="-2" max="2" step="0.1" value="0" /></label>
+          <span class="controls" id="actBtns" style="margin:0"></span>
+        </div></div>
+
+      <p class="rung">6 · From scores to a decision</p>
+      <h2>Softmax turns scores into probabilities</h2>
+      <p>Finally, <strong>softmax</strong>: exponentiate a vector of scores and normalize so they sum to 1 — a "soft argmax." Drag the bars to set the raw scores; the bottom row is the probability the model assigns each option. The <strong>temperature</strong> sharpens (cold → confident, one winner) or flattens (hot → unsure). These are precisely the attention weights — so now you're ready for <a href="/sims/attention/">Attention Is All You Need</a>.</p>
+      <div class="eqn" id="eqsm"></div>
+      <div class="fig"><div class="stage" aria-label="Softmax turning draggable logits into a probability distribution"><canvas id="sm"></canvas></div>
+        <div class="controls"><label class="row"><span>temperature <strong id="tValue"></strong></span><input id="t" type="range" min="0.2" max="3" step="0.05" value="1" /></label><button id="smRand">Randomize</button></div></div>
+
+      <p>That's the toolkit: a dot product measures agreement, a matrix bends space, multiplying them is rows-times-columns of dot products, activations add the curves, a neuron is a dot product plus a squash, and softmax turns scores into a decision. Next: see them all working at once in <a href="/sims/attention/">Attention</a>, or watch one learn in <a href="/sims/gradient-descent/">Gradient Descent</a> and <a href="/sims/neural-boundary/">Neural Boundary</a>.</p>
+
+      <script src="../lib/simkit.js"></script>
+      <script>
+        function fig(id, opts) {
+          const cv = document.getElementById(id); if (!cv) return null;
+          const ctx = cv.getContext("2d"); let view = { w: 0, h: 0 };
+          function resize() { view = Sim.fitCanvas(cv, ctx); }
+          const g = { cv, ctx, get w() { return view.w; }, get h() { return view.h; }, render: () => opts.render(g) };
+          window.addEventListener("resize", () => { resize(); g.render(); });
+          resize();
+          if (opts.autoplay === false || !opts.update) g.render();
+          else g.sim = Sim.loop({ update: dt => opts.update(g, dt), render: () => opts.render(g), stage: cv.parentElement });
+          return g;
+        }
+        function axes(g, S, ox, oy) { const ctx = g.ctx; ctx.strokeStyle = "#26262c"; ctx.lineWidth = 1; ctx.strokeLine(0, oy, g.w, oy); ctx.strokeLine(ox, 0, ox, g.h); }
+
+        // 1 · dot product
+        (function () {
+          let a = { x: 2.0, y: 0.7 }, b = { x: 1.0, y: 1.8 }, drag = null; const RNG = 3;
+          const g = fig("dotp", { autoplay: false, render(g) {
+            const ctx = g.ctx, ox = g.w / 2, oy = g.h / 2, S = Math.min(g.w, g.h) / (2 * RNG) * 0.9;
+            ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h); axes(g, S, ox, oy);
+            const d = a.x * b.x + a.y * b.y, la = Math.hypot(a.x, a.y), lb = Math.hypot(b.x, b.y), cos = d / (la * lb || 1);
+            ctx.strokeStyle = ctx.fillStyle = "#e8c547"; ctx.lineWidth = 3; ctx.arrow(ox, oy, ox + a.x * S, oy - a.y * S, 10); ctx.label(ox + a.x * S + 6, oy - a.y * S, "a", { color: "#e8c547", size: 13 });
+            ctx.strokeStyle = ctx.fillStyle = "#4fa3ff"; ctx.arrow(ox, oy, ox + b.x * S, oy - b.y * S, 10); ctx.label(ox + b.x * S + 6, oy - b.y * S, "b", { color: "#4fa3ff", size: 13 });
+            ctx.fillStyle = d >= 0 ? "#5fcf80" : "#e06a6a";
+            ctx.label(14, 24, "a · b = " + d.toFixed(2) + "   (" + (d >= 0 ? "agree" : "disagree") + ")", { color: ctx.fillStyle, size: 14 });
+            ctx.label(14, 44, "|a|=" + la.toFixed(2) + "  |b|=" + lb.toFixed(2) + "  cos θ=" + cos.toFixed(2), { size: 12 });
+          } });
+          function pick(p) { const ox = g.w / 2, oy = g.h / 2, S = Math.min(g.w, g.h) / (2 * RNG) * 0.9;
+            const da = Math.hypot(p.x - (ox + a.x * S), p.y - (oy - a.y * S)), db = Math.hypot(p.x - (ox + b.x * S), p.y - (oy - b.y * S));
+            drag = da < db ? (da < 40 ? a : null) : (db < 40 ? b : null); }
+          function set(p) { if (!drag) return; const ox = g.w / 2, oy = g.h / 2, S = Math.min(g.w, g.h) / (2 * RNG) * 0.9; drag.x = (p.x - ox) / S; drag.y = (oy - p.y) / S; g.render(); }
+          Sim.pointer(g.cv, { down(p) { pick(p); set(p); }, move(p) { set(p); }, up() { drag = null; } });
+        })();
+
+        // 2 · matrix transforms space
+        (function () {
+          const M = { a: 1, b: 0.4, c: 0.2, d: 1 };
+          const g = fig("mtx", { autoplay: false, render(g) {
+            const ctx = g.ctx, ox = g.w / 2, oy = g.h / 2, S = Math.min(g.w, g.h) / 8;
+            ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+            const T = (x, y) => [ox + (M.a * x + M.b * y) * S, oy - (M.c * x + M.d * y) * S];
+            ctx.strokeStyle = "#1c1c22"; ctx.lineWidth = 1;
+            for (let i = -4; i <= 4; i++) { let p0 = T(i, -4), p1 = T(i, 4); ctx.strokeLine(p0[0], p0[1], p1[0], p1[1]); p0 = T(-4, i); p1 = T(4, i); ctx.strokeLine(p0[0], p0[1], p1[0], p1[1]); }
+            const ih = T(1, 0), jh = T(0, 1);
+            ctx.strokeStyle = ctx.fillStyle = "#e8c547"; ctx.lineWidth = 3; ctx.arrow(ox, oy, ih[0], ih[1], 9);
+            ctx.strokeStyle = ctx.fillStyle = "#4fa3ff"; ctx.arrow(ox, oy, jh[0], jh[1], 9);
+            const det = M.a * M.d - M.b * M.c;
+            ctx.label(14, 24, "columns = where î (gold) and ĵ (blue) land", { size: 12 });
+            ctx.label(14, 44, "det = " + det.toFixed(2) + "  (area scale" + (det < 0 ? ", flipped" : "") + ")", { size: 12, color: "#8a8a8f" });
+          } });
+          ["ma:a", "mb:b", "mc:c", "md:d"].forEach(s => { const [id, k] = s.split(":"); Sim.bind(id, M, k, v => { g.render(); return (+v).toFixed(1); }); });
+        })();
+
+        // 3 · matrix multiply
+        (function () {
+          const P = { m: 2, n: 3, p: 2 }; let cell = 0;
+          const Aval = (i, k) => ((i + k) % 3) + 1, Bval = (k, j) => ((k + j + 1) % 3) + 1;
+          const g = fig("mm", { autoplay: false, render(g) {
+            const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+            const cs = 26, gap = 34; const total = P.n * cs + gap + P.p * cs + gap + P.p * cs;
+            let x0 = (g.w - total) / 2, yTop = 46; const ci = Math.floor(cell / P.p) % P.m, cj = cell % P.p;
+            function grid(x, rows, cols, valFn, label, hiRow, hiCol, hiCell) {
+              ctx.label(x, yTop - 10, label, { size: 11, color: "#8a8a8f" });
+              for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+                const on = (hiRow != null && r === hiRow) || (hiCol != null && c === hiCol) || (hiCell && r === hiCell[0] && c === hiCell[1]);
+                ctx.fillStyle = on ? "rgba(232,197,71,0.22)" : "#15151a"; ctx.fillRect(x + c * cs, yTop + r * cs, cs - 2, cs - 2);
+                ctx.label(x + c * cs + cs / 2, yTop + r * cs + cs / 2 + 4, String(valFn(r, c)), { align: "center", size: 12, color: on ? "#e8c547" : "#cfcfd4" });
+              }
+              return x + cols * cs;
+            }
+            let x = grid(x0, P.m, P.n, Aval, "A  (" + P.m + "×" + P.n + ")", ci, null, null);
+            ctx.label(x + gap / 2, yTop + P.m * cs / 2, "×", { align: "center", size: 16 });
+            x = grid(x + gap, P.n, P.p, Bval, "B  (" + P.n + "×" + P.p + ")", null, cj, null);
+            ctx.label(x + gap / 2, yTop + P.n * cs / 2, "=", { align: "center", size: 16 });
+            grid(x + gap, P.m, P.p, (r, c) => { let s = 0; for (let k = 0; k < P.n; k++) s += Aval(r, k) * Bval(k, c); return s; }, "C  (" + P.m + "×" + P.p + ")", null, null, [ci, cj]);
+            let terms = []; let sum = 0; for (let k = 0; k < P.n; k++) { terms.push(Aval(ci, k) + "·" + Bval(k, cj)); sum += Aval(ci, k) * Bval(k, cj); }
+            ctx.label(g.w / 2, g.h - 16, "C[" + ci + "][" + cj + "] = row·col = " + terms.join(" + ") + " = " + sum, { align: "center", size: 12.5, color: "#e8c547" });
+            ctx.label(14, 22, "every output cell is a dot product → inner dims (the n's) must match", { size: 11 });
+          } });
+          ["mmM_:m", "mmN_:n", "mmP_:p"].forEach(s => { const [id, k] = s.split(":"); Sim.bind(id, P, k, v => { cell = 0; g.render(); return v; }); });
+          document.getElementById("mmStep").onclick = () => { cell = (cell + 1) % (P.m * P.p); g.render(); };
+        })();
+
+        // 4 · activations
+        (function () {
+          let x0 = 1.2, drag = false; const RNG = 4;
+          const relu = x => Math.max(0, x), sig = x => 1 / (1 + Math.exp(-x)), th = x => Math.tanh(x);
+          const g = fig("act", { autoplay: false, render(g) {
+            const ctx = g.ctx, ox = g.w * 0.5, oy = g.h * 0.62, S = Math.min(g.w / (2 * RNG), g.h / 4);
+            ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h); axes(g, S, ox, oy);
+            function curve(fn, col) { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); for (let px = 0; px <= g.w; px++) { const x = (px - ox) / S, y = oy - fn(x) * S; px ? ctx.lineTo(px, y) : ctx.moveTo(px, y); } ctx.stroke(); }
+            curve(relu, "#e8c547"); curve(sig, "#4fa3ff"); curve(th, "#5fcf80");
+            const lx = ox + x0 * S; ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.setLineDash([3, 3]); ctx.strokeLine(lx, 0, lx, g.h); ctx.setLineDash([]);
+            [[relu, "#e8c547"], [sig, "#4fa3ff"], [th, "#5fcf80"]].forEach(([fn, col]) => { ctx.fillStyle = col; ctx.disc(lx, oy - fn(x0) * S, 4); });
+            ctx.label(14, 22, "x = " + x0.toFixed(2) + "   →   ReLU " + relu(x0).toFixed(2) + " · σ " + sig(x0).toFixed(2) + " · tanh " + th(x0).toFixed(2), { size: 12 });
+          } });
+          Sim.pointer(g.cv, { down(p) { drag = true; setx(p); }, move(p) { if (drag) setx(p); }, up() { drag = false; } });
+          function setx(p) { const ox = g.w * 0.5, S = Math.min(g.w / (2 * RNG), g.h / 4); x0 = Sim.clamp((p.x - ox) / S, -RNG, RNG); g.render(); }
+        })();
+
+        // 5 · neuron
+        (function () {
+          const w = { x: 1.0, y: 0.6 }, N = { b: 0, act: "relu" }; let drag = false; const RNG = 3;
+          const acts = { relu: x => Math.max(0, x), sigmoid: x => 1 / (1 + Math.exp(-x)), tanh: x => Math.tanh(x) };
+          const g = fig("neuron", { autoplay: false, render(g) {
+            const ctx = g.ctx, ox = g.w / 2, oy = g.h / 2, S = Math.min(g.w, g.h) / (2 * RNG) * 0.9, GS = 18;
+            ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+            const f = acts[N.act];
+            for (let py = 0; py < g.h; py += GS) for (let px = 0; px < g.w; px += GS) {
+              const x = (px + GS / 2 - ox) / S, y = (oy - py - GS / 2) / S; const a = f(w.x * x + w.y * y + N.b);
+              const t = N.act === "tanh" ? (a + 1) / 2 : N.act === "relu" ? Math.min(1, a / 3) : a;
+              ctx.fillStyle = Sim.heat(t); ctx.globalAlpha = 0.85; ctx.fillRect(px, py, GS, GS); ctx.globalAlpha = 1;
+            }
+            ctx.strokeStyle = ctx.fillStyle = "#fff"; ctx.lineWidth = 2.5; ctx.arrow(ox, oy, ox + w.x * S, oy - w.y * S, 9); ctx.label(ox + w.x * S + 6, oy - w.y * S, "w", { color: "#fff", size: 13 });
+            ctx.label(14, 22, "color = " + N.act + "(w·x + b)  ·  the boundary is where w·x + b = 0", { size: 12 });
+          } });
+          Sim.pointer(g.cv, { down(p) { drag = true; setw(p); }, move(p) { if (drag) setw(p); }, up() { drag = false; } });
+          function setw(p) { const ox = g.w / 2, oy = g.h / 2, S = Math.min(g.w, g.h) / (2 * RNG) * 0.9; w.x = (p.x - ox) / S; w.y = (oy - p.y) / S; g.render(); }
+          Sim.bind("nb", N, "b", v => { g.render(); return (+v).toFixed(1); });
+          const host = document.getElementById("actBtns"); ["relu", "sigmoid", "tanh"].forEach((a, i) => { const b = document.createElement("button"); b.textContent = a; if (i === 0) b.className = "on"; b.onclick = () => { N.act = a; [...host.children].forEach(c => c.className = c.textContent === a ? "on" : ""); g.render(); }; host.appendChild(b); });
+        })();
+
+        // 6 · softmax
+        (function () {
+          let logits = [2.0, 1.0, 0.2, -0.5, 1.4]; const P = { t: 1 }; let drag = -1;
+          const labels = ["A", "B", "C", "D", "E"];
+          function softmax(xs, T) { const z = xs.map(x => x / T); const m = Math.max(...z); const e = z.map(x => Math.exp(x - m)); const s = e.reduce((a, b) => a + b, 0); return e.map(x => x / s); }
+          const g = fig("sm", { autoplay: false, render(g) {
+            const ctx = g.ctx; ctx.fillStyle = "#0e0e10"; ctx.fillRect(0, 0, g.w, g.h);
+            const n = logits.length, bw = (g.w - 40) / n, midY = g.h * 0.5, top = 40;
+            ctx.label(14, 22, "raw scores (drag the bars)", { size: 11 });
+            ctx.strokeStyle = "#26262c"; ctx.strokeLine(20, midY, g.w - 20, midY);
+            logits.forEach((v, i) => { const h = v / 3 * (midY - top); ctx.fillStyle = "#4fa3ff"; ctx.fillRect(20 + i * bw + 4, midY - Math.max(0, h), bw - 8, Math.abs(h)); ctx.label(20 + i * bw + bw / 2, midY - Math.max(0, h) - 4, v.toFixed(1), { align: "center", size: 10, color: "#8a8a8f" }); });
+            const probs = softmax(logits, P.t); const base = g.h - 24, ph = base - midY - 18;
+            ctx.label(14, midY + 16, "softmax → probabilities (sum = 100%)", { size: 11 });
+            probs.forEach((p, i) => { ctx.fillStyle = "#e8c547"; ctx.fillRect(20 + i * bw + 4, base - p * ph, bw - 8, p * ph); ctx.label(20 + i * bw + bw / 2, base - p * ph - 4, (p * 100).toFixed(0) + "%", { align: "center", size: 10, color: "#8a8a8f" }); ctx.label(20 + i * bw + bw / 2, base + 14, labels[i], { align: "center", size: 11, color: "#8a8a8f" }); });
+          } });
+          Sim.pointer(g.cv, { down(p) { const n = logits.length, bw = (g.w - 40) / n; drag = Math.floor((p.x - 20) / bw); setv(p); }, move(p) { if (drag >= 0) setv(p); }, up() { drag = -1; } });
+          function setv(p) { if (drag < 0 || drag >= logits.length) return; const midY = g.h * 0.5, top = 40; logits[drag] = Sim.clamp((midY - p.y) / (midY - top) * 3, -3, 3); g.render(); }
+          Sim.bind("t", P, "t", v => { g.render(); return (+v).toFixed(2); });
+          document.getElementById("smRand").onclick = () => { logits = logits.map(() => (Math.random() * 5 - 1.5)); g.render(); };
+        })();
+
+        function eq(id, tex) { const el = document.getElementById(id); if (!el) return; if (typeof katex === "undefined") return setTimeout(() => eq(id, tex), 120); katex.render(tex, el, { throwOnError: false }); }
+        eq("eqdot", "a\\cdot b=\\textstyle\\sum_i a_i b_i=|a||b|\\cos\\theta");
+        eq("eqneuron", "y=f(w\\cdot x+b)");
+        eq("eqsm", "\\mathrm{softmax}(z)_i=\\dfrac{e^{z_i/T}}{\\sum_j e^{z_j/T}}");
+      </script>
+    </main>
+  </body>
+</html>
