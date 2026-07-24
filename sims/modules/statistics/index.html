@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Statistics Lab — Kevin Arifin</title>
+  <meta name="description" content="Ten interactive statistical riddles about sampling, inference, models, Bayes, and causality." />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    :root { --good:#55c98a; --bad:#e66f75; --blue:#71a7ff; --panel:rgba(255,255,255,.045); }
+    * { box-sizing:border-box; }
+    body { margin:0; }
+    .course { max-width:1180px; margin:auto; padding:0 22px 70px; }
+    .course-nav { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:24px 0; border-bottom:1px solid var(--border); }
+    .course-nav a { text-decoration:none; }
+    .course-nav .brand { color:var(--fg); font-weight:650; }
+    .hero { padding:48px 0 32px; border-bottom:1px solid var(--border); }
+    .hero h1 { max-width:850px; font-size:clamp(2.7rem,7vw,5.6rem); letter-spacing:-.055em; margin-bottom:16px; }
+    .hero .lead { max-width:760px; }
+    .progress-row { display:flex; align-items:center; gap:12px; margin-top:24px; color:var(--muted); font-size:.9rem; }
+    .progress-track { width:min(480px,68vw); height:9px; overflow:hidden; border-radius:99px; background:rgba(127,127,127,.18); }
+    .progress-bar { height:100%; width:0; background:var(--accent); transition:width .2s ease; }
+    .layout { display:grid; grid-template-columns:250px minmax(0,1fr); gap:26px; padding-top:30px; }
+    .rail { position:sticky; top:18px; align-self:start; }
+    .rail ol { list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+    .level { width:100%; display:grid; grid-template-columns:28px 1fr auto; gap:9px; align-items:center; text-align:left; padding:10px 11px; border:1px solid var(--border); border-radius:11px; background:transparent; color:var(--fg); cursor:pointer; }
+    .level:hover:not(:disabled), .level.active { border-color:var(--accent); background:var(--panel); }
+    .level:disabled { opacity:.38; cursor:not-allowed; }
+    .num { width:27px; height:27px; border:1px solid var(--border); border-radius:50%; display:grid; place-items:center; color:var(--muted); font-size:.78rem; }
+    .level-name { font-size:.84rem; line-height:1.2; }
+    .check { color:var(--good); }
+    .lab { min-width:0; padding:clamp(18px,3vw,30px); border:1px solid var(--border); border-radius:18px; background:var(--panel); }
+    .lab-head { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; margin-bottom:20px; }
+    .kicker { margin:0; color:var(--accent); text-transform:uppercase; letter-spacing:.16em; font-size:.72rem; }
+    .lab h2 { margin:4px 0 6px; font-size:clamp(1.7rem,3vw,2.4rem); }
+    .concept { color:var(--muted); margin:0; }
+    .status { border:1px solid var(--border); border-radius:99px; padding:6px 10px; color:var(--muted); font-size:.78rem; white-space:nowrap; }
+    .status.solved { color:var(--good); border-color:var(--good); }
+    .challenge, .feedback, .explanation { border:1px solid var(--border); border-radius:13px; padding:15px; margin-bottom:16px; }
+    .challenge { background:rgba(232,197,71,.07); }
+    .challenge strong { color:var(--accent); }
+    .feedback.good { border-color:var(--good); }
+    .feedback.bad { border-color:var(--bad); }
+    .explanation { background:rgba(127,127,127,.08); }
+    .explanation h3 { margin-top:0; }
+    .hidden { display:none!important; }
+    .workspace { display:grid; gap:16px; margin-bottom:18px; }
+    .controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .control { border:1px solid var(--border); border-radius:12px; padding:13px; background:rgba(0,0,0,.08); }
+    .control label, .control .label { display:block; color:var(--muted); font-size:.82rem; margin-bottom:7px; }
+    input[type=range], input[type=number], select { width:100%; }
+    input[type=range] { accent-color:var(--accent); }
+    input[type=number], select { padding:9px; border:1px solid var(--border); border-radius:9px; color:var(--fg); background:var(--bg); font:inherit; }
+    button { font:inherit; }
+    .button-row { display:flex; flex-wrap:wrap; gap:9px; }
+    .btn { border:1px solid var(--border); border-radius:10px; padding:9px 12px; color:var(--fg); background:transparent; cursor:pointer; }
+    .btn:hover { border-color:var(--accent); }
+    .btn.primary { background:var(--accent); border-color:var(--accent); color:#151515; font-weight:650; }
+    .btn.selected { border-color:var(--accent); background:rgba(232,197,71,.11); }
+    .actions { display:flex; justify-content:flex-end; gap:9px; flex-wrap:wrap; }
+    .pager { display:flex; justify-content:space-between; gap:10px; margin-top:20px; padding-top:17px; border-top:1px solid var(--border); }
+    .btn:disabled { opacity:.4; cursor:not-allowed; }
+    .chart { overflow:hidden; border:1px solid var(--border); border-radius:13px; background:#090d17; }
+    canvas { display:block; width:100%; height:auto; touch-action:none; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+    .metric { border:1px solid var(--border); border-radius:11px; padding:11px; }
+    .metric small { display:block; color:var(--muted); font-size:.72rem; }
+    .metric strong { font-size:1.18rem; }
+    .choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+    .posterior { display:grid; grid-template-columns:90px 1fr 60px; gap:9px; align-items:center; margin:8px 0; }
+    .track { height:11px; border-radius:99px; background:rgba(127,127,127,.18); overflow:hidden; }
+    .fill { height:100%; background:var(--accent); }
+    .tiny { color:var(--muted); font-size:.82rem; }
+    @media(max-width:900px){ .layout{grid-template-columns:1fr}.rail{position:static;overflow:auto}.rail ol{display:flex;min-width:max-content}.level{width:205px}.controls,.choices{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)} }
+    @media(max-width:540px){ .course{padding-inline:14px}.course-nav{align-items:flex-start}.lab-head{flex-direction:column}.posterior{grid-template-columns:65px 1fr 48px} }
+  </style>
+</head>
+<body>
+  <div class="course">
+    <nav class="course-nav">
+      <a class="brand" href="/">Kevin Arifin</a>
+      <div class="button-row"><a href="/sims/">← Sims</a><button id="reset" class="btn" type="button">Reset course</button></div>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">Statistics laboratory</p>
+      <h1>Ten riddles about uncertainty</h1>
+      <p class="lead">You do not pass by reading. You pass by choosing a method, running the experiment, and making the right statistical judgment.</p>
+      <div class="progress-row"><div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div><span id="progress-label">0 / 10 solved</span></div>
+    </header>
+
+    <main class="layout">
+      <aside class="rail"><ol id="levels"></ol></aside>
+      <section class="lab">
+        <div class="lab-head"><div><p id="kicker" class="kicker"></p><h2 id="title"></h2><p id="concept" class="concept"></p></div><span id="status" class="status">Unsolved</span></div>
+        <div id="challenge" class="challenge"></div>
+        <div id="workspace" class="workspace"></div>
+        <div class="actions"><button id="hint" class="btn" type="button">Hint</button><button id="submit" class="btn primary" type="button">Submit answer</button></div>
+        <div id="hint-box" class="feedback hidden"></div>
+        <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+        <div id="explanation" class="explanation hidden"></div>
+        <div class="pager"><button id="prev" class="btn" type="button">Previous</button><button id="next" class="btn primary" type="button">Next challenge</button></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+  (() => {
+    const $ = (id) => document.getElementById(id);
+    const W = $("workspace"), challenge = $("challenge"), feedback = $("feedback"), hintBox = $("hint-box"), explanation = $("explanation");
+    const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+    const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
+    const median=a=>{const b=[...a].sort((x,y)=>x-y),m=Math.floor(b.length/2);return b.length%2?b[m]:(b[m-1]+b[m])/2};
+    const sd=a=>Math.sqrt(a.reduce((s,x)=>s+(x-mean(a))**2,0)/(a.length-1||1));
+    const quantile=(a,q)=>{const b=[...a].sort((x,y)=>x-y),p=(b.length-1)*q,i=Math.floor(p),f=p-i;return b[i]+(b[i+1]??b[i])*f};
+    function rng(seed){let s=seed>>>0;return()=>{s=(1664525*s+1013904223)>>>0;return s/4294967296}}
+    function normal(r){const u=Math.max(r(),1e-9),v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+    function setHTML(html){W.innerHTML=html;feedback.className="feedback hidden";hintBox.className="feedback hidden";}
+    function metric(label,value){return `<div class="metric"><small>${label}</small><strong>${value}</strong></div>`}
+    function drawHistogram(canvas,data,{mark=null,label=""}={}){const c=canvas.getContext("2d"),w=canvas.width,h=canvas.height;c.fillStyle="#090d17";c.fillRect(0,0,w,h);if(!data.length){c.fillStyle="rgba(255,255,255,.6)";c.font="14px system-ui";c.fillText("Run the experiment.",18,28);return}let lo=Math.min(...data),hi=Math.max(...data);if(lo===hi){lo-=1;hi+=1}const bins=28,counts=Array(bins).fill(0);data.forEach(x=>counts[Math.min(bins-1,Math.floor((x-lo)/(hi-lo)*bins))]++);const mx=Math.max(...counts),pad=34;c.fillStyle="#71a7ff";counts.forEach((n,i)=>{const x=pad+i*(w-pad*2)/bins,y=h-pad-n/mx*(h-pad*2);c.fillRect(x,y,(w-pad*2)/bins-1,h-pad-y)});c.strokeStyle="rgba(255,255,255,.35)";c.beginPath();c.moveTo(pad,h-pad);c.lineTo(w-pad,h-pad);c.stroke();if(mark!==null){const x=pad+(mark-lo)/(hi-lo)*(w-pad*2);c.strokeStyle="#e8c547";c.lineWidth=3;c.beginPath();c.moveTo(x,18);c.lineTo(x,h-pad);c.stroke()}c.fillStyle="rgba(255,255,255,.7)";c.font="13px system-ui";c.fillText(label,18,22);c.fillText(lo.toFixed(1),pad,h-10);c.fillText(hi.toFixed(1),w-pad-28,h-10)}
+    function radio(name,items){return `<div class="choices">${items.map(([v,t])=>`<label class="btn"><input type="radio" name="${name}" value="${v}"> ${t}</label>`).join("")}</div>`}
+    let state={},current=0;
+    const stored=JSON.parse(localStorage.getItem("statistics-lab-progress")||"null");
+    let solved=Array.isArray(stored)&&stored.length===10?stored:Array(10).fill(false);
+    const save=()=>localStorage.setItem("statistics-lab-progress",JSON.stringify(solved));
+
+    const modules=[
+      {
+        title:"Sampling Machine", concept:"Robust statistics and sampling variability",
+        challenge:`<p>A sensor population is mostly centered near 50, but 10% of readings are catastrophic spikes. Produce an estimator that tracks the <strong>typical reading</strong>, not the average damage.</p><p>Win condition: choose the robust statistic and use a sample large enough to stabilize it.</p>`,
+        hint:"A statistic can be efficient in clean data but brittle when a few values are enormous.",
+        explanation:`<h3>Why it works</h3><p>The median has a high breakdown point: a minority of extreme observations cannot drag it arbitrarily far. The mean uses every magnitude directly, so contamination creates bias and volatility.</p>`,
+        render(){state={stat:"mean",n:10,ran:false};setHTML(`<div class="controls"><div class="control"><label>Estimator</label><select id="s-stat"><option value="mean">Mean</option><option value="median">Median</option></select></div><div class="control"><label>Sample size: <b id="s-nout">10</b></label><input id="s-n" type="range" min="5" max="80" value="10"></div></div><div class="button-row"><button id="s-run" class="btn">Run 800 samples</button></div><div class="chart"><canvas id="s-chart" width="760" height="320"></canvas></div><div id="s-metrics" class="metrics"></div>`);$("s-stat").onchange=e=>state.stat=e.target.value;$("s-n").oninput=e=>{$("s-nout").textContent=e.target.value;state.n=+e.target.value};$("s-run").onclick=()=>{const r=rng(1107),est=[];for(let k=0;k<800;k++){const sample=[];for(let i=0;i<state.n;i++)sample.push(r()<.1?120+30*Math.abs(normal(r)):50+8*normal(r));est.push(state.stat==="median"?median(sample):mean(sample))}state.ran=true;state.rmse=Math.sqrt(mean(est.map(x=>(x-50)**2)));drawHistogram($("s-chart"),est,{mark:50,label:"sampling distribution of your estimator"});$("s-metrics").innerHTML=metric("center",mean(est).toFixed(1))+metric("RMSE",state.rmse.toFixed(1))+metric("sample n",state.n)+metric("estimator",state.stat)}} ,
+        check(){return state.ran&&state.stat==="median"&&state.n>=25?{pass:true,message:"Solved. You chose resistance to contamination and enough data to reduce sampling noise."}:{pass:false,message:"Not yet. Your estimator must resist the spikes, and tiny samples remain unstable."}}
+      },
+      {
+        title:"Bell Curve Factory", concept:"Central Limit Theorem",
+        challenge:`<p>Start with a violently right-skewed population. Manufacture a sampling distribution of averages that is close to symmetric—but do it with the <strong>smallest sample size you can</strong>.</p><p>Win condition: absolute skewness below 0.35 with n no larger than 55.</p>`,
+        hint:"You are averaging, not collecting individual observations. Increase n gradually and watch the distribution change shape.",
+        explanation:`<h3>The central limit effect</h3><p>Averages combine many independent contributions. After centering and scaling, their distribution approaches normality under broad conditions. Larger n reduces skew and shrinks standard error at the rate 1/√n.</p>`,
+        render(){state={n:5,ran:false};setHTML(`<div class="controls"><div class="control"><label>Sample size: <b id="c-nout">5</b></label><input id="c-n" type="range" min="2" max="80" value="5"></div><div class="control"><span class="label">Population</span><strong>Exponential: many small values, a long right tail</strong></div></div><button id="c-run" class="btn">Average 1,500 samples</button><div class="chart"><canvas id="c-chart" width="760" height="320"></canvas></div><div id="c-metrics" class="metrics"></div>`);$("c-n").oninput=e=>{$("c-nout").textContent=e.target.value;state.n=+e.target.value};$("c-run").onclick=()=>{const r=rng(221),a=[];for(let k=0;k<1500;k++){let s=0;for(let i=0;i<state.n;i++)s+=-Math.log(Math.max(r(),1e-9));a.push(s/state.n)}const m=mean(a),z=sd(a);state.skew=mean(a.map(x=>((x-m)/z)**3));state.ran=true;drawHistogram($("c-chart"),a,{mark:1,label:"sample means from a skewed population"});$("c-metrics").innerHTML=metric("skewness",state.skew.toFixed(2))+metric("mean",m.toFixed(2))+metric("standard error",z.toFixed(2))+metric("n",state.n)}} ,
+        check(){return state.ran&&Math.abs(state.skew)<.35&&state.n<=55?{pass:true,message:"Solved. The raw population is skewed, but averages have become nearly symmetric."}:{pass:false,message:"Your factory is not efficient yet. Reach low skewness without simply maxing out n."}}
+      },
+      {
+        title:"Confidence Interval Rain", concept:"Coverage versus precision",
+        challenge:`<p>Make a confidence-interval procedure that catches the true mean in roughly 90–98 of 100 repeated studies while keeping average interval width below 6 units.</p>`,
+        hint:"Higher confidence widens intervals. Larger samples narrow them without lowering nominal coverage.",
+        explanation:`<h3>Coverage belongs to the procedure</h3><p>A 95% method means that across repeated samples, about 95% of constructed intervals contain the fixed parameter. It does not assign a 95% probability to the already-computed interval.</p>`,
+        render(){state={n:20,conf:.8,ran:false};setHTML(`<div class="controls"><div class="control"><label>Confidence level</label><select id="i-conf"><option value=".8">80%</option><option value=".9">90%</option><option value=".95">95%</option><option value=".99">99%</option></select></div><div class="control"><label>Sample size: <b id="i-nout">20</b></label><input id="i-n" type="range" min="10" max="140" value="20"></div></div><button id="i-run" class="btn">Run 100 studies</button><div class="chart"><canvas id="i-chart" width="760" height="360"></canvas></div><div id="i-metrics" class="metrics"></div>`);$("i-conf").onchange=e=>state.conf=+e.target.value;$("i-n").oninput=e=>{$("i-nout").textContent=e.target.value;state.n=+e.target.value};$("i-run").onclick=()=>{const r=rng(918),z={.8:1.282,.9:1.645,.95:1.96,.99:2.576}[state.conf],ints=[];let hit=0;for(let k=0;k<100;k++){const sample=Array.from({length:state.n},()=>50+12*normal(r)),m=mean(sample),half=z*12/Math.sqrt(state.n);ints.push([m-half,m+half]);if(m-half<=50&&50<=m+half)hit++}state.cover=hit;state.width=mean(ints.map(x=>x[1]-x[0]));state.ran=true;const c=$("i-chart").getContext("2d"),w=760,h=360;c.fillStyle="#090d17";c.fillRect(0,0,w,h);const x=v=>50+(v-40)/20*(w-100);c.strokeStyle="#e8c547";c.lineWidth=3;c.beginPath();c.moveTo(x(50),12);c.lineTo(x(50),h-12);c.stroke();ints.forEach((q,j)=>{c.strokeStyle=q[0]<=50&&50<=q[1]?"rgba(85,201,138,.8)":"rgba(230,111,117,.9)";c.lineWidth=2;c.beginPath();c.moveTo(x(q[0]),18+j*3.25);c.lineTo(x(q[1]),18+j*3.25);c.stroke()});$("i-metrics").innerHTML=metric("coverage",hit+" / 100")+metric("avg width",state.width.toFixed(2))+metric("confidence",Math.round(state.conf*100)+"%")+metric("n",state.n)}} ,
+        check(){return state.ran&&state.cover>=90&&state.cover<=98&&state.width<6?{pass:true,message:"Solved. You achieved high repeated-sample coverage without paying for an excessively wide interval."}:{pass:false,message:"The procedure is either missing too often or wasting precision. Balance confidence and sample size."}}
+      },
+      {
+        title:"P-Value Courtroom", concept:"Null distributions and decision thresholds",
+        challenge:`<p>A randomized null model gives p = <strong>0.032</strong>. Choose the strongest statement that is logically justified.</p>`,
+        hint:"Compare the same p-value to both 0.05 and 0.01. A p-value is not the probability that the null is true.",
+        explanation:`<h3>The p-value is conditional</h3><p>It measures how extreme the observed statistic would be if the null model generated the data. Here the evidence crosses a 5% threshold but not a 1% threshold.</p>`,
+        render(){state={answer:""};setHTML(`<div class="chart"><canvas id="p-chart" width="760" height="300"></canvas></div>${radio("p-answer",[["a","There is a 3.2% chance the null is true."],["b","Reject at 5%, but not at 1%."],["c","The alternative is 96.8% likely."],["d","Fail to reject at every conventional threshold."]])}`);document.querySelectorAll('input[name="p-answer"]').forEach(x=>x.onchange=e=>state.answer=e.target.value);const c=$("p-chart").getContext("2d"),w=760,h=300;c.fillStyle="#090d17";c.fillRect(0,0,w,h);const pts=[];for(let i=0;i<500;i++){const x=-3+6*i/499,y=Math.exp(-x*x/2);pts.push([x,y])}c.strokeStyle="#71a7ff";c.lineWidth=3;c.beginPath();pts.forEach(([x,y],i)=>{const sx=50+(x+3)/6*(w-100),sy=h-40-y*(h-80);i?c.lineTo(sx,sy):c.moveTo(sx,sy)});c.stroke();c.fillStyle="rgba(230,111,117,.65)";for(let i=430;i<500;i++){const [x,y]=pts[i],sx=50+(x+3)/6*(w-100),sy=h-40-y*(h-80);c.fillRect(sx,sy,2,h-40-sy)}c.fillStyle="white";c.font="14px system-ui";c.fillText("null distribution",24,28);c.fillText("tail area = 0.032",w-180,55)},
+        check(){return state.answer==="b"?{pass:true,message:"Solved. Statistical significance depends on the chosen error threshold."}:{pass:false,message:"That statement claims more than the p-value can tell you."}}
+      },
+      {
+        title:"A/B Shuffle Lab", concept:"Permutation tests",
+        challenge:`<p>Variant A converts 42 of 100 visitors; B converts 56 of 100. Build a randomization test that asks whether the labels alone could plausibly create this gap.</p>`,
+        hint:"Under the null, outcomes stay fixed and group labels are exchangeable. Use a difference in rates, not raw totals.",
+        explanation:`<h3>Randomization creates the null</h3><p>Shuffling treatment labels preserves the observed outcomes while destroying any real assignment effect. The fraction of shuffled gaps at least as large as the observed gap is the permutation p-value.</p>`,
+        render(){state={stat:"totals",reps:200,conclusion:"",ran:false};setHTML(`<div class="controls"><div class="control"><label>Test statistic</label><select id="a-stat"><option value="totals">Difference in conversion totals</option><option value="rates">Difference in conversion rates</option></select></div><div class="control"><label>Shuffles: <b id="a-rout">200</b></label><input id="a-r" type="range" min="100" max="5000" step="100" value="200"></div></div><button id="a-run" class="btn">Shuffle labels</button><div class="chart"><canvas id="a-chart" width="760" height="320"></canvas></div>${radio("a-conclusion",[["effect","Evidence of an effect"],["noise","Plausible random noise"]])}<div id="a-metrics" class="metrics"></div>`);$("a-stat").onchange=e=>state.stat=e.target.value;$("a-r").oninput=e=>{$("a-rout").textContent=e.target.value;state.reps=+e.target.value};document.querySelectorAll('input[name="a-conclusion"]').forEach(x=>x.onchange=e=>state.conclusion=e.target.value);$("a-run").onclick=()=>{const outcomes=Array(42).fill(1).concat(Array(58).fill(0),Array(56).fill(1),Array(44).fill(0)),r=rng(443),dist=[];for(let k=0;k<state.reps;k++){const b=[...outcomes];for(let i=b.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[b[i],b[j]]=[b[j],b[i]]}const d=b.slice(100).reduce((s,x)=>s+x,0)-b.slice(0,100).reduce((s,x)=>s+x,0);dist.push(state.stat==="rates"?d/100:d)}const obs=state.stat==="rates"?.14:14;state.p=(dist.filter(x=>Math.abs(x)>=Math.abs(obs)).length+1)/(dist.length+1);state.ran=true;drawHistogram($("a-chart"),dist,{mark:obs,label:"null gaps after shuffling labels"});$("a-metrics").innerHTML=metric("observed gap",state.stat==="rates"?"14 pp":"14")+metric("p-value",state.p.toFixed(3))+metric("shuffles",state.reps)+metric("statistic",state.stat)}} ,
+        check(){return state.ran&&state.stat==="rates"&&state.reps>=1000&&state.p<.05&&state.conclusion==="effect"?{pass:true,message:"Solved. The observed rate gap lies in the extreme tail of shuffled assignments."}:{pass:false,message:"Build a stable permutation test with a comparable rate statistic, then interpret the resulting tail area."}}
+      },
+      {
+        title:"Bootstrap Universe", concept:"Resampling and estimator choice",
+        challenge:`<p>You have only twelve skewed observations: 5, 6, 7, 8, 8, 9, 10, 12, 13, 18, 40, 55. Construct an interval for the typical value that is not dominated by the two giants.</p>`,
+        hint:"Resampling cannot repair a bad target. First choose a statistic that actually means typical for this sample.",
+        explanation:`<h3>Bootstrap the target you care about</h3><p>The bootstrap approximates repeated sampling by resampling the observed empirical distribution. For a highly skewed sample, the median answers a robust typical-value question while the mean answers a different, tail-sensitive question.</p>`,
+        render(){state={stat:"mean",reps:200,ran:false};setHTML(`<div class="controls"><div class="control"><label>Statistic</label><select id="b-stat"><option value="mean">Mean</option><option value="median">Median</option></select></div><div class="control"><label>Resamples: <b id="b-rout">200</b></label><input id="b-r" type="range" min="200" max="5000" step="200" value="200"></div></div><button id="b-run" class="btn">Bootstrap</button><div class="chart"><canvas id="b-chart" width="760" height="320"></canvas></div><div id="b-metrics" class="metrics"></div>`);$("b-stat").onchange=e=>state.stat=e.target.value;$("b-r").oninput=e=>{$("b-rout").textContent=e.target.value;state.reps=+e.target.value};$("b-run").onclick=()=>{const data=[5,6,7,8,8,9,10,12,13,18,40,55],r=rng(902),boot=[];for(let k=0;k<state.reps;k++){const s=Array.from({length:data.length},()=>data[Math.floor(r()*data.length)]);boot.push(state.stat==="median"?median(s):mean(s))}state.lo=quantile(boot,.025);state.hi=quantile(boot,.975);state.ran=true;drawHistogram($("b-chart"),boot,{mark:state.stat==="median"?median(data):mean(data),label:"bootstrap distribution"});$("b-metrics").innerHTML=metric("estimate",(state.stat==="median"?median(data):mean(data)).toFixed(1))+metric("2.5%",state.lo.toFixed(1))+metric("97.5%",state.hi.toFixed(1))+metric("resamples",state.reps)}} ,
+        check(){return state.ran&&state.stat==="median"&&state.reps>=2000?{pass:true,message:"Solved. You bootstrapped a robust target with enough resamples for stable percentile tails."}:{pass:false,message:"Your interval is either unstable or centered on a statistic that the extreme tail controls."}}
+      },
+      {
+        title:"Regression Playground", concept:"Influence and leverage",
+        challenge:`<p>One observation is quietly steering the fitted line. Click the point whose removal changes the slope the most.</p>`,
+        hint:"Influence needs both leverage in x and a large residual from the trend followed by most points.",
+        explanation:`<h3>Influence combines distance and disagreement</h3><p>A point far from the center of x has leverage. If it also lies away from the prevailing relationship, removing it can substantially rotate the regression line.</p>`,
+        render(){state={selected:-1};const pts=[[1,3],[2,4.5],[3,5],[4,7],[5,7.7],[6,9.4],[7,10.1],[8,12],[9,12.8],[14,4]];state.pts=pts;setHTML(`<div class="chart"><canvas id="r-chart" width="760" height="420"></canvas></div><div id="r-metrics" class="metrics"></div><p class="tiny">Click a point, then submit.</p>`);const cv=$("r-chart"),ctx=cv.getContext("2d"),reg=a=>{const mx=mean(a.map(p=>p[0])),my=mean(a.map(p=>p[1]));const slope=a.reduce((s,p)=>s+(p[0]-mx)*(p[1]-my),0)/a.reduce((s,p)=>s+(p[0]-mx)**2,0);return{slope,intercept:my-slope*mx}},sx=x=>50+x/15*660,sy=y=>380-y/15*330;function draw(){ctx.fillStyle="#090d17";ctx.fillRect(0,0,760,420);const full=reg(pts),reduced=state.selected>=0?reg(pts.filter((_,i)=>i!==state.selected)):full;const line=(m,color,dash=[])=>{ctx.strokeStyle=color;ctx.lineWidth=3;ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(sx(0),sy(m.intercept));ctx.lineTo(sx(15),sy(m.intercept+m.slope*15));ctx.stroke();ctx.setLineDash([])};line(full,"#e8c547");if(state.selected>=0)line(reduced,"#71a7ff",[8,6]);pts.forEach((p,i)=>{ctx.fillStyle=i===state.selected?"white":i===pts.length-1?"#e66f75":"rgba(255,255,255,.75)";ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),i===state.selected?9:6,0,Math.PI*2);ctx.fill()});if(state.selected>=0){state.change=Math.abs(full.slope-reduced.slope);$("r-metrics").innerHTML=metric("all-point slope",full.slope.toFixed(2))+metric("without selected",reduced.slope.toFixed(2))+metric("slope change",state.change.toFixed(2))+metric("point",state.selected+1)}}draw();cv.onclick=e=>{const q=cv.getBoundingClientRect(),x=(e.clientX-q.left)*760/q.width,y=(e.clientY-q.top)*420/q.height;let best=0,d=1e9;pts.forEach((p,i)=>{const dd=Math.hypot(x-sx(p[0]),y-sy(p[1]));if(dd<d){d=dd;best=i}});state.selected=best;draw()}},
+        check(){return state.selected===state.pts.length-1&&state.change>.5?{pass:true,message:"Solved. The far-right contradictory point has both leverage and a large residual."}:{pass:false,message:"That point is not the strongest driver of the slope. Look for leverage plus disagreement."}}
+      },
+      {
+        title:"Bayesian Belief Engine", concept:"Priors, likelihoods, and sequential evidence",
+        challenge:`<p>Factories A, B, and C make 80%, 15%, and 5% of parts. Their defect rates are 1%, 5%, and 20%. A hidden factory produces consecutive defective parts. Decide how much evidence is needed before C becomes the dominant explanation.</p>`,
+        hint:"Posterior weight is prior × likelihood. Consecutive independent defects multiply the likelihood repeatedly.",
+        explanation:`<h3>Rare causes can dominate after diagnostic evidence</h3><p>C starts with only 5% prior probability, but each defect is twenty times more likely under C than A. Repeated evidence can overwhelm the prior.</p>`,
+        render(){state={k:1,answer:""};setHTML(`<div class="controls"><div class="control"><label>Consecutive defects observed: <b id="y-kout">1</b></label><input id="y-k" type="range" min="1" max="4" value="1"></div><div class="control"><span class="label">Choose most likely factory</span><div class="button-row"><button class="btn y-choice" data-v="A">A</button><button class="btn y-choice" data-v="B">B</button><button class="btn y-choice" data-v="C">C</button></div></div></div><div id="y-bars"></div>`);function update(){const pri={A:.8,B:.15,C:.05},like={A:.01,B:.05,C:.2},raw={};let total=0;for(const x of ["A","B","C"]){raw[x]=pri[x]*like[x]**state.k;total+=raw[x]}state.post={};for(const x of ["A","B","C"])state.post[x]=raw[x]/total;$("y-bars").innerHTML=["A","B","C"].map(x=>`<div class="posterior"><span>Factory ${x}</span><div class="track"><div class="fill" style="width:${state.post[x]*100}%"></div></div><strong>${(state.post[x]*100).toFixed(1)}%</strong></div>`).join("")}$("y-k").oninput=e=>{state.k=+e.target.value;$("y-kout").textContent=state.k;update()};document.querySelectorAll(".y-choice").forEach(b=>b.onclick=()=>{state.answer=b.dataset.v;document.querySelectorAll(".y-choice").forEach(x=>x.classList.toggle("selected",x===b))});update()},
+        check(){return state.k>=2&&state.answer==="C"&&state.post.C>.75?{pass:true,message:"Solved. Two defects are enough for C's much larger likelihood to overwhelm its small prior."}:{pass:false,message:"You have not yet accumulated enough evidence—or selected the posterior leader."}}
+      },
+      {
+        title:"Random Walk City", concept:"Markov chains and absorbing states",
+        challenge:`<p>Release walkers at the southwest corner. Reach target T in the northeast while avoiding trap X. Tune right/up probabilities; the remaining probability is split between left/down.</p><p>Win condition: target rate above 55% and trap rate below 20%.</p>`,
+        hint:"A balanced northeast drift may run through the trap. An asymmetric path can route around it.",
+        explanation:`<h3>Local transition probabilities create global behavior</h3><p>A Markov chain remembers only its current state, yet its transition matrix determines long-run hitting probabilities. Small directional biases can dramatically change which absorbing state is reached.</p>`,
+        render(){state={right:.4,up:.4,ran:false};setHTML(`<div class="controls"><div class="control"><label>Right probability: <b id="w-rout">0.40</b></label><input id="w-r" type="range" min=".05" max=".8" step=".01" value=".4"></div><div class="control"><label>Up probability: <b id="w-uout">0.40</b></label><input id="w-u" type="range" min=".05" max=".8" step=".01" value=".4"></div></div><button id="w-run" class="btn">Release 2,000 walkers</button><div class="chart"><canvas id="w-chart" width="760" height="430"></canvas></div><div id="w-metrics" class="metrics"></div>`);const bind=(id,key,out)=>$(id).oninput=e=>{state[key]=+e.target.value;$(out).textContent=state[key].toFixed(2)};bind("w-r","right","w-rout");bind("w-u","up","w-uout");$("w-run").onclick=()=>{if(state.right+state.up>.94){feedback.textContent="Right + up must leave at least 6% probability for the other directions.";feedback.className="feedback bad";return}const r=rng(Math.floor((state.right*1000+state.up*10000))),trap=[3,4],target=[7,7],paths=[];let hit=0,bad=0;for(let k=0;k<2000;k++){let x=0,y=0,path=[[0,0]],out="none";for(let t=0;t<100;t++){const q=r(),other=(1-state.right-state.up)/2;if(q<state.right)x++;else if(q<state.right+state.up)y++;else if(q<state.right+state.up+other)x--;else y--;x=clamp(x,0,7);y=clamp(y,0,7);if(k<90)path.push([x,y]);if(x===trap[0]&&y===trap[1]){bad++;out="trap";break}if(x===target[0]&&y===target[1]){hit++;out="hit";break}}if(k<90)paths.push({path,out})}state.hit=hit/2000;state.trap=bad/2000;state.ran=true;const cv=$("w-chart"),c=cv.getContext("2d"),cell=45,ox=(760-cell*8)/2,oy=30;c.fillStyle="#090d17";c.fillRect(0,0,760,430);c.strokeStyle="rgba(255,255,255,.13)";for(let i=0;i<=8;i++){c.beginPath();c.moveTo(ox+i*cell,oy);c.lineTo(ox+i*cell,oy+8*cell);c.stroke();c.beginPath();c.moveTo(ox,oy+i*cell);c.lineTo(ox+8*cell,oy+i*cell);c.stroke()}paths.forEach(o=>{c.strokeStyle=o.out==="hit"?"rgba(85,201,138,.16)":o.out==="trap"?"rgba(230,111,117,.14)":"rgba(255,255,255,.06)";c.beginPath();o.path.forEach(([x,y],i)=>{const sx=ox+(x+.5)*cell,sy=oy+(7.5-y)*cell;i?c.lineTo(sx,sy):c.moveTo(sx,sy)});c.stroke()});const mark=(x,y,color,t)=>{const sx=ox+(x+.5)*cell,sy=oy+(7.5-y)*cell;c.fillStyle=color;c.beginPath();c.arc(sx,sy,14,0,Math.PI*2);c.fill();c.fillStyle="#090d17";c.font="bold 12px system-ui";c.textAlign="center";c.fillText(t,sx,sy+4);c.textAlign="left"};mark(0,0,"#e8c547","S");mark(7,7,"#55c98a","T");mark(3,4,"#e66f75","X");$("w-metrics").innerHTML=metric("target",(state.hit*100).toFixed(1)+"%")+metric("trap",(state.trap*100).toFixed(1)+"%")+metric("right",state.right.toFixed(2))+metric("up",state.up.toFixed(2))}} ,
+        check(){return state.ran&&state.hit>.55&&state.trap<.2?{pass:true,message:"Solved. You designed a transition policy that routes probability mass around the absorbing hazard."}:{pass:false,message:"The walkers still hit the trap too often or fail to reach the target reliably."}}
+      },
+      {
+        title:"Causal World Builder", concept:"Confounding and bad controls",
+        challenge:`<p>Exercise truly improves health by 5 points. Motivation increases both exercise and health; weight loss occurs after exercise. Choose the analysis that recovers the causal effect.</p>`,
+        hint:"Adjust for common causes of treatment and outcome. Do not control for a variable caused by treatment.",
+        explanation:`<h3>Condition on confounders, not consequences</h3><p>Motivation opens a backdoor association between exercise and health, so adjustment blocks that path. Weight loss is downstream of exercise; controlling for it removes part of the effect and can introduce bias.</p>`,
+        render(){state={method:"raw",ran:false};setHTML(`<div class="choices"><button class="btn d-choice selected" data-v="raw">Raw treated vs untreated</button><button class="btn d-choice" data-v="motivation">Adjust for motivation</button><button class="btn d-choice" data-v="post">Adjust for weight loss</button><button class="btn d-choice" data-v="random">Pretend assignment was random</button></div><button id="d-run" class="btn">Analyze observational world</button><div class="chart"><canvas id="d-chart" width="760" height="330"></canvas></div><div id="d-metrics" class="metrics"></div>`);document.querySelectorAll(".d-choice").forEach(b=>b.onclick=()=>{state.method=b.dataset.v;document.querySelectorAll(".d-choice").forEach(x=>x.classList.toggle("selected",x===b))});$("d-run").onclick=()=>{const r=rng(771),rows=[];for(let i=0;i<4000;i++){const m=normal(r),exercise=(m+.7*normal(r)>.1)?1:0,loss=2.2*exercise+.8*m+normal(r),health=50+5*exercise+4*m+2*normal(r);rows.push({m,exercise,loss,health})}const diff=a=>mean(a.filter(x=>x.exercise).map(x=>x.health))-mean(a.filter(x=>!x.exercise).map(x=>x.health));let est;if(state.method==="raw"||state.method==="random")est=diff(rows);else if(state.method==="motivation"){const groups=[rows.filter(x=>x.m<-.5),rows.filter(x=>x.m>=-.5&&x.m<.5),rows.filter(x=>x.m>=.5)];est=mean(groups.map(diff))}else{const groups=[rows.filter(x=>x.loss<1),rows.filter(x=>x.loss>=1&&x.loss<3),rows.filter(x=>x.loss>=3)];est=mean(groups.filter(g=>g.some(x=>x.exercise)&&g.some(x=>!x.exercise)).map(diff))}state.est=est;state.ran=true;const c=$("d-chart").getContext("2d");c.fillStyle="#090d17";c.fillRect(0,0,760,330);const nodes={M:[140,85,"Motivation"],E:[375,85,"Exercise"],H:[620,85,"Health"],L:[375,245,"Weight loss"]};const arrow=(a,b,color)=>{c.strokeStyle=color;c.lineWidth=3;c.beginPath();c.moveTo(a[0]+58,a[1]);c.lineTo(b[0]-58,b[1]);c.stroke()};arrow(nodes.M,nodes.E,state.method==="motivation"?"#e8c547":"rgba(255,255,255,.35)");arrow(nodes.E,nodes.H,"rgba(255,255,255,.5)");c.strokeStyle=state.method==="motivation"?"#e8c547":"rgba(255,255,255,.35)";c.beginPath();c.moveTo(180,65);c.quadraticCurveTo(380,0,580,65);c.stroke();c.strokeStyle=state.method==="post"?"#e66f75":"rgba(255,255,255,.35)";c.beginPath();c.moveTo(375,113);c.lineTo(375,217);c.stroke();Object.values(nodes).forEach(n=>{c.fillStyle="rgba(255,255,255,.08)";c.strokeStyle="rgba(255,255,255,.45)";c.beginPath();c.roundRect(n[0]-70,n[1]-27,140,54,12);c.fill();c.stroke();c.fillStyle="white";c.font="14px system-ui";c.textAlign="center";c.fillText(n[2],n[0],n[1]+5)});c.textAlign="left";$("d-metrics").innerHTML=metric("estimated effect",est.toFixed(2))+metric("true effect","5.00")+metric("absolute error",Math.abs(est-5).toFixed(2))+metric("method",state.method)}} ,
+        check(){return state.ran&&state.method==="motivation"&&Math.abs(state.est-5)<1.2?{pass:true,message:"Course complete. You blocked the backdoor path without conditioning on a post-treatment variable."}:{pass:false,message:"That analysis does not isolate the causal path from exercise to health."}}
+      }
+    ];
+
+    function renderRail(){const list=$("levels");list.innerHTML=modules.map((m,i)=>{const unlocked=i===0||solved[i-1]||solved[i];return `<li><button class="level ${i===current?"active":""}" data-i="${i}" ${unlocked?"":"disabled"}><span class="num">${i+1}</span><span class="level-name">${m.title}</span><span class="check">${solved[i]?"✓":unlocked?"":"🔒"}</span></button></li>`}).join("");list.querySelectorAll("button").forEach(b=>b.onclick=()=>{current=+b.dataset.i;render()})}
+    function renderProgress(){const n=solved.filter(Boolean).length;$("progress-bar").style.width=(n/10*100)+"%";$("progress-label").textContent=`${n} / 10 solved`}
+    function render(){const m=modules[current];state={};$("kicker").textContent=`Challenge ${current+1} of 10`;$("title").textContent=m.title;$("concept").textContent=m.concept;challenge.innerHTML=m.challenge;$("status").textContent=solved[current]?"Solved":"Unsolved";$("status").className="status "+(solved[current]?"solved":"");hintBox.className="feedback hidden";feedback.className="feedback hidden";explanation.innerHTML=m.explanation;explanation.className="explanation "+(solved[current]?"":"hidden");$("prev").disabled=current===0;$("next").disabled=current===9||!solved[current];$("next").textContent=current===9?"Course complete":"Next challenge";m.render();renderRail();renderProgress()}
+    $("hint").onclick=()=>{hintBox.textContent=modules[current].hint;hintBox.className="feedback"};
+    $("submit").onclick=()=>{const result=modules[current].check();feedback.textContent=result.message;feedback.className="feedback "+(result.pass?"good":"bad");if(result.pass){solved[current]=true;save();explanation.classList.remove("hidden");$("status").textContent="Solved";$("status").className="status solved";$("next").disabled=current===9;renderRail();renderProgress()}};
+    $("prev").onclick=()=>{if(current>0){current--;render();scrollTo({top:0,behavior:"smooth"})}};
+    $("next").onclick=()=>{if(current<9&&solved[current]){current++;render();scrollTo({top:0,behavior:"smooth"})}};
+    $("reset").onclick=()=>{if(confirm("Reset all Statistics Lab progress?")){solved=Array(10).fill(false);save();current=0;render()}};
+    render();
+  })();
+  </script>
+</body>
+</html>
