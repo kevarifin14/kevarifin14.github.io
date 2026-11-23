@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "eval:sims": "node scripts/evaluate-sims.mjs",
-    "eval:skills": "node .skills/meta-skill-evaluator/scripts/check-skill-evals.mjs .skills",
+    "eval:skills": "node \"$HOME/code/handbook/skills/meta-skill-evaluator/scripts/check-skill-evals.mjs\" \"$HOME/code/handbook/skills\"",
     "thumbs": "node scripts/thumbnails.mjs"
   },
   "devDependencies": {
