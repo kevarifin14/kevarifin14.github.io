@@ -47,29 +47,8 @@ Merge the deterministic report and independent review into the next implementati
 
 ## Skill Feedback Loop
 
-After a material eval run, use the `skill-making` evaluation loop to decide whether the result should update this skill. Keep the log in this skill directory:
-
-```sh
-node ~/code/handbook/skills/skill-making/scripts/log-skill-eval.mjs \
-  --skill ~/code/kevarifin14.github.io/skill \
-  --title "Simulation gallery eval" \
-  --evaluator "npm run eval:sims + independent reviewer" \
-  --artifact sims/eval-results/latest.md \
-  --artifact sims/eval-results/latest.json \
-  --result "18/18 sims scored 100/100" \
-  --lesson "Semantic labels, stage aria-labels, and reset/pause controls were recurring gaps" \
-  --decision "Made labels, accessibility, lifecycle controls, and evaluation records outside Git part of the workflow"
-```
-
-Update this skill when the finding is reusable:
-
-- recurring failures across multiple sims;
-- a missing invariant in the generation workflow;
-- a grader false positive/negative that would distort future work;
-- a starter/template weakness that causes repeated patching;
-- an independent reviewer finding about pedagogy or affordance quality that should become a standard.
-
-Do not update this skill for one-off content mistakes. Patch the artifact, log only if useful, and keep the skill lean.
+After a material eval run, update this skill only for recurring lessons, and test the change as
+the `skill-making` skill describes.
 
 ## Eval Design Notes
 

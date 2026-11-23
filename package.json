@@ -3,7 +3,6 @@
   "type": "module",
   "scripts": {
     "eval:sims": "node scripts/evaluate-sims.mjs",
-    "eval:skills": "node \"$HOME/code/handbook/skills/skill-making/scripts/check-skill-evals.mjs\" \"$HOME/code/kevarifin14.github.io/skill\"",
     "thumbs": "node scripts/thumbnails.mjs"
   },
   "devDependencies": {

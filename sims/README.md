@@ -73,7 +73,7 @@ The gallery uses the shared skill research notes in `skill/reference/`. Recent c
 ## Choosing the method (no default — right tool for the job)
 SVG for labeled diagrams/axes; Canvas 2D for fields/particles/high counts; WebGL/three.js for 3D; D3 for data; Matter/Rapier for rigid-body physics; p5 for quick sketches. Full decision guide: `skill/SKILL.md`.
 
-The `sims` skill in `skill/` is linked into Claude and Codex on every Mac.
+The `sims` skill in `skill/` loads for Claude and Codex inside this repo.
 
 ## Local preview
 Canvas/SVG/p5/D3/Matter open from `file://`. The three.js example uses ES modules — serve it:
