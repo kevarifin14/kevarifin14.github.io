@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulation Starter</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./main.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>Simulation Starter</h1>
+          <p>Drag inside the stage and adjust the variables to explore the model.</p>
+        </div>
+        <div class="readouts" aria-live="polite">
+          <span><strong id="particleReadout">0</strong> particles</span>
+          <span><strong id="energyReadout">0.00</strong> energy</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="stage" aria-label="Interactive simulation stage">
+          <canvas id="simulation" width="960" height="640"></canvas>
+        </section>
+
+        <aside class="control-panel" aria-label="Simulation controls">
+          <div class="control-row command-row">
+            <button id="toggleRun" type="button">Pause</button>
+            <button id="reset" type="button">Reset</button>
+            <button id="randomize" type="button">Randomize</button>
+          </div>
+
+          <label class="control-row">
+            <span>Particle count <strong id="countValue">72</strong></span>
+            <input id="count" type="range" min="16" max="160" step="4" value="72">
+          </label>
+
+          <label class="control-row">
+            <span>Attraction <strong id="forceValue">0.62</strong></span>
+            <input id="force" type="range" min="0" max="1.2" step="0.01" value="0.62">
+          </label>
+
+          <label class="control-row">
+            <span>Damping <strong id="dampingValue">0.94</strong></span>
+            <input id="damping" type="range" min="0.82" max="0.995" step="0.005" value="0.94">
+          </label>
+
+          <label class="check-row">
+            <input id="trails" type="checkbox" checked>
+            <span>Show motion trails</span>
+          </label>
+
+          <div class="preset-group" aria-label="Presets">
+            <button class="preset" type="button" data-preset="orbit">Orbit</button>
+            <button class="preset" type="button" data-preset="drift">Drift</button>
+            <button class="preset" type="button" data-preset="collapse">Collapse</button>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </body>
+</html>

@@ -62,7 +62,7 @@ No build step: each folder is plain HTML/JS/CSS that runs as static files on Git
 
 ## Research sources
 
-The gallery uses the shared skill research notes in `.skills/building-html-simulations/reference/`. Recent course-inspired sims draw from Stanford CS229 model selection, bias/variance, k-means, and neural-network material; Stanford CS221 MDP, CSP, and search material; Stanford CS224W PageRank/cascade material; Stanford CS109 probability topics such as Markov chains, birthday collisions, coupon collection, and gambler's ruin; MIT OCW stochastic processes, random walks, queueing, feedback control, orbital mechanics, heat/diffusion, reaction-diffusion, enzyme kinetics, Gillespie simulation, predator-prey, and systems biology material; Princeton percolation/union-find material; Harvard CS50 algorithm material; and Stanford Nifty Schelling material.
+The gallery uses the shared skill research notes in `skill/reference/`. Recent course-inspired sims draw from Stanford CS229 model selection, bias/variance, k-means, and neural-network material; Stanford CS221 MDP, CSP, and search material; Stanford CS224W PageRank/cascade material; Stanford CS109 probability topics such as Markov chains, birthday collisions, coupon collection, and gambler's ruin; MIT OCW stochastic processes, random walks, queueing, feedback control, orbital mechanics, heat/diffusion, reaction-diffusion, enzyme kinetics, Gillespie simulation, predator-prey, and systems biology material; Princeton percolation/union-find material; Harvard CS50 algorithm material; and Stanford Nifty Schelling material.
 
 ## Add a new sim
 1. `cp -r _template my-sim` (or copy the example closest to your method).
@@ -71,15 +71,9 @@ The gallery uses the shared skill research notes in `.skills/building-html-simul
 4. Commit + push — live at `/sims/my-sim/` in ~1 min.
 
 ## Choosing the method (no default — right tool for the job)
-SVG for labeled diagrams/axes; Canvas 2D for fields/particles/high counts; WebGL/three.js for 3D; D3 for data; Matter/Rapier for rigid-body physics; p5 for quick sketches. Full decision guide: `.claude/skills/building-html-simulations/SKILL.md`.
+SVG for labeled diagrams/axes; Canvas 2D for fields/particles/high counts; WebGL/three.js for 3D; D3 for data; Matter/Rapier for rigid-body physics; p5 for quick sketches. Full decision guide: `skill/SKILL.md`.
 
-Claude and Codex both use the same simulation-building skill through symlinks:
-
-- Canonical skill: `.skills/building-html-simulations/`
-- Claude path: `.claude/skills/building-html-simulations`
-- Codex path: `~/.codex/skills/building-html-simulations`
-
-Update the canonical folder only; both agents will read the same workflow, references, and starter asset.
+The `sims` skill in `skill/` is linked into Claude and Codex on every Mac.
 
 ## Local preview
 Canvas/SVG/p5/D3/Matter open from `file://`. The three.js example uses ES modules — serve it:
